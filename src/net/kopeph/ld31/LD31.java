@@ -207,12 +207,11 @@ public class LD31 extends PApplet {
 		//paint the image with the proper textures
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
 		
-		int taskSize = pixels.length/texturingPool.poolSize;
+		float taskSize = pixels.length/texturingPool.poolSize;
 		for (int i = 0; i < texturingPool.poolSize; ++i) {
 			final int j = i;
-			texturingPool.post(() -> applyTexture(pixels, j*taskSize, (j+1)*taskSize));
+			texturingPool.post(() -> applyTexture(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)));
 		}
-		
 		texturingPool.forceSync();
 		
 		//draw all entities

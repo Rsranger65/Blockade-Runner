@@ -59,12 +59,6 @@ public class Level implements AutoCloseable {
 		
 		LEVEL_WIDTH = width;
 		LEVEL_HEIGHT = height;
-		
-		//these will be overwritten later in clearRect()
-		minx = LEVEL_WIDTH;
-		miny = LEVEL_HEIGHT;
-		maxx = 0;
-		maxy = 0;
 
 		//a few adjustments to make the level properties scale somewhat with the game size
 		//these are more or less just arbitrary magic numbers that are "close enough" to the desired result
@@ -78,6 +72,12 @@ public class Level implements AutoCloseable {
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 
 		do {
+			//these will be overwritten later in clearRect()
+			minx = LEVEL_WIDTH;
+			miny = LEVEL_HEIGHT;
+			maxx = 0;
+			maxy = 0;
+			
 			Arrays.fill(tiles, FLOOR_NONE);
 
 			//clear out the rooms
