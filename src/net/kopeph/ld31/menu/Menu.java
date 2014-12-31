@@ -3,39 +3,41 @@ package net.kopeph.ld31.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kopeph.ld31.entity.Renderable;
-import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.LD31;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Menu implements Renderable {
+public class Menu {
 	private final PApplet context;
-	private final Font font;
-	private final String title;
-
+	
+	private int width, height;
+	
 	List<MenuWidget> widgets = new ArrayList<>();
-
-	public Menu(PApplet context, Font font, String title) {
-		this.context = context;
-		this.font = font;
-		this.title = title;
+	
+	public Menu(int width, int height) {
+		context = LD31.getContext();
+		setDimensions(width, height);
 	}
-
+	
+	public void setDimensions(int w, int h) {
+		width = w;
+		height = h;
+	}
+	
 	public void add(MenuWidget b) {
 		widgets.add(b);
 	}
-
-	@Override
+	
 	public void render() {
-		context.fill(100, 200);
 		context.pushStyle();
+		
+		context.fill(100, 200);
 		context.rectMode(PConstants.CENTER);
-		context.rect(context.width/2, context.height/2, context.width - 200, context.height - 200, 10);
-		context.popStyle();
-
-		font.renderCentered(title, context.width / 2, 125);
-
+		context.rect(context.width/2, context.height/2, width, height, 10);
+		
 		for (MenuWidget w : widgets)
 			w.render();
+		
+		context.popStyle();
 	}
 }

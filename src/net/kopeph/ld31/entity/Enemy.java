@@ -11,13 +11,18 @@ public class Enemy extends Entity {
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	public final int comDistance = 100; //distance that enemy coms can reach in pixels (doesn't need line of sight)
+	public final int color;
 	private float direction; //radians
 
 	//for communication
 	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
-	public Enemy(PApplet context, Level level, int color) {
-		super(context, level, color);
+	public Enemy(Level level) {
+		super(level);
+
+		//give the enemy a random color
+		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
+		color = possibleColors[(int)(context.random(possibleColors.length))];
 	}
 
 	//checks if should be pursuing the player and then notifies any enemies within com distance
@@ -34,7 +39,7 @@ public class Enemy extends Entity {
 				return true;
 			referrer = ref;
 			return false;
-		}); //for some reason this doesn't fucking work
+		});
 
 		//notify other enemies within communication range
 		if (referrer != null)
@@ -68,10 +73,8 @@ public class Enemy extends Entity {
 			direction = context.random(8);
 	}
 
-	@Override
-	public void render() {
-		super.render();
-
+	public void draw() {
+		draw(color);
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
 				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;

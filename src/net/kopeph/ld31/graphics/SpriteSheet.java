@@ -3,6 +3,7 @@ package net.kopeph.ld31.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -15,19 +16,19 @@ public class SpriteSheet {
 	private final PApplet context;
 	private List<PImage> splitImages = new ArrayList<>();
 
-	public SpriteSheet(PApplet context, String filename, int cellsX, int cellsY) {
-		this(context, context.loadImage(filename), cellsX, cellsY);
+	public SpriteSheet(String filename, int cellsX, int cellsY) {
+		this(LD31.getContext().loadImage(filename), cellsX, cellsY);
 	}
 
-	public SpriteSheet(PApplet context, PImage sheet, int cellsX, int cellsY) {
-		this.context = context;
+	public SpriteSheet(PImage sheet, int cellsX, int cellsY) {
+		this.context = LD31.getContext();
 		int width = sheet.width / cellsX;
 		int height = sheet.height / cellsY;
 
 		//Splice up the image into a bunch of little ones
 		for (int y = 0; y < cellsY; y++) {
 			for (int x = 0; x < cellsX; x++) {
-				PImage cell = Util.crop(context, sheet, x * width, y * height, width, height);
+				PImage cell = Util.crop(sheet, x * width, y * height, width, height);
 				splitImages.add(cell);
 			}
 		}

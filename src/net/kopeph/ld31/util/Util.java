@@ -3,7 +3,7 @@ package net.kopeph.ld31.util;
 import java.io.Closeable;
 import java.io.IOException;
 
-import processing.core.PApplet;
+import net.kopeph.ld31.LD31;
 import processing.core.PConstants;
 import processing.core.PImage;
 
@@ -31,7 +31,7 @@ public class Util {
 	}
 
 	/**
-	 * Closes the supplied resource, catching all IOExceptions.
+	 * Closes the supplied resource, catching all Exceptions.
 	 * @param res
 	 * @throws RuntimeException when the resource's close() throws an exception.
 	 */
@@ -53,16 +53,11 @@ public class Util {
 		if (d < 0) return -1;
 				   return  0;
 	}
-
-	public static PImage crop(PApplet context, PImage img, int x, int y, int w, int h) {
-		PImage cropped = context.createImage(w, h, PConstants.ARGB);
+	
+	public static PImage crop(PImage img, int x, int y, int w, int h) {
+		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		cropped.copy(img, x, y, w, h, 0, 0, w, h);
 
 		return cropped;
-	}
-
-	public static boolean boxContains(int x, int y, int width, int height, int xTest, int yTest) {
-		return xTest > x         && yTest > y &&
-			   xTest < x + width && yTest < y + height;
 	}
 }

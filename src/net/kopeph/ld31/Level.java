@@ -24,7 +24,7 @@ public class Level implements AutoCloseable {
 
 	//constants (these may not be constant later)
 	private final int ROOM_COUNT, //25
-					  MIN_ROOM_WIDTH = 50, //TODO: change all these to be size-dependent
+					  MIN_ROOM_WIDTH = 50,
 					  MIN_ROOM_HEIGHT = 50,
 					  MAX_ROOM_WIDTH = 150,
 					  MAX_ROOM_HEIGHT = 150,
@@ -34,7 +34,7 @@ public class Level implements AutoCloseable {
 					  MAX_HALLWAY_LENGTH, //300
 					  HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
 
-					  VORONOI_POINTS = 100; //TODO: change this to be size-dependent
+					  VORONOI_POINTS = 100;
 
 	public final int LEVEL_WIDTH,
 					 LEVEL_HEIGHT,
@@ -47,14 +47,16 @@ public class Level implements AutoCloseable {
 
 	private final ThreadPool lightingThreadPool = new ThreadPool();
 	public final int[] tiles;
-
+	
 	//used to constrain Entity.rayTrace() for performance purposes
 	public int minx, miny, maxx, maxy;
 
-	public Level(PApplet context, int width, int height) {
+	public Level(int width, int height) {
+		PApplet context = LD31.getContext();
+		
 		LEVEL_WIDTH = width;
 		LEVEL_HEIGHT = height;
-
+		
 		//these will be overwritten later in clearRect()
 		minx = LEVEL_WIDTH;
 		miny = LEVEL_HEIGHT;
@@ -129,7 +131,7 @@ public class Level implements AutoCloseable {
 				int color = FLOOR_BLACK;
 				int x = i%LEVEL_WIDTH;
 				int y = i/LEVEL_WIDTH;
-
+					
 				for (int v = VORONOI_POINTS - 1; v-- != 0;) {
 					int distance = Math.abs(posx[v] - x) + Math.abs(posy[v] - y);
 					if (distance < minDistance) {
@@ -159,13 +161,8 @@ public class Level implements AutoCloseable {
 
 		//add enemies
 		enemies = new Enemy[ENEMY_COUNT];
-
-		//give the enemy a random color
-		int[] possibleColors = { FLOOR_RED, FLOOR_GREEN, FLOOR_BLUE };
-		for (int i = 0; i < ENEMY_COUNT; ++i) {
-			int color = possibleColors[(int)(context.random(possibleColors.length))];
-			enemies[i] = new Enemy(context, this, color);
-		}
+		for (int i = 0; i < ENEMY_COUNT; ++i)
+			enemies[i] = new Enemy(this);
 
 		//allow the player + objective placement to give up after so many attempts
 		//this is so we don't lock up on edge cases where one of the placements can't possibly succeed
@@ -173,14 +170,14 @@ public class Level implements AutoCloseable {
 
 		//add player
 		do {
-			player = new Entity(context, this, Entity.COLOR_PLAYER);
+			player = new Entity(this);
 			++placementFailCount;
 		} while (!goodPlayerPlacement() && placementFailCount < 100);
 
 		//add objective
 		placementFailCount = 0;
 		do {
-			objective = new Entity(context, this, Entity.COLOR_OBJECTIVE);
+			objective = new Entity(this);
 			++placementFailCount;
 		} while (!goodObjectivePlacement() && placementFailCount < 100);
 	}
@@ -223,7 +220,7 @@ public class Level implements AutoCloseable {
 		miny = PApplet.min(miny, y0);
 		maxx = PApplet.max(maxx, x0 + w - 1);
 		maxy = PApplet.max(maxy, y0 + h - 1);
-
+		
 		//this does the clearing
 		for (int y = y0; y < y0 + h; ++y)
 			for (int x = x0; x < x0 + w; ++x)

@@ -1,5 +1,6 @@
 package net.kopeph.ld31.entity;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.PointPredicate;
@@ -8,7 +9,7 @@ import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
-public class Entity implements Renderable {
+public class Entity {
 	public static final int SIZE = 2; //radius-.5
 	//if you modify a constant at runtime again I'll fucking kill you
 	private static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
@@ -40,14 +41,12 @@ public class Entity implements Renderable {
 	protected final PApplet context;
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
-	public final int color;
 
 	private Vector2 pos = new Vector2();
 
-	public Entity(PApplet context, Level level, int color) {
-		this.context = context;
+	public Entity(Level level) {
+		this.context = LD31.getContext();
 		this.level = level;
-		this.color = color;
 
 		//place the player in a valid spot
 		do {
@@ -141,12 +140,12 @@ public class Entity implements Renderable {
 	public Node toNode() {
 		return new Node(x(), y());
 	}
-
+	
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
 		int x = x(); //pre-calculating these gives us at least a 30% performance improvement
 		int y = y(); //holy shit
 		int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
-
+		
 		PointPredicate op = (lx, ly) -> {
 			int i = ly*level.LEVEL_WIDTH + lx; //we use this value twice now, so it makes sense to calculate and store
 			if (array[i] == Level.FLOOR_NONE) return false;
@@ -175,8 +174,7 @@ public class Entity implements Renderable {
 		}
 	}
 
-	@Override
-	public void render() {
+	public void draw(int color) {
 		for (int dy = -SIZE; dy <= SIZE; ++dy) {
 			for (int dx = -SIZE; dx <= SIZE; ++dx) {
 				int loc = (y() + dy)*context.width + x() + dx;

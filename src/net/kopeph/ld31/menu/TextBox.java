@@ -1,44 +1,21 @@
-/*
- * Copyright 2014 Alex Gittemeier
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package net.kopeph.ld31.menu;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
-import processing.core.PApplet;
 
-/**
- *
- * @author alexg
- */
-public class TextBox extends MenuWidget {
-	private final Font font;
-	public String text;
-	public boolean hAlign, vAlign;
+public class TextBox implements MenuWidget {
+	private String text;
+	private Font font;
+	private int yPos;
 
-	public TextBox(PApplet context, Font font, int x, int y, int w, int h) {
-		this(context, font, x, y, w, h, ""); //$NON-NLS-1$
-	}
-
-	public TextBox(PApplet context, Font font, int x, int y, int w, int h, String text) {
-		super(context, x, y, w, h);
+	public TextBox(Font font, String text, int yPos) {
 		this.font = font;
 		this.text = text;
+		this.yPos = yPos;
 	}
 
 	@Override
 	public void render() {
-		font.render(text, xPos, yPos, width, height, hAlign, vAlign);
+		font.renderCentered(text, LD31.getContext().width/2, yPos);
 	}
 }
