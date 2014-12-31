@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- *
  * @author alexg
  */
 public class Paths {

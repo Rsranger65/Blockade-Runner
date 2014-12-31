@@ -8,7 +8,6 @@ import processing.core.PConstants;
 import processing.core.PImage;
 
 /**
- *
  * @author alexg
  */
 public class Util {
@@ -18,7 +17,6 @@ public class Util {
 
 	/**
 	 * Closes the supplied resource, catching all Exceptions.
-	 * @param res
 	 * @throws RuntimeException when the resource's close() throws an exception.
 	 */
 	public static void forceClose(AutoCloseable res) {
@@ -32,7 +30,6 @@ public class Util {
 
 	/**
 	 * Closes the supplied resource, catching all Exceptions.
-	 * @param res
 	 * @throws RuntimeException when the resource's close() throws an exception.
 	 */
 	public static void forceClose(Closeable res) {
@@ -44,10 +41,7 @@ public class Util {
 		}
 	}
 
-	/**
-	 * @param d
-	 * @return 0 if number is zero, otherwise equivalent to abs(d)/d
-	 */
+	/** @return 0 if number is zero, otherwise equivalent to abs(d)/d */
 	public static int sign(double d) {
 		if (d > 0) return  1;
 		if (d < 0) return -1;

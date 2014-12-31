@@ -3,7 +3,6 @@ package net.kopeph.ld31.util;
 import processing.core.PApplet;
 
 /**
- *
  * @author alexg
  */
 public class Profiler {

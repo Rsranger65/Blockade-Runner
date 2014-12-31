@@ -26,7 +26,7 @@ public class LD31 extends PApplet {
 	private static final String MSG_WIN = "YA DID IT!";
 	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
 	
-	private static final int
+	private static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
 		ST_RESET      = -1,  // Level needs regenerated
 		ST_RUNNING    =  0,  // Normal Condition

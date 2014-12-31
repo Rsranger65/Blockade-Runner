@@ -4,10 +4,6 @@ import java.awt.Point;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-/**
- *
- * @author alexg
- */
 public class Trace {
 	private Trace() {
 		throw new AssertionError("No Instantiation of: " + getClass().getName()); //$NON-NLS-1$
@@ -69,7 +65,6 @@ public class Trace {
 		}
 	}
 
-	/***/
 	public static void fill(int x, int y, PointPredicate op) {
 		//using a Deque (stack) to simulate recursion
 		Deque<Point> points = new ArrayDeque<>();

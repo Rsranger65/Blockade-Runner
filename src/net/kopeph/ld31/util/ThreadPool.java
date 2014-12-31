@@ -6,7 +6,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author alexg
  */
 public class ThreadPool implements AutoCloseable {
@@ -21,16 +20,12 @@ public class ThreadPool implements AutoCloseable {
 	public final int poolSize;
 
 
-	/**
-	 * Creates a new thread pool using one thread per core.
-	 */
+	/** Creates a new thread pool using one thread per core. */
 	public ThreadPool() {
 		this(Runtime.getRuntime().availableProcessors());
 	}
 
-	/**
-	 * Creates a new thread pool using the specified number of threads.
-	 */
+	/** Creates a new thread pool using the specified number of threads. */
 	public ThreadPool(int poolSize) {
 		pool = Executors.newFixedThreadPool(poolSize);
 		this.poolSize = poolSize;

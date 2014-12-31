@@ -4,19 +4,13 @@ import java.util.Arrays;
 
 /** @immutable */
 public final class Vector2  {
-	/***/ public final double x;
-    /***/ public final double y;
+	public final double x;
+    public final double y;
 
-	/**
-	 * Constructs the &lt;0, 0&gt; vector.
-	 */
 	public Vector2() {
         this(0, 0);
     }
 
-	/**
-	 * Constructs the &lt;x, y&gt; vector.
-	 */
     public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
@@ -31,16 +25,12 @@ public final class Vector2  {
     	return new Vector2(m * Math.cos(t), m * Math.sin(t));
     }
 
-    /**
-     * @return the magnitude or length of this vector
-     */
+    /** @return the magnitude or length of this vector */
     public double mag() {
         return Math.sqrt(x * x + y * y);
     }
 
-    /**
-     * @return the angle of this vector
-     */
+    /** @return the angle of this vector */
     public double theta() {
         return Math.atan2(y, x);
     }
@@ -54,7 +44,7 @@ public final class Vector2  {
     }
 
     /**
-     * Subtracts this from the supplied vector.
+     * Subtracts the supplied vector from this
      * @return the resultant vector
      */
     public Vector2 sub(Vector2 rhs) {
@@ -68,7 +58,6 @@ public final class Vector2  {
     	return equals((Vector2) rhs);
     }
 
-    /***/
     public boolean equals(Vector2 rhs) {
         return x == rhs.x && y == rhs.y;
     }

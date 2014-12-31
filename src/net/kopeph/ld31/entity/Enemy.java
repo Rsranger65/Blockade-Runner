@@ -25,8 +25,8 @@ public class Enemy extends Entity {
 		color = possibleColors[(int)(context.random(possibleColors.length))];
 	}
 
-	//checks if should be pursuing the player and then notifies any enemies within com distance
 	/**
+	 * Checks if the enemy should pursue the player by line of sight and then notifies any enemies with com distance
 	 * @param ref Which Enemy is notifying this Enemy, or null if this is the first contact.
 	 */
 	public void checkPursuing(Enemy ref) {
