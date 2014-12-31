@@ -3,20 +3,20 @@ package net.kopeph.ld31.menu;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.entity.Renderable;
 import net.kopeph.ld31.graphics.Font;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Menu implements Renderable {
-	private final PApplet context;
+	private final PApplet context = LD31.getContext();
 	private final Font font;
 	private final String title;
 
 	List<MenuWidget> widgets = new ArrayList<>();
 
-	public Menu(PApplet context, Font font, String title) {
-		this.context = context;
+	public Menu(Font font, String title) {
 		this.font = font;
 		this.title = title;
 	}

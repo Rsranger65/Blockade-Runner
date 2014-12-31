@@ -16,8 +16,8 @@ public class Enemy extends Entity {
 	//for communication
 	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
-	public Enemy(PApplet context, Level level, int color) {
-		super(context, level, color);
+	public Enemy(Level level, int color) {
+		super(level, color);
 	}
 
 	//checks if should be pursuing the player and then notifies any enemies within com distance

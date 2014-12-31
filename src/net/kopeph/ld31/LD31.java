@@ -106,10 +106,10 @@ public class LD31 extends PApplet {
 		rawTextureYellow  = loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
 		rawTextureGrey    = loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
 		rawTextureWhite   = loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
-		fontWhite    = new Font(this, "res/font-16-white.png"     ); //$NON-NLS-1$
+		fontWhite         =  new Font("res/font-16-white.png"     ); //$NON-NLS-1$
 
-		win = new EndScreen(this, fontWhite, MSG_WIN, MSG_END_DIR   , color(0, 120, 0));
-		die = new EndScreen(this, fontWhite, MSG_DIE, MSG_END_DIR   , color(120, 0, 0));
+		win = new EndScreen(fontWhite, MSG_WIN, MSG_END_DIR   , color(0, 120, 0));
+		die = new EndScreen(fontWhite, MSG_DIE, MSG_END_DIR   , color(120, 0, 0));
 		setupMenu();
 		setupSettings();
 		setupPause();
@@ -273,14 +273,14 @@ public class LD31 extends PApplet {
 		die.render();
 	}
 	private void setupPause() {
-		pause = new Menu(this, fontWhite, MSG_PAUSE_TITLE);
-		pause.add(new MenuButton(this, fontWhite, MSG_PAUSE_MAINMENU, height/2 - 60, 200, 40, () -> {
+		pause = new Menu(fontWhite, MSG_PAUSE_TITLE);
+		pause.add(new MenuButton(fontWhite, MSG_PAUSE_MAINMENU, height/2 - 60, 200, 40, () -> {
 			gameState = ST_MAINMENU; //return to main menu
 		}));
-		pause.add(new MenuButton(this, fontWhite, MSG_PAUSE_RESUME, height/2, 200, 40, () -> {
+		pause.add(new MenuButton(fontWhite, MSG_PAUSE_RESUME, height/2, 200, 40, () -> {
 			gameState = ST_RUNNING; //resume game
 		}));
-		pause.add(new MenuButton(this, fontWhite, MSG_QUIT, height/2 + 60, 200, 40, () -> {
+		pause.add(new MenuButton(fontWhite, MSG_QUIT, height/2 + 60, 200, 40, () -> {
 			exit(); //exit game
 		}));
 	}
@@ -291,17 +291,17 @@ public class LD31 extends PApplet {
 	}
 
 	private void setupMenu() {
-		mainMenu = new Menu(this, fontWhite, MSG_TITLE);
-		mainMenu.add(new MenuButton(this, fontWhite, MSG_RANDOM, 200, 400, 50, () -> {
+		mainMenu = new Menu(fontWhite, MSG_TITLE);
+		mainMenu.add(new MenuButton(fontWhite, MSG_RANDOM, 200, 400, 50, () -> {
 			gameState = ST_RESET_HARD;
 		}));
-		mainMenu.add(new MenuButton(this, fontWhite, MSG_STORY, 260, 400, 50, () -> {
+		mainMenu.add(new MenuButton(fontWhite, MSG_STORY, 260, 400, 50, () -> {
 			//no-op for now
 		}));
-		mainMenu.add(new MenuButton(this, fontWhite, MSG_SETTINGS, 320, 400, 50, () -> {
+		mainMenu.add(new MenuButton(fontWhite, MSG_SETTINGS, 320, 400, 50, () -> {
 			gameState = ST_SETTINGS; //open settings menu
 		}));
-		mainMenu.add(new MenuButton(this, fontWhite, MSG_QUIT, 420, 400, 50, () -> {
+		mainMenu.add(new MenuButton(fontWhite, MSG_QUIT, 420, 400, 50, () -> {
 			exit(); //exit the game
 		}));
 	}
@@ -312,8 +312,8 @@ public class LD31 extends PApplet {
 	}
 
 	private void setupSettings() {
-		settings = new Menu(this, fontWhite, MSG_SETTINGS_TITLE);
-		settings.add(new MenuButton(this, fontWhite, MSG_SETTINGS_RET, 200, 400, 50, () -> {
+		settings = new Menu(fontWhite, MSG_SETTINGS_TITLE);
+		settings.add(new MenuButton(fontWhite, MSG_SETTINGS_RET, 200, 400, 50, () -> {
 			gameState = ST_MAINMENU;
 		}));
 	}

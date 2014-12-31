@@ -1,16 +1,16 @@
 package net.kopeph.ld31.menu;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.entity.Renderable;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 public abstract class MenuWidget implements Renderable {
-	protected final PApplet context;
+	protected final PApplet context = LD31.getContext();
 	protected int xPos, yPos, width, height;
 
-	public MenuWidget(PApplet context, int xPos, int yPos, int width, int height) {
-		this.context = context;
+	public MenuWidget(int xPos, int yPos, int width, int height) {
 		setBounds(xPos, yPos, width, height);
 	}
 

@@ -3,6 +3,7 @@ package net.kopeph.ld31.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -12,15 +13,18 @@ import processing.core.PImage;
  * @author alexg
  */
 public class SpriteSheet {
-	private final PApplet context;
+	private final PApplet context = LD31.getContext();
 	private List<PImage> splitImages = new ArrayList<>();
 
-	public SpriteSheet(PApplet context, String filename, int cellsX, int cellsY) {
-		this(context, context.loadImage(filename), cellsX, cellsY);
+	public SpriteSheet(String filename, int cellsX, int cellsY) {
+		init(context.loadImage(filename), cellsX, cellsY);
 	}
 
-	public SpriteSheet(PApplet context, PImage sheet, int cellsX, int cellsY) {
-		this.context = context;
+	public SpriteSheet(PImage sheet, int cellsX, int cellsY) {
+		init(sheet, cellsX, cellsY);
+	}
+
+	private void init(PImage sheet, int cellsX, int cellsY) {
 		int width = sheet.width / cellsX;
 		int height = sheet.height / cellsY;
 

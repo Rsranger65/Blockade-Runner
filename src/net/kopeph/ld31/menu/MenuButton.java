@@ -1,7 +1,7 @@
 package net.kopeph.ld31.menu;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
-import processing.core.PApplet;
 
 public class MenuButton extends TextBox {
 	private static final int
@@ -13,8 +13,8 @@ public class MenuButton extends TextBox {
 	Interaction interaction;
 	boolean wasPressed;
 
-	public MenuButton(PApplet context, Font font, String text, int yPos, int width, int height, Interaction interaction) {
-		super(context, font, (context.width - width) / 2, yPos - height / 2, width, height, text);
+	public MenuButton(Font font, String text, int yPos, int width, int height, Interaction interaction) {
+		super(font, (LD31.getContext().width - width) / 2, yPos - height / 2, width, height, text);
 		hAlign = true;
 		vAlign = true;
 		this.interaction = interaction;

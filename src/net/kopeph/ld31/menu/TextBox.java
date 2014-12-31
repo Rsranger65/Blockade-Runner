@@ -16,7 +16,6 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.graphics.Font;
-import processing.core.PApplet;
 
 /**
  *
@@ -27,12 +26,12 @@ public class TextBox extends MenuWidget {
 	public String text;
 	public boolean hAlign, vAlign;
 
-	public TextBox(PApplet context, Font font, int x, int y, int w, int h) {
-		this(context, font, x, y, w, h, ""); //$NON-NLS-1$
+	public TextBox(Font font, int x, int y, int w, int h) {
+		this(font, x, y, w, h, ""); //$NON-NLS-1$
 	}
 
-	public TextBox(PApplet context, Font font, int x, int y, int w, int h, String text) {
-		super(context, x, y, w, h);
+	public TextBox(Font font, int x, int y, int w, int h, String text) {
+		super(x, y, w, h);
 		this.font = font;
 		this.text = text;
 	}

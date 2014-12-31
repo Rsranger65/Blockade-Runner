@@ -164,7 +164,7 @@ public class Level implements AutoCloseable {
 		int[] possibleColors = { FLOOR_RED, FLOOR_GREEN, FLOOR_BLUE };
 		for (int i = 0; i < ENEMY_COUNT; ++i) {
 			int color = possibleColors[(int)(context.random(possibleColors.length))];
-			enemies[i] = new Enemy(context, this, color);
+			enemies[i] = new Enemy(this, color);
 		}
 
 		//allow the player + objective placement to give up after so many attempts
@@ -173,14 +173,14 @@ public class Level implements AutoCloseable {
 
 		//add player
 		do {
-			player = new Entity(context, this, Entity.COLOR_PLAYER);
+			player = new Entity(this, Entity.COLOR_PLAYER);
 			++placementFailCount;
 		} while (!goodPlayerPlacement() && placementFailCount < 100);
 
 		//add objective
 		placementFailCount = 0;
 		do {
-			objective = new Entity(context, this, Entity.COLOR_OBJECTIVE);
+			objective = new Entity(this, Entity.COLOR_OBJECTIVE);
 			++placementFailCount;
 		} while (!goodObjectivePlacement() && placementFailCount < 100);
 	}

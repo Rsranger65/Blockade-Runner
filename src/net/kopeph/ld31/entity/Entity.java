@@ -1,5 +1,6 @@
 package net.kopeph.ld31.entity;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.PointPredicate;
@@ -37,15 +38,14 @@ public class Entity implements Renderable {
 	};
 
 
-	protected final PApplet context;
+	protected final PApplet context = LD31.getContext();
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
 	public final int color;
 
 	private Vector2 pos = new Vector2();
 
-	public Entity(PApplet context, Level level, int color) {
-		this.context = context;
+	public Entity(Level level, int color) {
 		this.level = level;
 		this.color = color;
 
