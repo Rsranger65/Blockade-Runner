@@ -14,7 +14,7 @@ public class Menu implements Renderable {
 	private final Font font;
 	private final String title;
 
-	List<MenuWidget> widgets = new ArrayList<>();
+	private List<MenuWidget> widgets = new ArrayList<>();
 
 	public Menu(Font font, String title) {
 		this.font = font;

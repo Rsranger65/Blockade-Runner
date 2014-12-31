@@ -14,7 +14,7 @@ public class Enemy extends Entity {
 	private float direction; //radians
 
 	//for communication
-	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
+	private Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
 	public Enemy(Level level, int color) {
 		super(level, color);

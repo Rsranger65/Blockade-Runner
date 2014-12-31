@@ -11,8 +11,8 @@ public class MenuButton extends TextBox {
 		BRT_NORMAL  = 150,
 		ALPHA       = 200;
 
-	Interaction interaction;
-	boolean wasPressed;
+	private Interaction interaction;
+	private boolean wasPressed;
 
 	public MenuButton(Font font, String text, int yPos, int width, int height, Interaction interaction) {
 		super(font, (LD31.getContext().width - width) / 2, yPos - height / 2, width, height, text);
