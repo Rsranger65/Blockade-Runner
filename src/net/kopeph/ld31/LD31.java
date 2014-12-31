@@ -47,17 +47,6 @@ public class LD31 extends PApplet {
 	private volatile int gameState;
 	private int fadePhase;
 	
-	//player movement
-	//TODO: move key handling to a separate class
-	private boolean wpressed = false,
-					apressed = false,
-					spressed = false,
-					dpressed = false;
-	private boolean uppressed = false,
-					downpressed = false,
-					leftpressed = false,
-					rightpressed = false;
-	
 	public boolean interacting = false; //mouse interaction (used by MenuButton)
 	
 	private PImage textureRed    , rawTextureRed;
@@ -173,7 +162,10 @@ public class LD31 extends PApplet {
 	private void drawRunning() {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
-		level.player.move(wpressed || uppressed, spressed || downpressed, apressed || leftpressed, dpressed || rightpressed);
+		level.player.move(InputHandler.isPressed(InputHandler.UP   ),
+						  InputHandler.isPressed(InputHandler.DOWN ),
+						  InputHandler.isPressed(InputHandler.LEFT ),
+						  InputHandler.isPressed(InputHandler.RIGHT));
 		
 		//check win condition
 		if (dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
@@ -315,11 +307,8 @@ public class LD31 extends PApplet {
 	
 	@Override
 	public void keyPressed() {
+		//switch to handle special cases for now
 		switch (key) {
-			case 'w': case 'W': wpressed = true; break;
-			case 's': case 'S': spressed = true; break;
-			case 'a': case 'A': apressed = true; break;
-			case 'd': case 'D': dpressed = true; break;
 			case ' ':
 				if (gameState == ST_RUNNING ||
 					gameState == ST_WIN ||
@@ -345,32 +334,14 @@ public class LD31 extends PApplet {
 					loop();
 					gameState = ST_MENU;
 				}
-				break;
-			case CODED:
-				switch (keyCode) {
-					case UP:    uppressed    = true; break;
-					case DOWN:  downpressed  = true; break;
-					case LEFT:  leftpressed  = true; break;
-					case RIGHT: rightpressed = true; break;
-				}
 		}
+
+		InputHandler.handleInput(key == CODED? keyCode : key, true);
 	}
 	
 	@Override
 	public void keyReleased() {
-		switch (key) {
-			case 'w': case 'W': wpressed = false; break;
-			case 's': case 'S': spressed = false; break;
-			case 'a': case 'A': apressed = false; break;
-			case 'd': case 'D': dpressed = false; break;
-			case CODED:
-				switch (keyCode) {
-					case UP:    uppressed    = false; break;
-					case DOWN:  downpressed  = false; break;
-					case LEFT:  leftpressed  = false; break;
-					case RIGHT: rightpressed = false; break;
-				}
-		}
+		InputHandler.handleInput(key == CODED? keyCode : key, false);
 	}
 	
 	/** Global Entry Point */
