@@ -2,6 +2,7 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.spi.Interaction;
 
 public class MenuButton extends TextBox {
 	private static final int

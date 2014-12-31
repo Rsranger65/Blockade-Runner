@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
-import net.kopeph.ld31.graphics.PointPredicate;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.ThreadPool;
 import processing.core.PApplet;
 

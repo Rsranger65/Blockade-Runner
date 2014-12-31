@@ -1,7 +1,7 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.entity.Renderable;
+import net.kopeph.ld31.spi.Renderable;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;

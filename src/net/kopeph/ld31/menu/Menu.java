@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.entity.Renderable;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.spi.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

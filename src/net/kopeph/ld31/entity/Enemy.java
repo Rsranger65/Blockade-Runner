@@ -1,8 +1,8 @@
 package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.Level;
-import net.kopeph.ld31.graphics.PointPredicate;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 

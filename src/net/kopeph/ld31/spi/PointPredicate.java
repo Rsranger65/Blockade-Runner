@@ -1,4 +1,4 @@
-package net.kopeph.ld31.graphics;
+package net.kopeph.ld31.spi;
 
 /**
  * @author alexg

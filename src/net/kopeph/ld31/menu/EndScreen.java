@@ -16,8 +16,8 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.entity.Renderable;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.spi.Renderable;
 import processing.core.PApplet;
 
 /**

@@ -1,4 +1,4 @@
-package net.kopeph.ld31.menu;
+package net.kopeph.ld31.spi;
 
 /**
  * Used by interactive menu widgets for genericity

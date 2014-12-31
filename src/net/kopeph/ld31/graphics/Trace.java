@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import net.kopeph.ld31.spi.PointPredicate;
+
 /**
  *
  * @author alexg
