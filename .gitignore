@@ -17,3 +17,7 @@ hs_err_pid*
 
 #Custom Excludes
 res-src/
+bin/
+.project
+.classpath
+.settings/
