@@ -3,12 +3,13 @@ Blockade-Runner
 
 Contributors:
 
-- Alex Gittemeier (Code)
-- Miles Fogle (Prefork Code)
+- Alex Gittemeier (Prefork Code)
 - Dave Chen (Prefork Graphics)
+- Miles Fogle (Code)
 
 Building Directions
 -------------------
 
-1. Build with **Processing 2.2.1** by putting the included `core.jar` on the classpath
-1. Copy the `res` folder alongside the resultant .jar file.
+1. Add `core.jar` from **Processing 2.2.1** to the classpath
+2. Compile as a runnable `.jar` file with **JDK 1.8**
+3. Place the `res` folder next to the `.jar` file
