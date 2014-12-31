@@ -7,7 +7,14 @@ import net.kopeph.ld31.LD31;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/**
+ * @author stuntddude
+ */
 public class Menu {
+	public static final int
+		DEFAULT_WIDTH  = 600,
+		DEFAULT_HEIGHT = 400;
+	
 	private final PApplet context;
 	
 	private int width, height;
