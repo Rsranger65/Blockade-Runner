@@ -5,9 +5,10 @@ import java.util.Arrays;
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.ThreadPool;
-import processing.core.PApplet;
+import net.kopeph.ld31.util.Util;
 
 public class Level implements AutoCloseable {
 	//C-style enumeration of color values
@@ -40,6 +41,8 @@ public class Level implements AutoCloseable {
 					 LEVEL_HEIGHT,
 					 ENEMY_COUNT; //20
 
+	public final GraphicsContext ctx = GraphicsContext.getInstance();
+
 	//enemies and player
 	public Enemy[] enemies;
 	public Entity  player;
@@ -51,7 +54,7 @@ public class Level implements AutoCloseable {
 	//used to constrain Entity.rayTrace() for performance purposes
 	public int minx, miny, maxx, maxy;
 
-	public Level(PApplet context, int width, int height) {
+	public Level(int width, int height) {
 		LEVEL_WIDTH = width;
 		LEVEL_HEIGHT = height;
 
@@ -77,10 +80,10 @@ public class Level implements AutoCloseable {
 
 			//clear out the rooms
 			for (int r = 0; r < ROOM_COUNT; ++r) {
-				int rw = (int)context.random(MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
-				int rh = (int)context.random(MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
-				int rx = (int)context.random(LEVEL_WIDTH - rw - 1);
-				int ry = (int)context.random(LEVEL_HEIGHT - rh - 1);
+				int rw = Util.randomInt(MIN_ROOM_WIDTH, MAX_ROOM_WIDTH);
+				int rh = Util.randomInt(MIN_ROOM_HEIGHT, MAX_ROOM_HEIGHT);
+				int rx = Util.randomInt(LEVEL_WIDTH - rw - 1);
+				int ry = Util.randomInt(LEVEL_HEIGHT - rh - 1);
 
 				clearRect(rx, ry, rw, rh, FLOOR_BLACK);
 			}
@@ -90,10 +93,10 @@ public class Level implements AutoCloseable {
 				int rx1, ry1, rx2, ry2;
 				//find valid start and end points
 				do {
-					rx1 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
-					ry1 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
-					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
-					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
+					rx1 = Util.randomInt(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
+					ry1 = Util.randomInt(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
+					rx2 = Util.randomInt(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
+					ry2 = Util.randomInt(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
 				} while (Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) < MIN_HALLWAY_LENGTH ||
 						 Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
 						 !validTile(rx1, ry1) || !validTile(rx2, ry2));
@@ -113,12 +116,12 @@ public class Level implements AutoCloseable {
 		int[] colors = new int[VORONOI_POINTS];
 		for (int i = 0; i < VORONOI_POINTS; ++i) {
 			//assign a random position
-			posx[i] = (int)context.random(LEVEL_WIDTH);
-			posy[i] = (int)context.random(LEVEL_HEIGHT);
+			posx[i] = Util.randomInt(LEVEL_WIDTH);
+			posy[i] = Util.randomInt(LEVEL_HEIGHT);
 
 			//assign a random color
 			int[] possibleColors = { FLOOR_BLACK, FLOOR_RED, FLOOR_GREEN, FLOOR_BLUE };
-			colors[i] = possibleColors[(int)context.random(possibleColors.length)];
+			colors[i] = possibleColors[Util.randomInt(possibleColors.length)];
 		}
 
 		//for each pixel of floor
@@ -163,7 +166,7 @@ public class Level implements AutoCloseable {
 		//give the enemy a random color
 		int[] possibleColors = { FLOOR_RED, FLOOR_GREEN, FLOOR_BLUE };
 		for (int i = 0; i < ENEMY_COUNT; ++i) {
-			int color = possibleColors[(int)(context.random(possibleColors.length))];
+			int color = possibleColors[Util.randomInt(possibleColors.length)];
 			enemies[i] = new Enemy(this, color);
 		}
 
@@ -219,10 +222,10 @@ public class Level implements AutoCloseable {
 	//helper function for constructor/room + hallway generation
 	private void clearRect(int x0, int y0, int w, int h, int color) {
 		//update minx, maxx, miny, maxy if they need to be updated
-		minx = PApplet.min(minx, x0);
-		miny = PApplet.min(miny, y0);
-		maxx = PApplet.max(maxx, x0 + w - 1);
-		maxy = PApplet.max(maxy, y0 + h - 1);
+		minx = Math.min(minx, x0);
+		miny = Math.min(miny, y0);
+		maxx = Math.max(maxx, x0 + w - 1);
+		maxy = Math.max(maxy, y0 + h - 1);
 
 		//this does the clearing
 		for (int y = y0; y < y0 + h; ++y)
@@ -233,14 +236,14 @@ public class Level implements AutoCloseable {
 	//helper function for constructor/player placement
 	private boolean goodPlayerPlacement() {
 		for (Enemy e : enemies)
-			if (PApplet.dist(e.x(), e.y(), player.x(), player.y()) < e.viewDistance)
+			if (Util.dist(e.x(), e.y(), player.x(), player.y()) < e.viewDistance)
 				return false;
 		return true;
 	}
 
 	//helper function for constructor/objective placement
 	private boolean goodObjectivePlacement() {
-		return (PApplet.dist(player.x(), player.y(), objective.x(), objective.y()) > 200); //the magic numbers are real
+		return (Util.dist(player.x(), player.y(), objective.x(), objective.y()) > 200); //the magic numbers are real
 	}
 
 	public void calculateLighting(final int[] lighting) {

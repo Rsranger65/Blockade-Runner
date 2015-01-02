@@ -1,14 +1,14 @@
 package net.kopeph.ld31.entity;
 
-import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.spi.Renderable;
 import net.kopeph.ld31.util.Pointer;
+import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
-import processing.core.PApplet;
 
 public class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
@@ -39,7 +39,7 @@ public class Entity implements Renderable {
 	};
 
 
-	protected final PApplet context = LD31.getContext();
+	protected final GraphicsContext ctx = GraphicsContext.getInstance();
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
 	public final int color;
@@ -52,8 +52,8 @@ public class Entity implements Renderable {
 
 		//place the player in a valid spot
 		do {
-			pos = new Vector2(context.random(SIZE, level.LEVEL_WIDTH - SIZE),
-					          context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
+			pos = new Vector2(Util.random(SIZE, level.LEVEL_WIDTH - SIZE),
+					          Util.random(SIZE, level.LEVEL_HEIGHT - SIZE));
 		} while (!validPosition(x(), y()));
 	}
 
@@ -160,10 +160,10 @@ public class Entity implements Renderable {
 
 		//change the bounds of the for loop to stay within the level
 		//this way we don't have to do bounds checking per pixel inside of op.on()
-		int minx = PApplet.max(x - viewDistance + 1, level.minx);
-		int miny = PApplet.max(y - viewDistance + 1, level.miny);
-		int maxx = PApplet.min(x + viewDistance - 1, level.maxx);
-		int maxy = PApplet.min(y + viewDistance - 1, level.maxy);
+		int minx = Math.max(x - viewDistance + 1, level.minx);
+		int miny = Math.max(y - viewDistance + 1, level.miny);
+		int maxx = Math.min(x + viewDistance - 1, level.maxx);
+		int maxy = Math.min(y + viewDistance - 1, level.maxy);
 
 		for (int dx = minx; dx <= maxx; ++dx) {
 			Trace.line(x, y, dx, miny, op);
@@ -180,9 +180,9 @@ public class Entity implements Renderable {
 	public void render() {
 		for (int dy = -SIZE; dy <= SIZE; ++dy) {
 			for (int dx = -SIZE; dx <= SIZE; ++dx) {
-				int loc = (y() + dy)*context.width + x() + dx;
-				if (loc >= 0 && loc < context.pixels.length)
-					context.pixels[loc] = color;
+				int loc = (y() + dy)*ctx.width() + x() + dx;
+				if (loc >= 0 && loc < ctx.pixels().length)
+					ctx.pixels()[loc] = color;
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package net.kopeph.ld31.util;
 
-import processing.core.PApplet;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
+
 
 /**
  *
@@ -42,11 +43,11 @@ public class Profiler {
 		  endTimeMS[  endTask] = time;
 	}
 
-	public void report(PApplet context) {
+	public void report(GraphicsContext context) {
 		for (int i = 0; i < PROFILE_SIZE; i++)
 			System.out.printf("%s: %.3f\n", description[i], (endTimeMS[i] - startTimeMS[i]) / 1000.0); //$NON-NLS-1$
-		System.out.printf("FRAMERATE_AVG: %.2f\n", 1000.0 * context.frameCount / context.millis()); //$NON-NLS-1$
-		System.out.printf("FRAMERATE_CUR: %.2f\n", context.frameRate); //$NON-NLS-1$
+		System.out.printf("FRAMERATE_AVG: %.2f\n", 1000.0 * context.frameCount() / context.millis()); //$NON-NLS-1$
+		System.out.printf("FRAMERATE_CUR: %.2f\n", context.frameRate()); //$NON-NLS-1$
 		System.out.println();
 	}
 }

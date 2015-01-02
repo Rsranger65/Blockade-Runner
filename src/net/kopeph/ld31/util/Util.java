@@ -3,10 +3,6 @@ package net.kopeph.ld31.util;
 import java.io.Closeable;
 import java.io.IOException;
 
-import processing.core.PApplet;
-import processing.core.PConstants;
-import processing.core.PImage;
-
 /**
  *
  * @author alexg
@@ -54,15 +50,36 @@ public class Util {
 				   return  0;
 	}
 
-	public static PImage crop(PApplet context, PImage img, int x, int y, int w, int h) {
-		PImage cropped = context.createImage(w, h, PConstants.ARGB);
-		cropped.copy(img, x, y, w, h, 0, 0, w, h);
-
-		return cropped;
-	}
-
 	public static boolean boxContains(int x, int y, int width, int height, int xTest, int yTest) {
 		return xTest > x         && yTest > y &&
 			   xTest < x + width && yTest < y + height;
+	}
+
+	public static double dist(int x1, int y1, int x2, int y2) {
+		return new Vector2(x2 - x1, y2 - y1).mag();
+	}
+
+	public static int randomInt(int upper) {
+		return (int)random(0, upper);
+	}
+
+	public static int randomInt(int lower, int upper) {
+		return (int)random(lower, upper);
+	}
+
+	public static double random(double upper) {
+		return random(0, upper);
+	}
+
+	public static double random(double lower, double upper) {
+		return Math.random() * (upper - lower) + lower;
+	}
+
+	public static int clamp(int value, int min, int max) {
+		return Math.min(Math.max(value, min), max);
+	}
+
+	public static double clamp(double value, double min, double max) {
+		return Math.min(Math.max(value, min), max);
 	}
 }

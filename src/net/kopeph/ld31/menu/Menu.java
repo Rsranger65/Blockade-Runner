@@ -3,14 +3,12 @@ package net.kopeph.ld31.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.spi.Renderable;
-import processing.core.PApplet;
-import processing.core.PConstants;
 
 public class Menu implements Renderable {
-	private final PApplet context = LD31.getContext();
+	private final GraphicsContext ctx = GraphicsContext.getInstance();
 	private final Font font;
 	private final String title;
 
@@ -27,13 +25,9 @@ public class Menu implements Renderable {
 
 	@Override
 	public void render() {
-		context.fill(100, 200);
-		context.pushStyle();
-		context.rectMode(PConstants.CENTER);
-		context.rect(context.width/2, context.height/2, context.width - 200, context.height - 200, 10);
-		context.popStyle();
-
-		font.renderCentered(title, context.width / 2, 125);
+		ctx.fill(ctx.color(100, 100, 100, 200));
+		ctx.rect(100, 100, ctx.width() - 200, ctx.height() - 200, 10);
+		font.renderCentered(title, ctx.width() / 2, 125);
 
 		for (MenuWidget w : widgets)
 			w.render();

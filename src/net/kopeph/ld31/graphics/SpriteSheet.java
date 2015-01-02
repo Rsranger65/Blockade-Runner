@@ -3,35 +3,33 @@ package net.kopeph.ld31.graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.util.Util;
-import processing.core.PApplet;
-import processing.core.PImage;
+import net.kopeph.ld31.graphics.context.ContextImage;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 
 /**
  *
  * @author alexg
  */
 public class SpriteSheet {
-	private final PApplet context = LD31.getContext();
-	private List<PImage> splitImages = new ArrayList<>();
+	private final GraphicsContext ctx = GraphicsContext.getInstance();
+	private List<ContextImage> splitImages = new ArrayList<>();
 
 	public SpriteSheet(String filename, int cellsX, int cellsY) {
-		init(context.loadImage(filename), cellsX, cellsY);
+		init(ctx.loadImage(filename), cellsX, cellsY);
 	}
 
-	public SpriteSheet(PImage sheet, int cellsX, int cellsY) {
+	public SpriteSheet(ContextImage sheet, int cellsX, int cellsY) {
 		init(sheet, cellsX, cellsY);
 	}
 
-	private void init(PImage sheet, int cellsX, int cellsY) {
-		int width = sheet.width / cellsX;
-		int height = sheet.height / cellsY;
+	private void init(ContextImage sheet, int cellsX, int cellsY) {
+		int width = sheet.width() / cellsX;
+		int height = sheet.height() / cellsY;
 
 		//Splice up the image into a bunch of little ones
 		for (int y = 0; y < cellsY; y++) {
 			for (int x = 0; x < cellsX; x++) {
-				PImage cell = Util.crop(context, sheet, x * width, y * height, width, height);
+				ContextImage cell = sheet.crop(x * width, y * height, width, height);
 				splitImages.add(cell);
 			}
 		}
@@ -44,6 +42,6 @@ public class SpriteSheet {
 	 * @param y render location Y
 	 */
 	public void render(int cellId, int x, int y) {
-		context.image(splitImages.get(cellId), x, y);
+		ctx.image(splitImages.get(cellId), x, y);
 	}
 }

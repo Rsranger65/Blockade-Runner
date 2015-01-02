@@ -4,20 +4,16 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.graphics.context.ContextImage;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.util.Profiler;
 import net.kopeph.ld31.util.ThreadPool;
 import net.kopeph.ld31.util.Util;
-import processing.core.PApplet;
-import processing.core.PImage;
 
-/** Everything inside here works like it does in processing */
-public class LD31 extends PApplet {
-
-
-	private static final long serialVersionUID = 1L;
+public class LD31 {
 
 	//THESE ARE ALL THE USER MESSAGES
 	private static final String //Sorry, this project is not MSG free
@@ -50,10 +46,9 @@ public class LD31 extends PApplet {
 		ST_MAINMENU   =  4,  // Displaying Main Menu
 		ST_SETTINGS   =  5;  // Displaying Settings Menu
 
-	private static LD31 context;
-
 	private final Profiler profiler = new Profiler();
 	private final ThreadPool texturingPool = new ThreadPool();
+	private GraphicsContext ctx;
 
 	private Level level;
 	private EndScreen win, die;
@@ -72,44 +67,48 @@ public class LD31 extends PApplet {
 					rtPressed = false;
 
 	//textures
-	private PImage textureRed    , rawTextureRed;
-	private PImage textureGreen  , rawTextureGreen;
-	private PImage textureBlue   , rawTextureBlue;
-	private PImage textureCyan   , rawTextureCyan;
-	private PImage textureMagenta, rawTextureMagenta;
-	private PImage textureYellow , rawTextureYellow;
-	private PImage textureGrey   , rawTextureGrey;
-	private PImage textureWhite  , rawTextureWhite;
+	private ContextImage textureRed    , rawTextureRed;
+	private ContextImage textureGreen  , rawTextureGreen;
+	private ContextImage textureBlue   , rawTextureBlue;
+	private ContextImage textureCyan   , rawTextureCyan;
+	private ContextImage textureMagenta, rawTextureMagenta;
+	private ContextImage textureYellow , rawTextureYellow;
+	private ContextImage textureGrey   , rawTextureGrey;
+	private ContextImage textureWhite  , rawTextureWhite;
 	private Font   fontWhite;
 
 	/** Global Entry Point */
-	public static void main(String[] args) {
-		PApplet.main(new String[] { LD31.class.getName() });
+	@SuppressWarnings("unused")
+	public static void main(String[] args) { new LD31(); }
+
+	private LD31() {
+		GraphicsContext.init(GraphicsContext.PROCESSING, this::setup, this::render);
 	}
 
-	@Override
-	public void setup() {
-		context = this;
-		size(800, 600);
-		frameRate(60);
-		noStroke();
-		frame.setResizable(true);
-		frame.setTitle(MSG_TITLE);
+	private void setup() {
+		ctx = GraphicsContext.getInstance();
+
+		ctx.size(800, 600);
+		ctx.frameRate(60);
+		ctx.noStroke();
+		ctx.allowResize(true);
+		ctx.setFrameTitle(MSG_TITLE);
+		ctx.setKeyHandlers(this::keyPressed, this::keyReleased);
 		//TODO: give the window a custom icon
 
 		//load raw textures
-		rawTextureRed     = loadImage("res/red-background.jpg"    ); //$NON-NLS-1$
-		rawTextureGreen   = loadImage("res/green-background.jpg"  ); //$NON-NLS-1$
-		rawTextureBlue    = loadImage("res/blue-background.jpg"   ); //$NON-NLS-1$
-		rawTextureCyan    = loadImage("res/cyan-background.jpg"   ); //$NON-NLS-1$
-		rawTextureMagenta = loadImage("res/magenta-background.jpg"); //$NON-NLS-1$
-		rawTextureYellow  = loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
-		rawTextureGrey    = loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
-		rawTextureWhite   = loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
+		rawTextureRed     = ctx.loadImage("res/red-background.jpg"    ); //$NON-NLS-1$
+		rawTextureGreen   = ctx.loadImage("res/green-background.jpg"  ); //$NON-NLS-1$
+		rawTextureBlue    = ctx.loadImage("res/blue-background.jpg"   ); //$NON-NLS-1$
+		rawTextureCyan    = ctx.loadImage("res/cyan-background.jpg"   ); //$NON-NLS-1$
+		rawTextureMagenta = ctx.loadImage("res/magenta-background.jpg"); //$NON-NLS-1$
+		rawTextureYellow  = ctx.loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
+		rawTextureGrey    = ctx.loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
+		rawTextureWhite   = ctx.loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
 		fontWhite         =  new Font("res/font-16-white.png"     ); //$NON-NLS-1$
 
-		win = new EndScreen(fontWhite, MSG_WIN, MSG_END_DIR   , color(0, 120, 0));
-		die = new EndScreen(fontWhite, MSG_DIE, MSG_END_DIR   , color(120, 0, 0));
+		win = new EndScreen(fontWhite, MSG_WIN, MSG_END_DIR   , ctx.color(0, 120, 0));
+		die = new EndScreen(fontWhite, MSG_DIE, MSG_END_DIR   , ctx.color(120, 0, 0));
 		setupMenu();
 		setupSettings();
 		setupPause();
@@ -117,15 +116,10 @@ public class LD31 extends PApplet {
 		gameState = ST_MAINMENU;
 	}
 
-	public static LD31 getContext() {
-		return context;
-	}
-
-	@Override
-	public void draw() {
+	public void render() {
 		//detect and react to window resizing
 		if (gameState == ST_RUNNING)
-			if (level.LEVEL_WIDTH != width || level.LEVEL_HEIGHT != height)
+			if (level.LEVEL_WIDTH != ctx.width() || level.LEVEL_HEIGHT != ctx.height())
 				gameState = ST_RESET_HARD;
 
 		switch (gameState) {
@@ -142,22 +136,23 @@ public class LD31 extends PApplet {
 
 	private void resetHard() {
 		reset();
-		loadPixels(); //must be done whenever the size of pixels changes
+		ctx.loadPixels(); //must be done whenever the size of pixels changes
 
 		//crop textures
-		textureRed     = Util.crop(this, rawTextureRed    , 0, 0, width, height);
-		textureGreen   = Util.crop(this, rawTextureGreen  , 0, 0, width, height);
-		textureBlue    = Util.crop(this, rawTextureBlue   , 0, 0, width, height);
-		textureCyan    = Util.crop(this, rawTextureCyan   , 0, 0, width, height);
-		textureMagenta = Util.crop(this, rawTextureMagenta, 0, 0, width, height);
-		textureYellow  = Util.crop(this, rawTextureYellow , 0, 0, width, height);
-		textureGrey    = Util.crop(this, rawTextureGrey   , 0, 0, width, height);
-		textureWhite   = Util.crop(this, rawTextureWhite  , 0, 0, width, height);
+		textureRed     = rawTextureRed    .crop(0, 0, ctx.width(), ctx.height());
+		textureGreen   = rawTextureGreen  .crop(0, 0, ctx.width(), ctx.height());
+		textureBlue    = rawTextureBlue   .crop(0, 0, ctx.width(), ctx.height());
+		textureCyan    = rawTextureCyan   .crop(0, 0, ctx.width(), ctx.height());
+		textureMagenta = rawTextureMagenta.crop(0, 0, ctx.width(), ctx.height());
+		textureYellow  = rawTextureYellow .crop(0, 0, ctx.width(), ctx.height());
+		textureGrey    = rawTextureGrey   .crop(0, 0, ctx.width(), ctx.height());
+		textureWhite   = rawTextureWhite  .crop(0, 0, ctx.width(), ctx.height());
 	}
 
 	private void reset() {
 		Util.forceClose(level); //prevent resource leak from earlier ThreadPool (if any)
-		level = new Level(this, width, height); //level verifies itself so we don't do that here anymore
+		//level verifies itself so we don't do that here anymore
+		level = new Level(ctx.width(), ctx.height());
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}
@@ -171,20 +166,20 @@ public class LD31 extends PApplet {
 				          dPressed || rtPressed);
 
 		//check win condition
-		if (dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
+		if (Util.dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
 			gameState = ST_WIN;
 			return;
 		}
 
 		//calculate lighting
 		profiler.swap(Profiler.PLAYER_MOVE, Profiler.LIGHTING);
-		level.calculateLighting(pixels);
+		level.calculateLighting(ctx.pixels());
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
 
 		//check which enemies should be following the player
-		if (pixels[level.player.y()*level.LEVEL_WIDTH + level.player.x()] == Level.FLOOR_WHITE)
+		if (ctx.pixels()[level.player.y()*level.LEVEL_WIDTH + level.player.x()] == Level.FLOOR_WHITE)
 			for (Enemy e : level.enemies)
 				e.checkPursuing(null); //pass in null to indicate the call isn't a referral from another enemy
 
@@ -193,7 +188,7 @@ public class LD31 extends PApplet {
 			e.moveAuto();
 
 			//losing condition
-			if (abs(e.x() - level.player.x()) < Entity.SIZE && abs(e.y() - level.player.y()) < Entity.SIZE) {
+			if (Math.abs(e.x() - level.player.x()) < Entity.SIZE && Math.abs(e.y() - level.player.y()) < Entity.SIZE) {
 				gameState = ST_DIE;
 				return;
 			}
@@ -202,10 +197,10 @@ public class LD31 extends PApplet {
 		//paint the image with the proper textures
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
 
-		int taskSize = pixels.length/texturingPool.poolSize;
+		int taskSize = ctx.pixels().length/texturingPool.poolSize;
 		for (int i = 0; i < texturingPool.poolSize; ++i) {
 			final int j = i;
-			texturingPool.post(() -> applyTexture(pixels, j*taskSize, (j+1)*taskSize));
+			texturingPool.post(() -> applyTexture(ctx.pixels(), j*taskSize, (j+1)*taskSize));
 		}
 
 		texturingPool.forceSync();
@@ -218,49 +213,49 @@ public class LD31 extends PApplet {
 			e.render();
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
-		Trace.circle(level.objective.x(), level.objective.y(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
+		Trace.circle(level.objective.x(), level.objective.y(), Math.abs(ctx.frameCount() % 50 - 25) + 50, (x, y) -> {
 			if (level.inBounds(x, y))
-				pixels[y*width + x] = Entity.COLOR_OBJECTIVE;
+				ctx.pixels()[y*ctx.width() + x] = Entity.COLOR_OBJECTIVE;
 			return true;
 		});
 
 		//update pixels/wrap things up
 		profiler.swap(Profiler.ENTITY_DRAW, Profiler.PIXEL_UPDATE);
-		updatePixels();
+		ctx.updatePixels();
 		profiler.end(Profiler.PIXEL_UPDATE);
 
 		//fade in and draw circle closing in on player at beginning of level
 		if (fadePhase < 0) {
-			fill(0, -(fadePhase += 4));
-			rect(0, 0, width, height);
-			loadPixels();
+			ctx.fill(ctx.color(ctx.COLOR_BLACK, Util.clamp(-(fadePhase += 4), 0, 255)));
+			ctx.rect(0, 0, ctx.width(), ctx.height());
+			ctx.loadPixels();
 			level.player.render();
-			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
+			Trace.circle(level.player.x(), level.player.y(), Math.max(0, -fadePhase - 255), (x, y) -> {
 				if (level.inBounds(x, y))
-					pixels[y*width + x] = Entity.COLOR_PLAYER;
+					ctx.pixels()[y*ctx.width() + x] = Entity.COLOR_PLAYER;
 				return true;
 			});
-			updatePixels();
+			ctx.updatePixels();
 		}
 
 		//Print out Text for directions
-		fontWhite.render(MSG_GAME_DIR, 8, height - 16);
+		fontWhite.render(MSG_GAME_DIR, 8, ctx.height() - 16);
 
-		profiler.report(this);
+		profiler.report(ctx);
 	}
 
 	private void applyTexture(final int[] image, int iBegin, int iEnd) {
 		for (int i = iBegin; i < iEnd; ++i) {
-			switch (pixels[i]) {
-				case Level.FLOOR_NONE: break; //I don't know if this helps speed or not
-				case Level.FLOOR_RED:     pixels[i] = textureRed.pixels[i];     break;
-				case Level.FLOOR_GREEN:   pixels[i] = textureGreen.pixels[i];   break;
-				case Level.FLOOR_BLUE:    pixels[i] = textureBlue.pixels[i];    break;
-				case Level.FLOOR_CYAN:    pixels[i] = textureCyan.pixels[i];    break;
-				case Level.FLOOR_MAGENTA: pixels[i] = textureMagenta.pixels[i]; break;
-				case Level.FLOOR_YELLOW:  pixels[i] = textureYellow.pixels[i];  break;
-				case Level.FLOOR_BLACK:   pixels[i] = textureGrey.pixels[i];    break;
-				case Level.FLOOR_WHITE:   pixels[i] = textureWhite.pixels[i];   break;
+			switch (ctx.pixels()[i]) {
+				case Level.FLOOR_NONE: 												  break;
+				case Level.FLOOR_RED:     ctx.pixels()[i] = textureRed.pixels()[i];     break;
+				case Level.FLOOR_GREEN:   ctx.pixels()[i] = textureGreen.pixels()[i];   break;
+				case Level.FLOOR_BLUE:    ctx.pixels()[i] = textureBlue.pixels()[i];    break;
+				case Level.FLOOR_CYAN:    ctx.pixels()[i] = textureCyan.pixels()[i];    break;
+				case Level.FLOOR_MAGENTA: ctx.pixels()[i] = textureMagenta.pixels()[i]; break;
+				case Level.FLOOR_YELLOW:  ctx.pixels()[i] = textureYellow.pixels()[i];  break;
+				case Level.FLOOR_BLACK:   ctx.pixels()[i] = textureGrey.pixels()[i];    break;
+				case Level.FLOOR_WHITE:   ctx.pixels()[i] = textureWhite.pixels()[i];   break;
 			}
 		}
 	}
@@ -274,19 +269,19 @@ public class LD31 extends PApplet {
 	}
 	private void setupPause() {
 		pause = new Menu(fontWhite, MSG_PAUSE_TITLE);
-		pause.add(new MenuButton(fontWhite, MSG_PAUSE_MAINMENU, height/2 - 60, 200, 40, () -> {
+		pause.add(new MenuButton(fontWhite, MSG_PAUSE_MAINMENU, ctx.height()/2 - 60, 200, 40, () -> {
 			gameState = ST_MAINMENU; //return to main menu
 		}));
-		pause.add(new MenuButton(fontWhite, MSG_PAUSE_RESUME, height/2, 200, 40, () -> {
+		pause.add(new MenuButton(fontWhite, MSG_PAUSE_RESUME, ctx.height()/2, 200, 40, () -> {
 			gameState = ST_RUNNING; //resume game
 		}));
-		pause.add(new MenuButton(fontWhite, MSG_QUIT, height/2 + 60, 200, 40, () -> {
-			exit(); //exit game
+		pause.add(new MenuButton(fontWhite, MSG_QUIT, ctx.height()/2 + 60, 200, 40, () -> {
+			ctx.exit(); //exit game
 		}));
 	}
 
 	private void drawPause() {
-		updatePixels();
+		ctx.updatePixels();
 		pause.render();
 	}
 
@@ -302,12 +297,12 @@ public class LD31 extends PApplet {
 			gameState = ST_SETTINGS; //open settings menu
 		}));
 		mainMenu.add(new MenuButton(fontWhite, MSG_QUIT, 420, 400, 50, () -> {
-			exit(); //exit the game
+			ctx.exit(); //exit the game
 		}));
 	}
 
 	private void drawMenu() {
-		image(rawTextureRed, 0, 0); //placeholder background
+		ctx.image(rawTextureRed, 0, 0); //placeholder background
 		mainMenu.render();
 	}
 
@@ -319,69 +314,52 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawSettings() {
-		image(rawTextureBlue, 0, 0); //placeholder background
+		ctx.image(rawTextureBlue, 0, 0); //placeholder background
 		settings.render();
-		fontWhite.renderCentered(MSG_SETTINGS_BODY, width/2, 450);
+		fontWhite.renderCentered(MSG_SETTINGS_BODY, ctx.width()/2, 450);
 	}
 
-	@Override
-	public void keyPressed() {
-		switch (key) {
-			case 'w': case 'W': wPressed = true; break;
-			case 's': case 'S': sPressed = true; break;
-			case 'a': case 'A': aPressed = true; break;
-			case 'd': case 'D': dPressed = true; break;
-			case ' ':
+	private void keyPressed(String keyId) {
+		switch (keyId) {
+			case "w": case "W": wPressed = true; break;
+			case "s": case "S": sPressed = true; break;
+			case "a": case "A": aPressed = true; break;
+			case "d": case "D": dPressed = true; break;
+			case " ":
 				if (gameState == ST_RUNNING ||
 					gameState == ST_WIN ||
 					gameState == ST_DIE) {
-					loop();
+					ctx.loop(true);
 					gameState = ST_RESET;
 				}
 				break;
-//			case 'p':
-//				if (gameState == ST_RUNNING) {
-//					gameState = ST_PAUSE;
-//				} else if (gameState == ST_PAUSE) {
-//					gameState = ST_RUNNING;
-//				}
-//				break;
-			case ESC:
-				//capture ESC key so it takes us to the menu instead of quitting our program
-				key = 0;
+			case "ESC":
 				if (gameState == ST_MAINMENU)
-					exit();
+					ctx.exit();
 				else if (gameState == ST_PAUSE)
 					gameState = ST_MAINMENU;
 				else {
-					loop();
+					ctx.loop(true);
 					gameState = ST_PAUSE;
 				}
 				break;
-			case CODED:
-				switch (keyCode) {
-					case UP:    upPressed = true; break;
-					case DOWN:  dnPressed = true; break;
-					case LEFT:  ltPressed = true; break;
-					case RIGHT: rtPressed = true; break;
-				}
+			case "UP":    upPressed = true; break;
+			case "DOWN":  dnPressed = true; break;
+			case "LEFT":  ltPressed = true; break;
+			case "RIGHT": rtPressed = true; break;
 		}
 	}
 
-	@Override
-	public void keyReleased() {
-		switch (key) {
-			case 'w': case 'W': wPressed = false; break;
-			case 's': case 'S': sPressed = false; break;
-			case 'a': case 'A': aPressed = false; break;
-			case 'd': case 'D': dPressed = false; break;
-			case CODED:
-				switch (keyCode) {
-					case UP:    upPressed = false; break;
-					case DOWN:  dnPressed = false; break;
-					case LEFT:  ltPressed = false; break;
-					case RIGHT: rtPressed = false; break;
-				}
+	private void keyReleased(String keyId) {
+		switch (keyId) {
+			case "w": case "W": wPressed = false; break;
+			case "s": case "S": sPressed = false; break;
+			case "a": case "A": aPressed = false; break;
+			case "d": case "D": dPressed = false; break;
+			case "UP":    upPressed = false; break;
+			case "DOWN":  dnPressed = false; break;
+			case "LEFT":  ltPressed = false; break;
+			case "RIGHT": rtPressed = false; break;
 		}
 	}
 }

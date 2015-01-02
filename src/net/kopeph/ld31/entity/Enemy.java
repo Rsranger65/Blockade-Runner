@@ -3,15 +3,15 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
+import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
-import processing.core.PApplet;
 
 public class Enemy extends Entity {
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	public final int comDistance = 100; //distance that enemy coms can reach in pixels (doesn't need line of sight)
-	private float direction; //radians
+	private double direction; //radians
 
 	//for communication
 	private Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
@@ -30,7 +30,7 @@ public class Enemy extends Entity {
 		//establish whether or not we have line of sight
 		referrer = this; //guilty until proven innocent
 		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
-			if (level.tiles[y*context.width + x] != Level.FLOOR_NONE)
+			if (level.tiles[y*ctx.width() + x] != Level.FLOOR_NONE)
 				return true;
 			referrer = ref;
 			return false;
@@ -39,7 +39,7 @@ public class Enemy extends Entity {
 		//notify other enemies within communication range
 		if (referrer != null)
 			for (Enemy e : level.enemies)
-				if (e != this && PApplet.dist(x(), y(), e.x(), e.y()) < comDistance)
+				if (e != this && Util.dist(x(), y(), e.x(), e.y()) < comDistance)
 					e.checkPursuing(this);
 	}
 
@@ -59,13 +59,13 @@ public class Enemy extends Entity {
 	}
 
 	public void moveIdle() {
-		direction += context.random(-1.0f/2, 1.0f/2);
+		direction += Util.random(-1.0f/2, 1.0f/2);
 		direction += TWO_PI; //because modulus sucks with negative numbers
 		direction %= TWO_PI;
 		Vector2 oldPos = pos();
 		move(direction);
 		if (pos().equals(oldPos)) //If we didn't move, pick a random direction to fake a bounce
-			direction = context.random(8);
+			direction = Util.random(8);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class Enemy extends Entity {
 
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
-				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;
+				ctx.pixels()[y*ctx.width() + x] = Entity.COLOR_ENEMY_COM;
 			return true;
 		};
 

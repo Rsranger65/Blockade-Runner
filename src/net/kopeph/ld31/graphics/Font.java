@@ -15,8 +15,8 @@
  */
 package net.kopeph.ld31.graphics;
 
-import net.kopeph.ld31.LD31;
-import processing.core.PImage;
+import net.kopeph.ld31.graphics.context.ContextImage;
+import net.kopeph.ld31.graphics.context.GraphicsContext;
 
 /**
  *
@@ -35,10 +35,10 @@ public class Font {
 	private final SpriteSheet sheet;
 
 	public Font(String filename) {
-		this(LD31.getContext().loadImage(filename));
+		this(GraphicsContext.getInstance().loadImage(filename));
 	}
 
-	public Font(PImage img) {
+	public Font(ContextImage img) {
 		this.sheet = new SpriteSheet(img, 16, 8);
 	}
 
