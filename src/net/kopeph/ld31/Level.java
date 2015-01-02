@@ -27,21 +27,21 @@ public class Level implements AutoCloseable {
 
 	//constants (these may not be constant later)
 	private final int ROOM_COUNT, //25
-					  MIN_ROOM_WIDTH = 50,
-					  MIN_ROOM_HEIGHT = 50,
-					  MAX_ROOM_WIDTH = 150,
-					  MAX_ROOM_HEIGHT = 150,
+	                  MIN_ROOM_WIDTH = 50,
+	                  MIN_ROOM_HEIGHT = 50,
+	                  MAX_ROOM_WIDTH = 150,
+	                  MAX_ROOM_HEIGHT = 150,
 
-					  HALLWAY_COUNT, //60
-					  MIN_HALLWAY_LENGTH, //50
-					  MAX_HALLWAY_LENGTH, //300
-					  HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
+	                  HALLWAY_COUNT, //60
+	                  MIN_HALLWAY_LENGTH, //50
+	                  MAX_HALLWAY_LENGTH, //300
+	                  HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
 
-					  VORONOI_POINTS = 100;
+	                  VORONOI_POINTS = 100;
 
 	public final int LEVEL_WIDTH,
-					 LEVEL_HEIGHT,
-					 ENEMY_COUNT; //20
+	                 LEVEL_HEIGHT,
+	                 ENEMY_COUNT; //20
 
 	//enemies and player
 	public Enemy[] enemies;
@@ -155,7 +155,7 @@ public class Level implements AutoCloseable {
 						tiles[y*LEVEL_WIDTH + x + 1] != FLOOR_NONE) {
 						tiles[y*LEVEL_WIDTH + x] = tiles[y*LEVEL_WIDTH + x - 1];
 					} else if (tiles[(y - 1)*LEVEL_WIDTH + x] != FLOOR_NONE &&
-							   tiles[(y + 1)*LEVEL_WIDTH + x] != FLOOR_NONE) {
+					           tiles[(y + 1)*LEVEL_WIDTH + x] != FLOOR_NONE) {
 						tiles[y*LEVEL_WIDTH + x] = tiles[(y + 1)*LEVEL_WIDTH + x];
 					}
 				}

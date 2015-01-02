@@ -33,7 +33,7 @@ public class LD31 extends PApplet {
 		ST_RUNNING    =  0,  // Normal Condition
 		ST_DIE        =  1,  // Displaying lose screen
 		ST_WIN        =  2,  // Displaying win screen
-		ST_PAUSE	  =  3,  // Displaying Pause Menu
+		ST_PAUSE      =  3,  // Displaying Pause Menu
 		ST_MENU       =  4,  // Displaying Main Menu
 		ST_SETTINGS   =  5;  // Displaying Settings Menu
 
@@ -164,9 +164,9 @@ public class LD31 extends PApplet {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
 		level.player.move(InputHandler.isPressed(InputHandler.UP   ),
-						  InputHandler.isPressed(InputHandler.DOWN ),
-						  InputHandler.isPressed(InputHandler.LEFT ),
-						  InputHandler.isPressed(InputHandler.RIGHT));
+		                  InputHandler.isPressed(InputHandler.DOWN ),
+		                  InputHandler.isPressed(InputHandler.LEFT ),
+		                  InputHandler.isPressed(InputHandler.RIGHT));
 		//check win condition
 		if (dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
 			gameState = ST_WIN;

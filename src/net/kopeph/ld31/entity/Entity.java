@@ -21,7 +21,7 @@ public class Entity {
 
 	private static final double
 		NONE =  -1         ,
-		 E   = 	0*Math.PI/4,
+		 E   =  0*Math.PI/4,
 		SE   =  1*Math.PI/4,
 		S    =  2*Math.PI/4,
 		SW   =  3*Math.PI/4,
@@ -51,7 +51,7 @@ public class Entity {
 		//place the player in a valid spot
 		do {
 			pos = new Vector2(context.random(SIZE, level.LEVEL_WIDTH - SIZE),
-					          context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
+			                  context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
 		} while (!validPosition(x(), y()));
 	}
 
@@ -93,7 +93,7 @@ public class Entity {
 			}
 		}
 		//SORRY DON'T WANT TO WORK ON THIS RN
-//		//if this is in a cardinal direction, try "bopping" around the corner
+		//if this is in a cardinal direction, try "bopping" around the corner
 //		else if (offset.x == 0) {
 //			for (int i = 1; i < SIZE * 2; i++) {
 //				if (move0(new Vector2( i, offset.y), false)) return true;

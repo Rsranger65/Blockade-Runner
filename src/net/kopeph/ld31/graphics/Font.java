@@ -78,8 +78,8 @@ public class Font {
 
 		for (String line : lines) {
 			while (!line.isEmpty()) {
-		        if (y > yMax)
-		        	break;
+				if (y > yMax)
+					break;
 
 				x = xInitial;
 				if (hCenter) {
@@ -99,25 +99,25 @@ public class Font {
 
 	private String renderLine(String str, int x, int y, int xMax) {
 		for (int i = 0; i < str.length(); i++) {
-            if (x > xMax)
-            	return str.substring(i);
-            switch (str.charAt(i)) {
-            case 'g':
-            case 'y':
-                sheet.render(G_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'j':
-            	sheet.render(J_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'p':
-            	sheet.render(P_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'q':
-            	sheet.render(Q_DESCENDER, x, y + Y_SIZE);
-                break;
-            }
-            sheet.render(str.charAt(i), x, y);
-            x += X_SIZE;
+			if (x > xMax)
+				return str.substring(i);
+			switch (str.charAt(i)) {
+			case 'g':
+			case 'y':
+				sheet.render(G_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'j':
+				sheet.render(J_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'p':
+				sheet.render(P_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'q':
+				sheet.render(Q_DESCENDER, x, y + Y_SIZE);
+				break;
+			}
+			sheet.render(str.charAt(i), x, y);
+			x += X_SIZE;
 		}
 
 		return ""; //$NON-NLS-1$

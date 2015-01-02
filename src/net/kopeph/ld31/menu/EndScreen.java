@@ -38,8 +38,8 @@ public class EndScreen {
 		}
 		else if (phase < 0) {
 			context.background(context.red  (backColor)*phase/-DARKEN_SPEED,
-							   context.green(backColor)*phase/-DARKEN_SPEED,
-					           context.blue (backColor)*phase/-DARKEN_SPEED);
+			                   context.green(backColor)*phase/-DARKEN_SPEED,
+			                   context.blue (backColor)*phase/-DARKEN_SPEED);
 			font.render(title, context.width/2, context.height/2);
 			font.render(footer, 8, context.height - 16);
 		}

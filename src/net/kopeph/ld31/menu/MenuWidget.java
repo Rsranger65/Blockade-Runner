@@ -54,7 +54,7 @@ public abstract class MenuWidget {
 		case ANCHOR_CENTER: xPos += dCtxWidth/2.0; break;
 		case ANCHOR_LEFT: 						   break;
 		case ANCHOR_RIGHT:  xPos += dCtxWidth; 	   break;
-	    case ANCHOR_FILL:  width += dCtxWidth; 	   break;
+		case ANCHOR_FILL:  width += dCtxWidth; 	   break;
 		}
 
 
@@ -62,7 +62,7 @@ public abstract class MenuWidget {
 		case ANCHOR_CENTER: yPos += dCtxHeight/2.0; break;
 		case ANCHOR_TOP: 						    break;
 		case ANCHOR_BOTTOM: yPos += dCtxHeight;     break;
-	    case ANCHOR_FILL: height += dCtxHeight;     break;
+		case ANCHOR_FILL: height += dCtxHeight;     break;
 		}
 	}
 

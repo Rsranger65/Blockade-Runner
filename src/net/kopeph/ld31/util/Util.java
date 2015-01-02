@@ -56,8 +56,8 @@ public class Util {
 	}
 
 	public static boolean boxContains(double x, double y, double w, double h,
-			                          double xTest, double yTest) {
+	                                  double xTest, double yTest) {
 		return xTest > x     && yTest > y &&
-			   xTest < x + w && yTest < y + h;
+		       xTest < x + w && yTest < y + h;
 	}
 }
