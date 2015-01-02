@@ -3,6 +3,7 @@ package net.kopeph.ld31;
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.graphics.RenderContainer;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.graphics.context.ContextImage;
 import net.kopeph.ld31.graphics.context.GraphicsContext;
@@ -13,7 +14,7 @@ import net.kopeph.ld31.util.Profiler;
 import net.kopeph.ld31.util.ThreadPool;
 import net.kopeph.ld31.util.Util;
 
-public class LD31 {
+public class LD31 extends RenderContainer {
 
 	//THESE ARE ALL THE USER MESSAGES
 	private static final String //Sorry, this project is not MSG free
@@ -116,6 +117,7 @@ public class LD31 {
 		gameState = ST_MAINMENU;
 	}
 
+	@Override
 	public void render() {
 		//detect and react to window resizing
 		if (gameState == ST_RUNNING)
