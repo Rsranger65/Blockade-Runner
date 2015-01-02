@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 import net.kopeph.ld31.spi.PointPredicate;
 
 /**
- *
  * @author alexg
  */
 public class Paths {

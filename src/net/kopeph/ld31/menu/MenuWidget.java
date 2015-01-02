@@ -1,12 +1,12 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.spi.Renderable;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public abstract class MenuWidget implements Renderable {
+/** implemented by all visual elements of a menu */
+public abstract class MenuWidget {
 	protected final PApplet context = LD31.getContext();
 	protected int xPos, yPos, width, height;
 
@@ -34,4 +34,5 @@ public abstract class MenuWidget implements Renderable {
 		return isMouseDown() && isHovered();
 	}
 
+	public abstract void render();
 }

@@ -30,7 +30,6 @@ public class Menu extends MenuWidget {
 		widgets.add(b);
 	}
 
-	@Override
 	public void render() {
 		context.pushStyle();
 

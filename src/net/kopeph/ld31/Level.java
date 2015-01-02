@@ -9,6 +9,9 @@ import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.ThreadPool;
 import processing.core.PApplet;
 
+/**
+ * @author stuntddude
+ */
 public class Level implements AutoCloseable {
 	//C-style enumeration of color values
 	public static final int

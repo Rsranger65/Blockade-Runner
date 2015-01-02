@@ -9,7 +9,6 @@ import processing.core.PApplet;
 import processing.core.PImage;
 
 /**
- *
  * @author alexg
  */
 public class SpriteSheet {
