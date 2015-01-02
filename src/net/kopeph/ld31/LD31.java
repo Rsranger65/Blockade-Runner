@@ -91,7 +91,7 @@ public class LD31 extends PApplet {
 		mainMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
-		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> {                            }));
+		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { /*SPACE FOR RENT */        }));
 		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
 		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
@@ -250,14 +250,14 @@ public class LD31 extends PApplet {
 		for (int i = iBegin; i < iEnd; ++i) {
 			switch (pixels[i]) {
 				case Level.FLOOR_NONE: break; //I don't know if this helps speed or not
-				case Level.FLOOR_RED:     pixels[i] = textureRed.pixels[i];     break;
-				case Level.FLOOR_GREEN:   pixels[i] = textureGreen.pixels[i];   break;
-				case Level.FLOOR_BLUE:    pixels[i] = textureBlue.pixels[i];    break;
-				case Level.FLOOR_CYAN:    pixels[i] = textureCyan.pixels[i];    break;
-				case Level.FLOOR_MAGENTA: pixels[i] = textureMagenta.pixels[i]; break;
-				case Level.FLOOR_YELLOW:  pixels[i] = textureYellow.pixels[i];  break;
-				case Level.FLOOR_BLACK:   pixels[i] = textureGrey.pixels[i];    break;
-				case Level.FLOOR_WHITE:   pixels[i] = textureWhite.pixels[i];   break;
+				case Level.FLOOR_RED:     image[i] = textureRed.pixels[i];     break;
+				case Level.FLOOR_GREEN:   image[i] = textureGreen.pixels[i];   break;
+				case Level.FLOOR_BLUE:    image[i] = textureBlue.pixels[i];    break;
+				case Level.FLOOR_CYAN:    image[i] = textureCyan.pixels[i];    break;
+				case Level.FLOOR_MAGENTA: image[i] = textureMagenta.pixels[i]; break;
+				case Level.FLOOR_YELLOW:  image[i] = textureYellow.pixels[i];  break;
+				case Level.FLOOR_BLACK:   image[i] = textureGrey.pixels[i];    break;
+				case Level.FLOOR_WHITE:   image[i] = textureWhite.pixels[i];   break;
 			}
 		}
 	}
@@ -339,12 +339,12 @@ public class LD31 extends PApplet {
 				}
 		}
 
-		InputHandler.handleInput(key == CODED? keyCode : key, true);
+		InputHandler.handleInput(key == CODED ? keyCode : key, true);
 	}
 
 	@Override
 	public void keyReleased() {
-		InputHandler.handleInput(key == CODED? keyCode : key, false);
+		InputHandler.handleInput(key == CODED ? keyCode : key, false);
 	}
 
 	/** Global Entry Point */

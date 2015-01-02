@@ -34,7 +34,6 @@ public class SpriteSheet {
 	}
 
 	/**
-	 * @param imageId resource ID from loadImage()
 	 * @param cellId numbering left to right, top to bottom, which cell in the sheet to render
 	 * @param x render location X
 	 * @param y render location Y
