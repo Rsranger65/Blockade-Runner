@@ -3,9 +3,9 @@ Blockade-Runner
 
 Contributors:
 
-- Alex Gittemeier (Prefork Code)
-- Dave Chen (Prefork Graphics)
+- Dave Chen (Graphics)
 - Miles Fogle (Code)
+- Alex Gittemeier (Code)
 
 Building Directions
 -------------------
