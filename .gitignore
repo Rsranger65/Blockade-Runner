@@ -15,10 +15,13 @@ hs_err_pid*
 .DS_Store
 ._.*
 
+#Eclipse project files
+.metadata/
+.settings/
+.classpath
+.project
+
 #Custom Excludes
 res-src/
 bin/
 libs/
-.project
-.classpath
-.settings/
