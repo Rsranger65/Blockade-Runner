@@ -162,10 +162,11 @@ public class LD31 extends RenderContainer {
 	private void drawRunning() {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
-		level.player.move(InputHandler.isPressed(InputHandler.UP   ),
-						  InputHandler.isPressed(InputHandler.DOWN ),
-						  InputHandler.isPressed(InputHandler.LEFT ),
-						  InputHandler.isPressed(InputHandler.RIGHT));
+		level.player.move(wPressed || upPressed,
+				          sPressed || dnPressed,
+				          aPressed || ltPressed,
+				          dPressed || rtPressed);
+
 		//check win condition
 		if (Util.dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
 			gameState = ST_WIN;
@@ -322,6 +323,10 @@ public class LD31 extends RenderContainer {
 
 	private void keyPressed(String keyId) {
 		switch (keyId) {
+			case "w": case "W": wPressed = true; break;
+			case "s": case "S": sPressed = true; break;
+			case "a": case "A": aPressed = true; break;
+			case "d": case "D": dPressed = true; break;
 			case " ":
 				if (gameState == ST_RUNNING ||
 					gameState == ST_WIN ||
@@ -340,12 +345,23 @@ public class LD31 extends RenderContainer {
 					gameState = ST_PAUSE;
 				}
 				break;
+			case "UP":    upPressed = true; break;
+			case "DOWN":  dnPressed = true; break;
+			case "LEFT":  ltPressed = true; break;
+			case "RIGHT": rtPressed = true; break;
 		}
-
-		InputHandler.handleInput(keyId.toUpperCase(), true);
 	}
 
 	private void keyReleased(String keyId) {
-		InputHandler.handleInput(keyId.toUpperCase(), false);
+		switch (keyId) {
+			case "w": case "W": wPressed = false; break;
+			case "s": case "S": sPressed = false; break;
+			case "a": case "A": aPressed = false; break;
+			case "d": case "D": dPressed = false; break;
+			case "UP":    upPressed = false; break;
+			case "DOWN":  dnPressed = false; break;
+			case "LEFT":  ltPressed = false; break;
+			case "RIGHT": rtPressed = false; break;
+		}
 	}
 }
