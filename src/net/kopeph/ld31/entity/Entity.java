@@ -166,11 +166,17 @@ public class Entity {
 		for (int dx = minx; dx <= maxx; ++dx) {
 			Trace.line(x, y, dx, miny, op);
 			Trace.line(x, y, dx, maxy, op);
+			//DEBUG
+			//array[miny*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
+			//array[maxy*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
 		for (int dy = miny + 1; dy < maxy; ++dy) {
 			Trace.line(x, y, minx, dy, op);
 			Trace.line(x, y, maxx, dy, op);
+			//DEBUG
+			//array[dy*level.LEVEL_WIDTH + minx] = Entity.COLOR_ENEMY_COM;
+			//array[dy*level.LEVEL_WIDTH + maxx] = Entity.COLOR_ENEMY_COM;
 		}
 	}
 
