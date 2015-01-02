@@ -16,6 +16,7 @@ public class Menu extends MenuWidget {
 
 	private List<MenuWidget> widgets = new ArrayList<>();
 
+
 	public Menu(int width, int height) {
 		super(0,0,0,0); //Dummy values
 		setBounds(width, height);
@@ -29,6 +30,8 @@ public class Menu extends MenuWidget {
 		setBounds((LD31.getContext().getWidth() - width) / 2,
 			      (LD31.getContext().getHeight() - height) / 2,
 			       width, height);
+		xAnchor = ANCHOR_CENTER;
+		yAnchor = ANCHOR_CENTER;
 	}
 
 	public void add(MenuWidget b) {
@@ -37,14 +40,14 @@ public class Menu extends MenuWidget {
 
 	@Override
 	public void render() {
-		context.pushStyle();
+		updateBounds();
 
+		context.pushStyle();
 		context.fill(100, 200);
 		context.rect(xPos, yPos, width, height, 10);
+		context.popStyle();
 
 		for (MenuWidget w : widgets)
 			w.render();
-
-		context.popStyle();
 	}
 }

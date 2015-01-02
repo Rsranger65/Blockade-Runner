@@ -26,10 +26,13 @@ public class TextBox extends MenuWidget {
 		this(font, xPos, yPos, LD31.getContext().width, LD31.getContext().height, text);
 		hAlign = true;
 		vAlign = true;
+		xAnchor = ANCHOR_CENTER;
+		yAnchor = ANCHOR_CENTER;
 	}
 
 	@Override
 	public void render() {
+		updateBounds();
 		font.render(text, xPos, yPos, width, height, hAlign, vAlign);
 	}
 }
