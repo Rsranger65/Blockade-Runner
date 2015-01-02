@@ -208,7 +208,7 @@ public class Level implements AutoCloseable {
 			}
 		}
 
-		//iterate backwards looking for unfilled tiles because it's faster
+		//iterate backwards looking for unfilled tiles because it's slightly faster
 		for (int i = tiles.length - 1; i-- != 0;)
 			if (tiles[i] == FLOOR_BLACK)
 				return false;

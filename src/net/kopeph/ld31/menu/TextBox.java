@@ -4,7 +4,7 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 
 /**
- * @author alexg
+ * @author alexg, stuntddude
  */
 public class TextBox extends MenuWidget {
 	private final Font font;
@@ -21,11 +21,14 @@ public class TextBox extends MenuWidget {
 		this.text = text;
 	}
 
-	public TextBox(Font font, String text, int yPos) {
-		this(font, 0, yPos, LD31.getContext().width, LD31.getContext().height, text);
+	//This is sort of a hack for merging purposes
+	public TextBox(Font font, String text, int xPos, int yPos) {
+		this(font, xPos, yPos, LD31.getContext().width, LD31.getContext().height, text);
 		hAlign = true;
+		vAlign = true;
 	}
 
+	@Override
 	public void render() {
 		font.render(text, xPos, yPos, width, height, hAlign, vAlign);
 	}

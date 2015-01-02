@@ -99,26 +99,26 @@ public class LD31 extends PApplet {
 		die = new EndScreen(fontWhite, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
 
 		//setup main menu
-		mainMenu = new Menu(width - 200, height - 200);
-		mainMenu.add(new TextBox(fontWhite, "Blockade Runner", 125));
-		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 200, 400, 50, () -> { gameState = ST_RESET_HARD; }));
-		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 260, 400, 50, () -> {                            }));
-		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 320, 400, 50, () -> { gameState = ST_SETTINGS;   }));
-		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 420, 400, 50, () -> { exit();                    }));
+		mainMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
+		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
+		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> {                            }));
+		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
+		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
-		settingsMenu = new Menu(width - 200, height - 200);
-		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 125));
-		settingsMenu.add(new MenuButton(fontWhite, "Back", 200, 400, 50, () -> { gameState = ST_MENU; }));
-		settingsMenu.add(new TextBox(fontWhite, "No settings to change yet :(", 450));
+		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
+		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
+		settingsMenu.add(new TextBox(fontWhite, "No settings to change yet :(", 0,  150));
 		//TODO: add options for key bindings
 
 		//setup pause menu
-		pauseMenu = new Menu(width - 200, height - 200);
-		pauseMenu.add(new TextBox(fontWhite, "Game Paused", height/2 - 200));
-		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", height/2 - 60, 200, 40, () -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , height/2     , 200, 40, () -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , height/2 + 60, 200, 40, () -> { exit();                 }));
+		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
+		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0, -70, 200, 50, () -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,   0, 200, 50, () -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0, +70, 200, 50, () -> { exit();                 }));
 
 		gameState = ST_MENU;
 	}
@@ -130,7 +130,8 @@ public class LD31 extends PApplet {
 	@Override
 	public void draw() {
 		//detect and react to window resizing
-		if (gameState == ST_RUNNING)
+		//TODO: fix so that resizing while paused doesn't kick you out of the pause menu
+		if (gameState == ST_RUNNING || gameState == ST_PAUSE)
 			if (level.LEVEL_WIDTH != width || level.LEVEL_HEIGHT != height)
 				gameState = ST_RESET_HARD;
 

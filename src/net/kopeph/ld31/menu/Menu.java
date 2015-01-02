@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.kopeph.ld31.LD31;
-import processing.core.PApplet;
 
+/**
+ * @author stuntddude
+ */
 public class Menu extends MenuWidget {
-	private final PApplet context = LD31.getContext();
+	public static final int
+		DEFAULT_WIDTH  = 600,
+		DEFAULT_HEIGHT = 400;
+
 
 	private List<MenuWidget> widgets = new ArrayList<>();
 
@@ -30,6 +35,7 @@ public class Menu extends MenuWidget {
 		widgets.add(b);
 	}
 
+	@Override
 	public void render() {
 		context.pushStyle();
 

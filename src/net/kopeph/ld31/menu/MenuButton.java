@@ -4,15 +4,27 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 
+/**
+ * @author stuntddude
+ */
 public class MenuButton extends TextBox {
-	private static boolean wasPressed; //Stop presses from propagating while mouse is held down
+	private static boolean wasPressed;
 
-	private Interaction interaction;
+	Interaction interaction;
 
-	public MenuButton(Font font, String text, int yPos, int width, int height, Interaction interaction) {
-		super(font, (LD31.getContext().width - width) / 2, yPos - height / 2, width, height, text);
-		hAlign = true;
-		vAlign = true;
+	/**
+	 * @param text        the text to be displayed centered inside the button
+	 * @param xPos        see TextBox constructor
+	 * @param yPos        see TextBox constructor
+	 * @param interaction method to be called when the button is clicked
+	 */
+	public MenuButton(Font font, String text, int xPos, int yPos, int width, int height, Interaction interaction) {
+		super(font, text, xPos, yPos);
+
+		this.xPos += (LD31.getContext().width - width) / 2;
+		this.yPos += (LD31.getContext().height - height) / 2;
+		this.width = width;
+		this.height = height;
 		this.interaction = interaction;
 	}
 
