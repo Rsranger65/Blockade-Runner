@@ -44,7 +44,7 @@ public class Menu extends MenuWidget {
 
 		context.pushStyle();
 		context.fill(100, 200);
-		context.rect(xPos, yPos, width, height, 10);
+		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 10);
 		context.popStyle();
 
 		for (MenuWidget w : widgets)

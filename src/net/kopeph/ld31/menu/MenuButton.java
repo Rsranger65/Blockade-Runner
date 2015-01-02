@@ -41,7 +41,7 @@ public class MenuButton extends TextBox {
 			wasPressed = false;
 
 		context.fill(isHovered() ? 50 : 150, 200);
-		context.rect(xPos, yPos, width, height, 7);
+		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 7);
 
 		super.render(); //Button Text
 	}

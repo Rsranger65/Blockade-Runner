@@ -47,7 +47,7 @@ public class Util {
 		if (d < 0) return -1;
 				   return  0;
 	}
-	
+
 	public static PImage crop(PImage img, int x, int y, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		cropped.copy(img, x, y, w, h, 0, 0, w, h);
@@ -55,8 +55,9 @@ public class Util {
 		return cropped;
 	}
 
-	public static boolean boxContains(int x, int y, int width, int height, int xTest, int yTest) {
-		return xTest > x         && yTest > y &&
-			   xTest < x + width && yTest < y + height;
+	public static boolean boxContains(double x, double y, double w, double h,
+			                          double xTest, double yTest) {
+		return xTest > x     && yTest > y &&
+			   xTest < x + w && yTest < y + h;
 	}
 }

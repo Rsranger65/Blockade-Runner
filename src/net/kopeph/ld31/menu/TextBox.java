@@ -33,6 +33,6 @@ public class TextBox extends MenuWidget {
 	@Override
 	public void render() {
 		updateBounds();
-		font.render(text, xPos, yPos, width, height, hAlign, vAlign);
+		font.render(text, (int)xPos, (int)yPos, (int)width, (int)height, hAlign, vAlign);
 	}
 }
