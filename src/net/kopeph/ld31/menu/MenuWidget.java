@@ -26,7 +26,12 @@ public abstract class MenuWidget implements Renderable {
 		return Util.boxContains(xPos, yPos, width, height, context.mouseX, context.mouseY);
 	}
 
-	public boolean isPressed() {
-		return isHovered() && context.mousePressed && (context.mouseButton == PConstants.LEFT);
+	public boolean isMouseDown() {
+		return context.mousePressed && (context.mouseButton == PConstants.LEFT);
 	}
+
+	public boolean isMouseDownInside() {
+		return isMouseDown() && isHovered();
+	}
+
 }

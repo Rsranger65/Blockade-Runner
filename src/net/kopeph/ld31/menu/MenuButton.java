@@ -5,14 +5,9 @@ import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 
 public class MenuButton extends TextBox {
-	private static final int
-		BRT_PRESSED = 250,
-		BRT_HOVERED =  50,
-		BRT_NORMAL  = 150,
-		ALPHA       = 200;
+	private static boolean wasPressed; //Stop presses from propagating while mouse is held down
 
 	private Interaction interaction;
-	private boolean wasPressed;
 
 	public MenuButton(Font font, String text, int yPos, int width, int height, Interaction interaction) {
 		super(font, (LD31.getContext().width - width) / 2, yPos - height / 2, width, height, text);
@@ -23,15 +18,16 @@ public class MenuButton extends TextBox {
 
 	@Override
 	public void render() {
-		if (wasPressed && !isPressed())
+		if (!wasPressed && isMouseDownInside()) {
 			interaction.interact();
-		wasPressed = isPressed();
+			wasPressed = true;
+		}
+		if (!isMouseDown())
+			wasPressed = false;
 
-		context.fill(isPressed() ? BRT_PRESSED :
-			         isHovered() ? BRT_HOVERED :
-			        	           BRT_NORMAL, ALPHA);
+		context.fill(isHovered() ? 50 : 150, 200);
 		context.rect(xPos, yPos, width, height, 7);
 
-		super.render();
+		super.render(); //Button Text
 	}
 }

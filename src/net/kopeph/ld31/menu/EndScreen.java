@@ -17,14 +17,13 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.spi.Renderable;
 import processing.core.PApplet;
 
 /**
  *
  * @author alexg
  */
-public class EndScreen implements Renderable {
+public class EndScreen {
 	private static final int SWEEP_SPEED = 8;
 	private static final int DARKEN_SPEED = 255;
 
@@ -41,7 +40,6 @@ public class EndScreen implements Renderable {
 		this.backColor = backColor;
 	}
 
-	@Override
 	public void render() {
 		++phase;
 
@@ -66,3 +64,4 @@ public class EndScreen implements Renderable {
 		}
 	}
 }
+

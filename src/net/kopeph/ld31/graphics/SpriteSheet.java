@@ -13,25 +13,22 @@ import processing.core.PImage;
  * @author alexg
  */
 public class SpriteSheet {
-	private final PApplet context = LD31.getContext();
+	private final PApplet context;
 	private List<PImage> splitImages = new ArrayList<>();
 
 	public SpriteSheet(String filename, int cellsX, int cellsY) {
-		init(context.loadImage(filename), cellsX, cellsY);
+		this(LD31.getContext().loadImage(filename), cellsX, cellsY);
 	}
 
 	public SpriteSheet(PImage sheet, int cellsX, int cellsY) {
-		init(sheet, cellsX, cellsY);
-	}
-
-	private void init(PImage sheet, int cellsX, int cellsY) {
+		this.context = LD31.getContext();
 		int width = sheet.width / cellsX;
 		int height = sheet.height / cellsY;
 
 		//Splice up the image into a bunch of little ones
 		for (int y = 0; y < cellsY; y++) {
 			for (int x = 0; x < cellsX; x++) {
-				PImage cell = Util.crop(context, sheet, x * width, y * height, width, height);
+				PImage cell = Util.crop(sheet, x * width, y * height, width, height);
 				splitImages.add(cell);
 			}
 		}

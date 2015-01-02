@@ -39,7 +39,7 @@ public class Font {
 	}
 
 	public Font(PImage img) {
-		this.sheet = new SpriteSheet(img, 16, 8);
+		sheet = new SpriteSheet(img, 16, 8);
 	}
 
 	/**

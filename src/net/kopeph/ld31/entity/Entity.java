@@ -5,12 +5,11 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
-import net.kopeph.ld31.spi.Renderable;
 import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
-public class Entity implements Renderable {
+public class Entity {
 	public static final int SIZE = 2; //radius-.5
 	//if you modify a constant at runtime again I'll fucking kill you
 	private static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
@@ -39,16 +38,15 @@ public class Entity implements Renderable {
 	};
 
 
-	protected final PApplet context = LD31.getContext();
+	protected final PApplet context;
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
-	public final int color;
 
 	private Vector2 pos = new Vector2();
 
-	public Entity(Level level, int color) {
+	public Entity(Level level) {
+		this.context = LD31.getContext();
 		this.level = level;
-		this.color = color;
 
 		//place the player in a valid spot
 		do {
@@ -176,8 +174,7 @@ public class Entity implements Renderable {
 		}
 	}
 
-	@Override
-	public void render() {
+	public void draw(int color) {
 		for (int dy = -SIZE; dy <= SIZE; ++dy) {
 			for (int dx = -SIZE; dx <= SIZE; ++dx) {
 				int loc = (y() + dy)*context.width + x() + dx;
