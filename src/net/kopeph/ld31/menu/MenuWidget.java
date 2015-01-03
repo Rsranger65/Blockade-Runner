@@ -15,8 +15,8 @@ public abstract class MenuWidget {
 
 	protected final PApplet context = LD31.getContext();
 
-	protected double xPos, yPos, width, height;
-	protected int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
+	public double xPos, yPos, width, height;
+	public int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
 
 	private int curCtxWidth, curCtxHeight;
 
