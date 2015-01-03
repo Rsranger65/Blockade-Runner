@@ -106,5 +106,12 @@ public class Trace {
 			if (op.on(p.x - 1, p.y    )) points.push(new Point(p.x - 1, p.y    ));
 		}
 	}
-
+	
+	public static void rectangle(int x, int y, int width, int height, PointPredicate op) {
+		for (int dx =  width; dx-- > 0;) {
+			for (int dy = height; dy-- > 0;) {
+				op.on(x + dx, y + dy);
+			}
+		}
+	}
 }
