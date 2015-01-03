@@ -311,34 +311,33 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		//switch to handle special cases for now
-		switch (key) {
-			case ' ':
-				if (gameState == ST_RUNNING ||
-					gameState == ST_WIN ||
-					gameState == ST_DIE) {
-					loop();
-					gameState = ST_RESET;
-				}
-				break;
-			case 'p':
-				if (gameState == ST_RUNNING) {
-					gameState = ST_PAUSE;
-					menuHeight = 1;
-				} else if (gameState == ST_PAUSE) {
-					gameState = ST_RUNNING;
-				}
-				break;
-			case ESC:
-				//capture ESC key so it takes us to the menu instead of quitting our program
-				key = 0;
-				if (gameState == ST_MENU) {
-					exit();
-				} else {
-					loop();
-					gameState = ST_MENU;
-				}
-		}
+		//TODO: move this into setup()
+		InputHandler.addBehavior(InputHandler.RESTART, () -> {
+			if (gameState == ST_RUNNING ||
+				gameState == ST_WIN ||
+				gameState == ST_DIE) {
+				loop();
+				gameState = ST_RESET;
+			}
+		});
+		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
+			if (gameState == ST_RUNNING) {
+				gameState = ST_PAUSE;
+				menuHeight = 1;
+			} else if (gameState == ST_PAUSE) {
+				gameState = ST_RUNNING;
+			}
+		});
+		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
+			//capture ESC key so it takes us to the menu instead of quitting our program
+			key = 0;
+			if (gameState == ST_MENU) {
+				exit();
+			} else {
+				loop();
+				gameState = ST_MENU;
+			}
+		});
 
 		InputHandler.handleInput(key == CODED ? keyCode : key, true);
 	}
