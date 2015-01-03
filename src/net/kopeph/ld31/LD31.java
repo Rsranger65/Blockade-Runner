@@ -371,16 +371,22 @@ public class LD31 extends PApplet {
 	}
 
 	private static String buildVersion() {
-		String buildNum = "?"; //$NON-NLS-1$
-		String branchName = "?"; //$NON-NLS-1$
-		try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
-			branchName = gitHead.readLine();
-			branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
-			buildNum = ResourceBundle.getBundle("buildNum").getString("build.number"); //$NON-NLS-1$ //$NON-NLS-2$
-		} catch (IOException | MissingResourceException e) {
-			//Oops. Ignore
-		}
+		try {
+			return ResourceBundle.getBundle("version").getString("build.versionString");
+		} catch (MissingResourceException e) {
+			//If the version file doesn't exist, make a version string based on
+			//auto-increment and the branch name
 
-		return String.format("VER:%s.%sa", branchName, buildNum); //$NON-NLS-1$
+			String buildNum = "?"; //$NON-NLS-1$
+			String branchName = "?"; //$NON-NLS-1$
+			try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
+				branchName = gitHead.readLine();
+				branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
+				buildNum = ResourceBundle.getBundle("buildNum").getString("build.number"); //$NON-NLS-1$ //$NON-NLS-2$
+			} catch (IOException | MissingResourceException e2) {
+				//Oops. Ignore
+			}
+			return String.format("VER:%s.%sa", branchName, buildNum); //$NON-NLS-1$
+		}
 	}
 }
