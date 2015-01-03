@@ -3,25 +3,30 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
-import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
+import processing.core.PApplet;
 
 public class Enemy extends Entity {
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	public final int comDistance = 100; //distance that enemy coms can reach in pixels (doesn't need line of sight)
-	private double direction; //radians
+	public final int color;
+	private float direction; //radians
 
 	//for communication
-	private Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
+	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
-	public Enemy(Level level, int color) {
-		super(level, color);
+	public Enemy(Level level) {
+		super(level);
+
+		//give the enemy a random color
+		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
+		color = possibleColors[(int)(context.random(possibleColors.length))];
 	}
 
-	//checks if should be pursuing the player and then notifies any enemies within com distance
 	/**
+	 * Checks if the enemy should pursue the player by line of sight and then notifies any enemies with com distance
 	 * @param ref Which Enemy is notifying this Enemy, or null if this is the first contact.
 	 */
 	public void checkPursuing(Enemy ref) {
@@ -30,16 +35,16 @@ public class Enemy extends Entity {
 		//establish whether or not we have line of sight
 		referrer = this; //guilty until proven innocent
 		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
-			if (level.tiles[y*ctx.width() + x] != Level.FLOOR_NONE)
+			if (level.tiles[y*context.width + x] != Level.FLOOR_NONE)
 				return true;
 			referrer = ref;
 			return false;
-		}); //for some reason this doesn't fucking work
+		});
 
 		//notify other enemies within communication range
 		if (referrer != null)
 			for (Enemy e : level.enemies)
-				if (e != this && Util.dist(x(), y(), e.x(), e.y()) < comDistance)
+				if (e != this && PApplet.dist(x(), y(), e.x(), e.y()) < comDistance)
 					e.checkPursuing(this);
 	}
 
@@ -59,22 +64,20 @@ public class Enemy extends Entity {
 	}
 
 	public void moveIdle() {
-		direction += Util.random(-1.0f/2, 1.0f/2);
+		direction += context.random(-1.0f/2, 1.0f/2);
 		direction += TWO_PI; //because modulus sucks with negative numbers
 		direction %= TWO_PI;
 		Vector2 oldPos = pos();
 		move(direction);
 		if (pos().equals(oldPos)) //If we didn't move, pick a random direction to fake a bounce
-			direction = Util.random(8);
+			direction = context.random(8);
 	}
 
-	@Override
-	public void render() {
-		super.render();
-
+	public void draw() {
+		draw(color);
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
-				ctx.pixels()[y*ctx.width() + x] = Entity.COLOR_ENEMY_COM;
+				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;
 			return true;
 		};
 

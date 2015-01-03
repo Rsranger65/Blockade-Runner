@@ -1,35 +1,47 @@
 package net.kopeph.ld31.menu;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.spi.Interaction;
 
+/**
+ * @author stuntddude
+ */
 public class MenuButton extends TextBox {
-	private static final int
-		PRESSED = 0xEEEEEE,
-		HOVERED = 0x333333,
-		NORMAL  = 0x666666,
-		ALPHA       = 0xCC;
+	private static boolean wasPressed;
 
-	private Interaction interaction;
-	private boolean wasPressed;
+	Interaction interaction;
 
-	public MenuButton(Font font, String text, int yPos, int width, int height, Interaction interaction) {
-		super(font, (GraphicsContext.getInstance().width() - width) / 2, yPos - height / 2, width, height, text);
-		hAlign = true;
-		vAlign = true;
+	/**
+	 * @param text        the text to be displayed centered inside the button
+	 * @param xPos        see TextBox constructor
+	 * @param yPos        see TextBox constructor
+	 * @param interaction method to be called when the button is clicked
+	 */
+	public MenuButton(Font font, String text, int xPos, int yPos, int width, int height, Interaction interaction) {
+		super(font, text, xPos, yPos);
+
+		this.xPos += (LD31.getContext().width - width) / 2;
+		this.yPos += (LD31.getContext().height - height) / 2;
+		this.width = width;
+		this.height = height;
 		this.interaction = interaction;
 	}
 
 	@Override
 	public void render() {
-		if (wasPressed && !isPressed())
+		updateBounds();
+
+		if (!wasPressed && isMouseDownInside()) {
 			interaction.interact();
-		wasPressed = isPressed();
+			wasPressed = true;
+		}
+		if (!isMouseDown())
+			wasPressed = false;
 
-		ctx.fill(ctx.color(isPressed() ? PRESSED : isHovered() ? HOVERED : NORMAL, ALPHA));
-		ctx.rect(xPos, yPos, width, height, 7);
+		context.fill(isHovered() ? 50 : 150, 200);
+		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 7);
 
-		super.render();
+		super.render(); //Button Text
 	}
 }

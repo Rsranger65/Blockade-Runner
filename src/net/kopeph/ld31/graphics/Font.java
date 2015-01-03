@@ -1,25 +1,9 @@
-/*
- * Copyright 2014 Alex Gittemeier
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package net.kopeph.ld31.graphics;
 
-import net.kopeph.ld31.graphics.context.ContextImage;
-import net.kopeph.ld31.graphics.context.GraphicsContext;
+import net.kopeph.ld31.LD31;
+import processing.core.PImage;
 
 /**
- *
  * @author alexg
  */
 public class Font {
@@ -35,11 +19,11 @@ public class Font {
 	private final SpriteSheet sheet;
 
 	public Font(String filename) {
-		this(GraphicsContext.getInstance().loadImage(filename));
+		this(LD31.getContext().loadImage(filename));
 	}
 
-	public Font(ContextImage img) {
-		this.sheet = new SpriteSheet(img, 16, 8);
+	public Font(PImage img) {
+		sheet = new SpriteSheet(img, 16, 8);
 	}
 
 	/**
@@ -94,8 +78,8 @@ public class Font {
 
 		for (String line : lines) {
 			while (!line.isEmpty()) {
-		        if (y > yMax)
-		        	break;
+				if (y > yMax)
+					break;
 
 				x = xInitial;
 				if (hCenter) {
@@ -115,25 +99,25 @@ public class Font {
 
 	private String renderLine(String str, int x, int y, int xMax) {
 		for (int i = 0; i < str.length(); i++) {
-            if (x > xMax)
-            	return str.substring(i);
-            switch (str.charAt(i)) {
-            case 'g':
-            case 'y':
-                sheet.render(G_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'j':
-            	sheet.render(J_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'p':
-            	sheet.render(P_DESCENDER, x, y + Y_SIZE);
-                break;
-            case 'q':
-            	sheet.render(Q_DESCENDER, x, y + Y_SIZE);
-                break;
-            }
-            sheet.render(str.charAt(i), x, y);
-            x += X_SIZE;
+			if (x > xMax)
+				return str.substring(i);
+			switch (str.charAt(i)) {
+			case 'g':
+			case 'y':
+				sheet.render(G_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'j':
+				sheet.render(J_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'p':
+				sheet.render(P_DESCENDER, x, y + Y_SIZE);
+				break;
+			case 'q':
+				sheet.render(Q_DESCENDER, x, y + Y_SIZE);
+				break;
+			}
+			sheet.render(str.charAt(i), x, y);
+			x += X_SIZE;
 		}
 
 		return ""; //$NON-NLS-1$

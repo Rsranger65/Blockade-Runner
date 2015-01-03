@@ -6,7 +6,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * @author alexg
  */
 public class ThreadPool implements AutoCloseable {
@@ -21,16 +20,12 @@ public class ThreadPool implements AutoCloseable {
 	public final int poolSize;
 
 
-	/**
-	 * Creates a new thread pool using one thread per core.
-	 */
+	/** Creates a new thread pool using one thread per core. */
 	public ThreadPool() {
 		this(Runtime.getRuntime().availableProcessors());
 	}
 
-	/**
-	 * Creates a new thread pool using the specified number of threads.
-	 */
+	/** Creates a new thread pool using the specified number of threads. */
 	public ThreadPool(int poolSize) {
 		pool = Executors.newFixedThreadPool(poolSize);
 		this.poolSize = poolSize;
@@ -40,16 +35,16 @@ public class ThreadPool implements AutoCloseable {
 	 * Add a new task to the queue for the thread pool
 	 * @param run  the Runnable whose run() method we run
 	 */
-	public void post(final Runnable run) {
-		pendingTasks++;
+	public synchronized void post(final Runnable run) {
 		pool.execute(() -> { run.run(); s.release(); }); //execute run run
+		pendingTasks++;
 	}
 
 	/**
 	 * Block the current thread until all scheduled tasks have completed.
 	 * @throws InterruptedException if the current thread receives an interrupt.
 	 */
-	public void sync() throws InterruptedException {
+	public synchronized void sync() throws InterruptedException {
 		s.acquire(pendingTasks);
 		pendingTasks = 0;
 	}
@@ -58,7 +53,7 @@ public class ThreadPool implements AutoCloseable {
 	 * Block the current thread until all scheduled tasks have completed.
 	 * Interrupts to the current thread are ignored.
 	 */
-	public void forceSync() {
+	public synchronized void forceSync() {
 		while (true) {
 			try {
 				sync();

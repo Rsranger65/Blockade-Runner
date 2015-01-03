@@ -3,20 +3,35 @@ package net.kopeph.ld31.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.graphics.context.GraphicsContext;
-import net.kopeph.ld31.spi.Renderable;
+import net.kopeph.ld31.LD31;
 
-public class Menu implements Renderable {
-	private final GraphicsContext ctx = GraphicsContext.getInstance();
-	private final Font font;
-	private final String title;
+/**
+ * @author stuntddude
+ */
+public class Menu extends MenuWidget {
+	public static final int
+		DEFAULT_WIDTH  = 600,
+		DEFAULT_HEIGHT = 400;
+
 
 	private List<MenuWidget> widgets = new ArrayList<>();
 
-	public Menu(Font font, String title) {
-		this.font = font;
-		this.title = title;
+
+	public Menu(int width, int height) {
+		super(0,0,0,0); //Dummy values
+		setBounds(width, height);
+	}
+
+	public Menu(int x, int y, int width, int height) {
+		super(x, y, width, height);
+	}
+
+	public void setBounds(int width, int height) {
+		setBounds((LD31.getContext().getWidth() - width) / 2,
+		          (LD31.getContext().getHeight() - height) / 2,
+		           width, height);
+		xAnchor = ANCHOR_CENTER;
+		yAnchor = ANCHOR_CENTER;
 	}
 
 	public void add(MenuWidget b) {
@@ -25,9 +40,12 @@ public class Menu implements Renderable {
 
 	@Override
 	public void render() {
-		ctx.fill(ctx.color(100, 100, 100, 200));
-		ctx.rect(100, 100, ctx.width() - 200, ctx.height() - 200, 10);
-		font.renderCentered(title, ctx.width() / 2, 125);
+		updateBounds();
+
+		context.pushStyle();
+		context.fill(100, 200);
+		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 10);
+		context.popStyle();
 
 		for (MenuWidget w : widgets)
 			w.render();

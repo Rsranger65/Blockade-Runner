@@ -1,16 +1,15 @@
 package net.kopeph.ld31.entity;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.graphics.context.GraphicsContext;
 import net.kopeph.ld31.spi.PointPredicate;
-import net.kopeph.ld31.spi.Renderable;
 import net.kopeph.ld31.util.Pointer;
-import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
+import processing.core.PApplet;
 
-public class Entity implements Renderable {
+public class Entity {
 	public static final int SIZE = 2; //radius-.5
 	//if you modify a constant at runtime again I'll fucking kill you
 	private static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
@@ -22,7 +21,7 @@ public class Entity implements Renderable {
 
 	private static final double
 		NONE =  -1         ,
-		 E   = 	0*Math.PI/4,
+		 E   =  0*Math.PI/4,
 		SE   =  1*Math.PI/4,
 		S    =  2*Math.PI/4,
 		SW   =  3*Math.PI/4,
@@ -39,21 +38,20 @@ public class Entity implements Renderable {
 	};
 
 
-	protected final GraphicsContext ctx = GraphicsContext.getInstance();
+	protected final PApplet context;
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
-	public final int color;
 
 	private Vector2 pos = new Vector2();
 
-	public Entity(Level level, int color) {
+	public Entity(Level level) {
+		this.context = LD31.getContext();
 		this.level = level;
-		this.color = color;
 
 		//place the player in a valid spot
 		do {
-			pos = new Vector2(Util.random(SIZE, level.LEVEL_WIDTH - SIZE),
-					          Util.random(SIZE, level.LEVEL_HEIGHT - SIZE));
+			pos = new Vector2(context.random(SIZE, level.LEVEL_WIDTH - SIZE),
+			                  context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
 		} while (!validPosition(x(), y()));
 	}
 
@@ -95,7 +93,7 @@ public class Entity implements Renderable {
 			}
 		}
 		//SORRY DON'T WANT TO WORK ON THIS RN
-//		//if this is in a cardinal direction, try "bopping" around the corner
+		//if this is in a cardinal direction, try "bopping" around the corner
 //		else if (offset.x == 0) {
 //			for (int i = 1; i < SIZE * 2; i++) {
 //				if (move0(new Vector2( i, offset.y), false)) return true;
@@ -160,29 +158,34 @@ public class Entity implements Renderable {
 
 		//change the bounds of the for loop to stay within the level
 		//this way we don't have to do bounds checking per pixel inside of op.on()
-		int minx = Math.max(x - viewDistance + 1, level.minx);
-		int miny = Math.max(y - viewDistance + 1, level.miny);
-		int maxx = Math.min(x + viewDistance - 1, level.maxx);
-		int maxy = Math.min(y + viewDistance - 1, level.maxy);
+		int minx = PApplet.max(x - viewDistance + 1, level.minx);
+		int miny = PApplet.max(y - viewDistance + 1, level.miny);
+		int maxx = PApplet.min(x + viewDistance - 1, level.maxx);
+		int maxy = PApplet.min(y + viewDistance - 1, level.maxy);
 
 		for (int dx = minx; dx <= maxx; ++dx) {
 			Trace.line(x, y, dx, miny, op);
 			Trace.line(x, y, dx, maxy, op);
+			//DEBUG
+			//array[miny*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
+			//array[maxy*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
 		for (int dy = miny + 1; dy < maxy; ++dy) {
 			Trace.line(x, y, minx, dy, op);
 			Trace.line(x, y, maxx, dy, op);
+			//DEBUG
+			//array[dy*level.LEVEL_WIDTH + minx] = Entity.COLOR_ENEMY_COM;
+			//array[dy*level.LEVEL_WIDTH + maxx] = Entity.COLOR_ENEMY_COM;
 		}
 	}
 
-	@Override
-	public void render() {
+	public void draw(int color) {
 		for (int dy = -SIZE; dy <= SIZE; ++dy) {
 			for (int dx = -SIZE; dx <= SIZE; ++dx) {
-				int loc = (y() + dy)*ctx.width() + x() + dx;
-				if (loc >= 0 && loc < ctx.pixels().length)
-					ctx.pixels()[loc] = color;
+				int loc = (y() + dy)*context.width + x() + dx;
+				if (loc >= 0 && loc < context.pixels.length)
+					context.pixels[loc] = color;
 			}
 		}
 	}
