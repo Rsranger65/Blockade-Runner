@@ -14,25 +14,50 @@ public class Trace {
 	/** Source: http://en.wikipedia.org/wiki/Bresenham's_line_algorithm#Simplification */
 	public static void line(int x1, int y1, int x2, int y2, PointPredicate op) {
 		int sx, sy, e2;
-		int dx = Math.abs(x2-x1);
-		int dy = Math.abs(y2-y1);
+		int dx =  Math.abs(x2-x1);
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
 
 		sx = x1 < x2? 1 : -1;
 		sy = y1 < y2? 1 : -1;
 
-		int err = dx - dy;
+		int err = dx + dy;
 
 		while (true) {
 			if (!op.on(x1,y1)) return;
 			if (x1 == x2 && y1 == y2) return;
 			e2 = 2*err;
-			if (e2 > -dy) {
-				err -= dy;
+			if (e2 > dy) { //down here is where I mean
+				err += dy;
 				x1 += sx;
 			}
 			if (x1 == x2 && y1 == y2) {
 				op.on(x1,y1);
 				return;
+			}
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
+		}
+	}
+	
+	/** A version of line() that doesn't check to stop if it's reached the end point */
+	public static void ray(int x1, int y1, int x2, int y2, PointPredicate op) {
+		int sx, sy, e2;
+		int dx =  Math.abs(x2-x1);
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
+
+		sx = x1 < x2? 1 : -1;
+		sy = y1 < y2? 1 : -1;
+
+		int err = dx + dy;
+
+		while (true) {
+			if (!op.on(x1,y1)) return;
+			e2 = 2*err;
+			if (e2 > dy) { //down here is where I mean
+				err += dy;
+				x1 += sx;
 			}
 			if (e2 < dx) {
 				err += dx;

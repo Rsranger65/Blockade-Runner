@@ -231,6 +231,7 @@ public class LD31 extends PApplet {
 		if (fadePhase < 0) {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
+			//TODO: refactor out these calls to loadPixels() and updatePixels()
 			loadPixels();
 			level.player.draw(Entity.COLOR_PLAYER);
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
