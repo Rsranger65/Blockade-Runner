@@ -1,5 +1,11 @@
 package net.kopeph.ld31;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Font;
@@ -7,6 +13,7 @@ import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
+import net.kopeph.ld31.menu.MenuWidget;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
 import net.kopeph.ld31.util.ThreadPool;
@@ -38,6 +45,7 @@ public class LD31 extends PApplet {
 		ST_SETTINGS   =  5;  // Displaying Settings Menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
+	private static TextBox buildVersion, footer;
 
 	private final Profiler profiler = new Profiler();
 	private final ThreadPool texturingPool = new ThreadPool();
@@ -82,6 +90,14 @@ public class LD31 extends PApplet {
 		rawTextureWhite   = loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
 
 		fontWhite = new Font("res/font-16-white.png"); //$NON-NLS-1$
+
+		buildVersion = new TextBox(fontWhite, 0, height - 12, width, 8, buildVersion());
+		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
+		buildVersion.yAnchor = MenuWidget.ANCHOR_BOTTOM;
+		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
+
+		footer = new TextBox(fontWhite, 4, height - 12, width, 8, MSG_FOOTER);
+		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 
 		//setup end screens
 		win = new EndScreen(fontWhite, MSG_WIN, MSG_FOOTER_END, color(0, 120, 0));
@@ -135,6 +151,7 @@ public class LD31 extends PApplet {
 			case ST_MENU:       drawMenu();     break;
 			case ST_SETTINGS:   drawSettings(); break;
 		}
+		buildVersion.render();
 
 		interacting = false; //mouse interactions should only last one frame
 	}
@@ -242,7 +259,7 @@ public class LD31 extends PApplet {
 		}
 
 		//Print out Text for directions
-		fontWhite.render(MSG_FOOTER, 8, height - 16);
+		footer.render();
 
 		profiler.report(this);
 	}
@@ -351,5 +368,19 @@ public class LD31 extends PApplet {
 	/** Global Entry Point */
 	public static void main(String[] args) {
 		PApplet.main(new String[] { LD31.class.getName() });
+	}
+
+	private static String buildVersion() {
+		String buildNum = "?"; //$NON-NLS-1$
+		String branchName = "?"; //$NON-NLS-1$
+		try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
+			branchName = gitHead.readLine();
+			branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
+			buildNum = ResourceBundle.getBundle("buildNum").getString("build.number"); //$NON-NLS-1$ //$NON-NLS-2$
+		} catch (IOException | MissingResourceException e) {
+			//Oops. Ignore
+		}
+
+		return String.format("VER:%s.%sa", branchName, buildNum); //$NON-NLS-1$
 	}
 }

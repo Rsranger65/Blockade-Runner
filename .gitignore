@@ -25,3 +25,5 @@ hs_err_pid*
 res-src/
 bin/
 libs/
+src/buildNum.properties
+*.launch
