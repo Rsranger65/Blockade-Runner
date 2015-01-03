@@ -25,7 +25,6 @@ public class MenuButton extends TextBox {
 		this.yPos += (LD31.getContext().height - height) / 2;
 		this.width = width;
 		this.height = height;
-		this.xAnchor = ANCHOR_FILL;
 		this.interaction = interaction;
 	}
 

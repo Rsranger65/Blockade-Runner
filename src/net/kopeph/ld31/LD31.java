@@ -105,9 +105,10 @@ public class LD31 extends PApplet {
 		//setup pause menu
 		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
-		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0, -70, 200, 50, () -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,   0, 200, 50, () -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0, +70, 200, 50, () -> { exit();                 }));
+		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(fontWhite, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
+		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		gameState = ST_MENU;
 	}
