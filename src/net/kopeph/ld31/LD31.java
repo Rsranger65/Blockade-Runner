@@ -231,15 +231,17 @@ public class LD31 extends PApplet {
 		if (fadePhase < 0) {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
-			//TODO: refactor out these calls to loadPixels() and updatePixels()
-			loadPixels();
-			level.player.draw(Entity.COLOR_PLAYER);
+			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
+			for (int dy = -Entity.SIZE; dy <= Entity.SIZE; ++dy) {
+				for (int dx = -Entity.SIZE; dx <= Entity.SIZE; ++dx) {
+					set(level.player.x() + dx, level.player.y() + dy, Entity.COLOR_PLAYER);
+				}
+			}
+			//draw a circle closing in on the player
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
-				if (level.inBounds(x, y))
-					pixels[y*width + x] = Entity.COLOR_PLAYER;
+				set(x, y, Entity.COLOR_PLAYER);
 				return true;
 			});
-			updatePixels();
 		}
 
 		//Print out Text for directions
