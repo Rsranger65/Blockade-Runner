@@ -248,14 +248,17 @@ public class LD31 extends PApplet {
 		if (fadePhase < 0) {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
-			loadPixels();
-			level.player.draw(Entity.COLOR_PLAYER);
+			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
+			for (int dy = -Entity.SIZE; dy <= Entity.SIZE; ++dy) {
+				for (int dx = -Entity.SIZE; dx <= Entity.SIZE; ++dx) {
+					set(level.player.x() + dx, level.player.y() + dy, Entity.COLOR_PLAYER);
+				}
+			}
+			//draw a circle closing in on the player
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
-				if (level.inBounds(x, y))
-					pixels[y*width + x] = Entity.COLOR_PLAYER;
+				set(x, y, Entity.COLOR_PLAYER);
 				return true;
 			});
-			updatePixels();
 		}
 
 		//Print out Text for directions
@@ -328,34 +331,33 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		//switch to handle special cases for now
-		switch (key) {
-			case ' ':
-				if (gameState == ST_RUNNING ||
-					gameState == ST_WIN ||
-					gameState == ST_DIE) {
-					loop();
-					gameState = ST_RESET;
-				}
-				break;
-			case 'p':
-				if (gameState == ST_RUNNING) {
-					gameState = ST_PAUSE;
-					menuHeight = 1;
-				} else if (gameState == ST_PAUSE) {
-					gameState = ST_RUNNING;
-				}
-				break;
-			case ESC:
-				//capture ESC key so it takes us to the menu instead of quitting our program
-				key = 0;
-				if (gameState == ST_MENU) {
-					exit();
-				} else {
-					loop();
-					gameState = ST_MENU;
-				}
-		}
+		//TODO: move this into setup()
+		InputHandler.addBehavior(InputHandler.RESTART, () -> {
+			if (gameState == ST_RUNNING ||
+				gameState == ST_WIN ||
+				gameState == ST_DIE) {
+				loop();
+				gameState = ST_RESET;
+			}
+		});
+		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
+			if (gameState == ST_RUNNING) {
+				gameState = ST_PAUSE;
+				menuHeight = 1;
+			} else if (gameState == ST_PAUSE) {
+				gameState = ST_RUNNING;
+			}
+		});
+		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
+			//capture ESC key so it takes us to the menu instead of quitting our program
+			key = 0;
+			if (gameState == ST_MENU) {
+				exit();
+			} else {
+				loop();
+				gameState = ST_MENU;
+			}
+		});
 
 		InputHandler.handleInput(key == CODED ? keyCode : key, true);
 	}
