@@ -3,6 +3,7 @@ package net.kopeph.ld31;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
@@ -73,20 +74,24 @@ public class InputHandler {
 	}
 	
 	public static String toKey(int keyCode) {
-		String ret = toKeyImpl(keyCode);
+		String ret = toKeyImpl(keyCode); //we don't know if this is coming to us already shifted or not, so try normal first
 		if (ret != "") return ret;
-		ret = toKeyImpl(keyCode >> 16);
+		ret = toKeyImpl(keyCode >> 16); //if it fails that test, it's probably left-shifted, so right-shift and try again
 		if (ret != "") return ret;
-		return "---";
+		return "---"; //key not found
 	}
 	
 	private static String toKeyImpl(int keyCode) {
 		switch(keyCode) {
-		case PConstants.TAB: case PConstants.TAB << 16: return "TAB";
-		case PConstants.ESC << 16: return "ESC";
-		case PConstants.ENTER << 16: return "ENTER";
-		case ' ': return "SPACE";
-		//TODO: add cases for arrow keys
+		case PConstants.BACKSPACE:	return "BACKSP";
+		case ' ':					return "SPACE";
+		case PConstants.TAB:		return "TAB";
+		case PConstants.ESC:		return "ESC";
+		case PConstants.ENTER:		return "ENTER";
+		case PConstants.RIGHT:		return "" + (char)Font.ARROW_RIGHT;
+		case PConstants.LEFT:		return "" + (char)Font.ARROW_LEFT;
+		case PConstants.UP:			return "" + (char)Font.ARROW_UP;
+		case PConstants.DOWN:		return "" + (char)Font.ARROW_DOWN;
 		}
 		
 		if (keyCode > 0 && keyCode < 128)

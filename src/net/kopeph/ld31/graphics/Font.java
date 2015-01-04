@@ -7,6 +7,12 @@ import processing.core.PImage;
  * @author alexg
  */
 public class Font {
+	public static final int
+		ARROW_RIGHT = 0x14,
+		ARROW_LEFT  = 0x15,
+		ARROW_UP    = 0x16,
+		ARROW_DOWN  = 0x17;
+	
 	private static final int
 		G_DESCENDER = 0x10,
 		P_DESCENDER = 0x11,
