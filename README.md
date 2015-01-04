@@ -1,4 +1,4 @@
-Blockade-Runner
+Blockade-Runner ([Releases](http://rsranger65.github.io/Blockade-Runner/releases.html))
 ===============
 
 Contributors:
@@ -7,7 +7,6 @@ Contributors:
 - Miles Fogle (Code)
 - Alex Gittemeier (Code)
 
-[Releases](http://rsranger65.github.io/Blockade-Runner/releases.html)
 
 Building Directions (Eclipse Java 8)
 ------------------------------------
