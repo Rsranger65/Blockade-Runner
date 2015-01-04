@@ -39,10 +39,14 @@ public class Java8to7 {
 			File outFile = new File(outDir, filename);
 			if (inFile.isDirectory())
 				processDirectory(inFile, outFile);
-			else if (filename.endsWith(EXT))
+			else if (filename.endsWith(EXT)) {
+				System.out.println("Processing: " + inFile.getPath());
 				processFile(inFile, outFile);
-			else
+			}
+			else {
+				System.out.println("Copying: " + inFile.getPath());
 				copyFile(inFile, outFile);
+			}
 		}
 	}
 
