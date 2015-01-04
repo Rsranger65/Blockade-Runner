@@ -40,7 +40,7 @@ Building Directions (Eclipse Java 7)
 5. Deselect **Project > Build Automatically**.
 6. Setup source folders: **Project Settings > Java Build Path > Source Folders**
   1. Remove `src/`
-  2. Add `convert/'
+  2. Add `convert/`
 6. Build and run as `net.kopeph.convert.Java8to7`.
 7. Add `src-7` to the source folder list.
 8. Build and run as necessary as `net.kopeph.ld31.LD31`.
