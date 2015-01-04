@@ -42,7 +42,8 @@ public class LD31 extends PApplet {
 		ST_WIN        =  2,  // Displaying win screen
 		ST_PAUSE      =  3,  // Displaying Pause Menu
 		ST_MENU       =  4,  // Displaying Main Menu
-		ST_SETTINGS   =  5;  // Displaying Settings Menu
+		ST_SETTINGS   =  5,  // Displaying Settings Menu
+		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 	private static TextBox buildVersion, footer;
@@ -52,7 +53,7 @@ public class LD31 extends PApplet {
 
 	private Level level;
 	private EndScreen win, die;
-	private Menu mainMenu, settingsMenu, pauseMenu;
+	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
 	private volatile int gameState;
 	private int fadePhase;
 
@@ -91,9 +92,8 @@ public class LD31 extends PApplet {
 
 		fontWhite = new Font("res/font-16-white.png"); //$NON-NLS-1$
 
-		buildVersion = new TextBox(fontWhite, 0, height - 12, width, 8, buildVersion());
+		buildVersion = new TextBox(fontWhite, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
-		buildVersion.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
 		footer = new TextBox(fontWhite, 4, height - 12, width, 8, MSG_FOOTER);
@@ -104,19 +104,19 @@ public class LD31 extends PApplet {
 		die = new EndScreen(fontWhite, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
 
 		//setup main menu
-		mainMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		mainMenu = new Menu();
 		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
 		//$LAMBDA:Interaction
-		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { /*SPACE FOR RENT */        }));
+		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
-		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
 		//add buttons for key bindings
 		MenuWidget[][] widgets = new MenuWidget[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
@@ -144,8 +144,15 @@ public class LD31 extends PApplet {
 		//$LAMBDA:Interaction
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
 
+		//setup dummy campaign menu
+		dummyCampaignMenu = new Menu();
+		dummyCampaignMenu.add(new TextBox(fontWhite, "Campaign Mode", 0, -175));
+		//$LAMBDA:Interaction
+		dummyCampaignMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(fontWhite, "This game mode hasn't been implemented yet :(", 0,  150));
+
 		//setup pause menu
-		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		pauseMenu = new Menu(); //Dynamic size. see drawPause();
 		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
 		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
@@ -155,7 +162,7 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
 		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
-		
+
 		//setup input interaction
 		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.RESTART, () -> {
@@ -211,6 +218,7 @@ public class LD31 extends PApplet {
 			case ST_PAUSE:      drawPause();    break;
 			case ST_MENU:       drawMenu();     break;
 			case ST_SETTINGS:   drawSettings(); break;
+			case ST_CAMPAIGN:   drawCampaign(); break;
 		}
 		buildVersion.render();
 
@@ -365,7 +373,7 @@ public class LD31 extends PApplet {
 		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
 
 		pauseMenu.setBounds(240, menuHeight);
-		if (menuHeight > 300) { //MAGIC NUMBERS EVERYWHERE!!!
+		if (menuHeight > 300) { //XXX: MAGIC NUMBERS EVERYWHERE!!!
 			pauseMenu.render();
 		} else {
 			pushStyle();
@@ -377,15 +385,18 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		image(rawTextureRed, 0, 0); //placeholder background
-		mainMenu.setBounds(width - 200, height - 200);
+		image(rawTextureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		image(rawTextureBlue, 0, 0); //placeholder background
-		settingsMenu.setBounds(width - 200, height - 200);
+		image(rawTextureBlue, 0, 0); //TODO: placeholder background
 		settingsMenu.render();
+	}
+
+	private void drawCampaign() {
+		image(rawTextureGreen, 0, 0); //TODO: placeholder background
+		dummyCampaignMenu.render();
 	}
 
 	@Override
@@ -415,16 +426,21 @@ public class LD31 extends PApplet {
 			//If the version file doesn't exist, make a version string based on
 			//auto-increment and the branch name
 
-			String buildNum = "?"; //$NON-NLS-1$
 			String branchName = "?"; //$NON-NLS-1$
+			String branchHash = "?"; //$NON-NLS-1$
 			try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
 				branchName = gitHead.readLine();
 				branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
-				buildNum = ResourceBundle.getBundle("buildNum").getString("build.number"); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (IOException | MissingResourceException e2) {
+				try (BufferedReader gitRefHead = new BufferedReader(new FileReader(".git/refs/heads/" + branchName))) { //$NON-NLS-1$
+					branchHash = gitRefHead.readLine().substring(0, 7);
+				} catch (IOException ew) {
+					//Oops. Ignore
+				}
+			} catch (IOException ew) {
 				//Oops. Ignore
 			}
-			return String.format("VER:%s.%sa", branchName, buildNum); //$NON-NLS-1$
+
+			return String.format("git %S.%s", branchName, branchHash); //$NON-NLS-1$
 		}
 	}
 }

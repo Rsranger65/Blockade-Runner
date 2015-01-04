@@ -16,6 +16,9 @@ public class Menu extends MenuWidget {
 
 	private List<MenuWidget> widgets = new ArrayList<>();
 
+	public Menu() {
+		this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	}
 
 	public Menu(int width, int height) {
 		super(0,0,0,0); //Dummy values
@@ -30,8 +33,8 @@ public class Menu extends MenuWidget {
 		setBounds((LD31.getContext().getWidth() - width) / 2,
 		          (LD31.getContext().getHeight() - height) / 2,
 		           width, height);
-		xAnchor = ANCHOR_CENTER;
-		yAnchor = ANCHOR_CENTER;
+		xAnchor = ANCHOR_FILL;
+		yAnchor = ANCHOR_FILL;
 	}
 
 	public void add(MenuWidget b) {

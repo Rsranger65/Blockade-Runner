@@ -1,4 +1,4 @@
-Blockade-Runner
+Blockade-Runner ([Releases](http://rsranger65.github.io/Blockade-Runner/releases.html))
 ===============
 
 Contributors:
@@ -6,6 +6,7 @@ Contributors:
 - Dave Chen (Graphics)
 - Miles Fogle (Code)
 - Alex Gittemeier (Code)
+
 
 Building Directions (Eclipse Java 8)
 ------------------------------------
@@ -15,7 +16,7 @@ Building Directions (Eclipse Java 8)
   1. **Project Settings > Java Compiler > Compiler Compliance Level**: `1.8`
   2. **Project Settings > Java Build Path > Libraries** Remove any existing libraries
   3. **Project Settings > Java Build Path > Libraries > Add Library > JRE System** choose jdk1.8
-3. Add [`core.jar`](http://rsranger65.github.io/Blockade-Runner/libs/processing_core-2.2.1.jar) for **Processing 2.2.1** to the classpath.
+3. Add [`core.jar`](http://rsranger65.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) for **Processing 2.2.1** to the classpath.
 4. Add `build.xml` as a **Builder**: (**Project Settings > Builders > New > Ant Builder**)
   1. **Buildfile**: `${project_loc}/build.xml`
   2. **Base Directory**: `${project_loc}`
@@ -39,7 +40,7 @@ Building Directions (Eclipse Java 7)
 5. Deselect **Project > Build Automatically**.
 6. Setup source folders: **Project Settings > Java Build Path > Source Folders**
   1. Remove `src/`
-  2. Add `convert/'
+  2. Add `convert/`
 6. Build and run as `net.kopeph.convert.Java8to7`.
 7. Add `src-7` to the source folder list.
 8. Build and run as necessary as `net.kopeph.ld31.LD31`.

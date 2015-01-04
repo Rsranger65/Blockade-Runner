@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project name="Blockade-Runner" default="default">
-<target name="default">
-<buildnumber file="src/buildNum.properties"/>
-</target>
-</project>
