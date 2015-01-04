@@ -14,7 +14,7 @@ import ddf.minim.Minim;
  *
  * @author alexg
  */
-public class AudioManager {
+public class Audio {
 	public static final int //Volume Categories
 		VOL_MUSIC  = 0,
 		VOL_GAME   = 1,
@@ -24,7 +24,7 @@ public class AudioManager {
 	private Map<String, AudioPlayer> files = new HashMap<>();
 	private List<List<String>> volumeClasses = new ArrayList<>(VOL_LENGTH);
 
-	public AudioManager() {
+	public Audio() {
 		for (int i = 0; i < VOL_LENGTH; i++)
 			volumeClasses.add(new ArrayList<>());
 	}
