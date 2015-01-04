@@ -119,7 +119,7 @@ public class LD31 extends PApplet {
 		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
 		//add buttons for key bindings
-		MenuWidget[][] widgets = new MenuWidget[InputHandler.bindings.length][InputHandler.bindings[0].length];
+		MenuWidget[][] widgets = new MenuWidget[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
 		//seed the (unused) top left corner of the table
 		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length);
 		//fill in the first row with positions relative to the seed (corner)
@@ -133,7 +133,7 @@ public class LD31 extends PApplet {
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
 			for (int col = 1; col < widgets[row].length; ++col) {
 				//$LAMBDA:Interaction
-				widgets[row][col] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[row][col]),
+				widgets[row][col] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[row - 1][col]),
 												   widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
 					//no-op for now
 				});

@@ -12,8 +12,8 @@ import processing.core.PConstants;
 public class InputHandler {
 	public static final int
 		UP      = 0,
-		DOWN    = 1,
 		LEFT    = 2,
+		DOWN    = 1,
 		RIGHT   = 3,
 		RESTART = 4,
 		PAUSE   = 5,
@@ -21,8 +21,8 @@ public class InputHandler {
 	
 	public static int[][] bindings = {
 		{ UP     , 'w', 'W', '8' , PConstants.UP    << 16 },
-		{ DOWN   , 's', 'S', '2' , PConstants.DOWN  << 16 },
 		{ LEFT   , 'a', 'A', '4' , PConstants.LEFT  << 16 },
+		{ DOWN   , 's', 'S', '2' , PConstants.DOWN  << 16 },
 		{ RIGHT  , 'd', 'D', '6' , PConstants.RIGHT << 16 },
 		{ RESTART, 'r', 'R', ' ' , PConstants.ENTER << 16 },
 		{ PAUSE  , 'p', 'P', '\t', PConstants.TAB   << 16 },
