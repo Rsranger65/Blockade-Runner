@@ -36,7 +36,6 @@ public class ThreadPool implements AutoCloseable {
 	 * @param run  the Runnable whose run() method we run
 	 */
 	public synchronized void post(final Runnable run) {
-		//$LAMBDA:java.lang.Runnable
 		pool.execute(() -> { run.run(); s.release(); }); //execute run run
 		pendingTasks++;
 	}

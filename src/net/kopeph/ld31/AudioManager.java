@@ -1,6 +1,16 @@
 package net.kopeph.ld31;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ddf.minim.AudioPlayer;
+import ddf.minim.Minim;
+
+
 /**
+ * Filename strings are used as keys for clips.
  *
  * @author alexg
  */
@@ -10,9 +20,35 @@ public class AudioManager {
 		VOL_GAME   = 1,
 		VOL_LENGTH = 2;
 
-	public AudioManager() {}
+	private final Minim minim = new Minim(LD31.getContext());
+	private Map<String, AudioPlayer> files = new HashMap<>();
+	private List<List<String>> volumeClasses = new ArrayList<>(VOL_LENGTH);
 
-	public void load(String filename, boolean loop, int volumeClass) {}
-	public void setPlaying(String filename, boolean playing) {}
-	public void setVolume(int volumeClass, float volume) {}
+	public AudioManager() {
+		for (int i = 0; i < VOL_LENGTH; i++)
+			volumeClasses.add(new ArrayList<>());
+	}
+
+	public void load(String filename, int volumeClass) {
+		files.put(filename, minim.loadFile(filename));
+		volumeClasses.get(volumeClass).add(filename);
+	}
+
+	public void play(String filename, boolean loop) {
+		files.get(filename).play();
+		if (loop)
+			files.get(filename).loop();
+	}
+	public void pause(String filename) {
+		files.get(filename).pause();
+	}
+	public void stop(String filename) {
+		files.get(filename).pause();
+		files.get(filename).rewind();
+	}
+
+	public void setVolume(int volumeClass, float volume) {
+		for (String filename : volumeClasses.get(volumeClass))
+			files.get(filename).setVolume(volume);
+	}
 }

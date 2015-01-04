@@ -34,7 +34,6 @@ public class Enemy extends Entity {
 
 		//establish whether or not we have line of sight
 		referrer = this; //guilty until proven innocent
-		//$LAMBDA:PointPredicate
 		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
 			if (level.tiles[y*context.width + x] != Level.FLOOR_NONE)
 				return true;
@@ -77,7 +76,6 @@ public class Enemy extends Entity {
 	public void draw() {
 		draw(color);
 
-		//$LAMBDA:PointPredicate
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
 				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;

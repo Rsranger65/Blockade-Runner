@@ -116,7 +116,6 @@ public class Entity {
 		int newYi = (int)Math.round(newPos.y);
 		final Pointer<Boolean> passable = new Pointer<>(true);
 
-		//$LAMBDA:PointPredicate
 		Trace.line(x(), y(), newXi, newYi, (x, y) -> { return passable.value = validPosition(x, y);});
 
 		return passable.value;
@@ -147,7 +146,6 @@ public class Entity {
 		final int yInitial = y(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 
-		//$LAMBDA:PointPredicate
 		PointPredicate op = (x, y) -> {
 			int i = y*level.LEVEL_WIDTH + x; //we use this value twice now, so it makes sense to calculate and store
 			if (array[i] == Level.FLOOR_NONE) return false;
@@ -183,7 +181,6 @@ public class Entity {
 	}
 
 	public void draw(int color) {
-		//$LAMBDA:PointPredicate
 		Trace.rectangle(x() - SIZE, y() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
 			if (!level.inBounds(x, y)) return false;
 			context.pixels[y*level.LEVEL_WIDTH + x] = color;
