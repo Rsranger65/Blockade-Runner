@@ -104,7 +104,7 @@ public class LD31 extends PApplet {
 		die = new EndScreen(fontWhite, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
 
 		//setup main menu
-		mainMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		mainMenu = new Menu();
 		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
@@ -116,7 +116,7 @@ public class LD31 extends PApplet {
 		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
-		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
 		//$LAMBDA:Interaction
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
@@ -124,7 +124,7 @@ public class LD31 extends PApplet {
 		//TODO: add options for key bindings
 
 		//setup pause menu
-		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
+		pauseMenu = new Menu(); //Dynamic size. see drawPause();
 		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
 		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
@@ -325,13 +325,11 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		mainMenu.setBounds(width - 200, height - 200);
 		image(rawTextureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		settingsMenu.setBounds(width - 200, height - 200);
 		image(rawTextureBlue, 0, 0); //TODO: placeholder background
 		settingsMenu.render();
 	}
