@@ -18,7 +18,7 @@ Building Directions (Eclipse Java 8)
   3. **Project Settings > Java Build Path > Libraries > Add Library > JRE System** choose jdk1.8
 3. Add the following libraries to the class path:
   1. [`core.jar`](http://rsranger65.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) from **Processing 2.2.1**.
-  2. [`library/*.jar`](http://code.compartmental.net/minim/distro/minim-2.2.0.zip) from **Minim 2.2.0**
+  2. [`library/*.jar`](http://code.compartmental.net/minim/distro/minim-2.2.0.zip) from **Minim 2.2.0**.
 4. Add `build.xml` as a **Builder**: (**Project Settings > Builders > New > Ant Builder**)
   1. **Buildfile**: `${project_loc}/build.xml`
   2. **Base Directory**: `${project_loc}`
