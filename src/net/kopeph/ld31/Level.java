@@ -193,16 +193,20 @@ public class Level implements AutoCloseable {
 
 	//checks to make sure the level is continuous by doing a flood fill and then checking for any pixels not reached
 	private boolean validateLevel() {
+		//$LAMBDA:PointPredicate
+		PointPredicate op = (x, y) -> {
+			if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
+				return false;
+			tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
+			return true;
+		};
+
 		for (int i = 0; i < tiles.length; ++i) {
 			if (tiles[i] == FLOOR_BLACK) {
 				//find the first pixel of floor and flood fill from there
-				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x0, y0) -> {
-					return validTile(x0, y0, (x1, y1) -> {
-						if (tiles[y1*LEVEL_WIDTH + x1] != FLOOR_BLACK)
-							return false;
-						tiles[y1*LEVEL_WIDTH + x1] = FLOOR_WHITE;
-						return true;
-					});
+				//$LAMBDA:PointPredicate
+				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x, y) -> {
+					return validTile(x, y, op);
 				});
 				break;
 			}
@@ -250,7 +254,8 @@ public class Level implements AutoCloseable {
 			//create a new thread to run the lighting process of each enemy
 			//this is extremely simple because the lighting is an embarrassingly parallel operation
 			//Pray to the java gods that this doesn't have actual data races
-			lightingThreadPool.post(() -> e.rayTrace(lighting, e.viewDistance, e.color));
+			//$LAMBDA:java.lang.Runnable
+			lightingThreadPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
 
 		lightingThreadPool.forceSync();

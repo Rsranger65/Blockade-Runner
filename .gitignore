@@ -26,4 +26,5 @@ res-src/
 bin/
 libs/
 src/buildNum.properties
+src-7/
 *.launch

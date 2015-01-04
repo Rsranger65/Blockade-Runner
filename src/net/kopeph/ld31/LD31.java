@@ -106,14 +106,19 @@ public class LD31 extends PApplet {
 		//setup main menu
 		mainMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
+		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
+		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { /*SPACE FOR RENT */        }));
+		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
+		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
 		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
+		//$LAMBDA:Interaction
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
 		settingsMenu.add(new TextBox(fontWhite, "No settings to change yet :(", 0,  150));
 		//TODO: add options for key bindings
@@ -121,9 +126,13 @@ public class LD31 extends PApplet {
 		//setup pause menu
 		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
+		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
+		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
+		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
+		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		gameState = ST_MENU;
@@ -220,7 +229,8 @@ public class LD31 extends PApplet {
 		float taskSize = pixels.length/texturingPool.poolSize;
 		for (int i = 0; i < texturingPool.poolSize; ++i) {
 			final int j = i;
-			texturingPool.post(() -> applyTexture(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)));
+			//$LAMBDA:java.lang.Runnable
+			texturingPool.post(() -> { applyTexture(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
 		}
 
 		texturingPool.forceSync();
@@ -233,6 +243,7 @@ public class LD31 extends PApplet {
 			e.draw();
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
+		//$LAMBDA:PointPredicate
 		Trace.circle(level.objective.x(), level.objective.y(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
 			if (level.inBounds(x, y))
 				pixels[y*width + x] = Entity.COLOR_OBJECTIVE;
@@ -255,6 +266,7 @@ public class LD31 extends PApplet {
 				}
 			}
 			//draw a circle closing in on the player
+			//$LAMBDA:PointPredicate
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
 				set(x, y, Entity.COLOR_PLAYER);
 				return true;
@@ -332,6 +344,7 @@ public class LD31 extends PApplet {
 	@Override
 	public void keyPressed() {
 		//TODO: move this into setup()
+		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.RESTART, () -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
@@ -340,6 +353,7 @@ public class LD31 extends PApplet {
 				gameState = ST_RESET;
 			}
 		});
+		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
@@ -348,6 +362,7 @@ public class LD31 extends PApplet {
 				gameState = ST_RUNNING;
 			}
 		});
+		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
 			//capture ESC key so it takes us to the menu instead of quitting our program
 			key = 0;

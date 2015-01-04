@@ -116,6 +116,7 @@ public class Entity {
 		int newYi = (int)Math.round(newPos.y);
 		final Pointer<Boolean> passable = new Pointer<>(true);
 
+		//$LAMBDA:PointPredicate
 		Trace.line(x(), y(), newXi, newYi, (x, y) -> { return passable.value = validPosition(x, y);});
 
 		return passable.value;
@@ -142,15 +143,16 @@ public class Entity {
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		int x = x(); //pre-calculating these gives us at least a 30% performance improvement
-		int y = y(); //holy shit
-		int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
+		final int xInitial = x(); //pre-calculating these gives us at least a 30% performance improvement
+		final int yInitial = y(); //holy shit
+		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 
-		PointPredicate op = (lx, ly) -> {
-			int i = ly*level.LEVEL_WIDTH + lx; //we use this value twice now, so it makes sense to calculate and store
+		//$LAMBDA:PointPredicate
+		PointPredicate op = (x, y) -> {
+			int i = y*level.LEVEL_WIDTH + x; //we use this value twice now, so it makes sense to calculate and store
 			if (array[i] == Level.FLOOR_NONE) return false;
 			//restrict it to a circle
-			int dx = lx - x, dy = ly - y; //squaring manually to avoid float/int conversion with PApplet.sq()
+			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid float/int conversion with PApplet.sq()
 			if (dx*dx + dy*dy > vdsq) return false; //distance formula
 			array[i] |= color;
 			return true;
@@ -158,22 +160,22 @@ public class Entity {
 
 		//change the bounds of the for loop to stay within the level
 		//this way we don't have to do bounds checking per pixel inside of op.on()
-		int minx = PApplet.max(x - viewDistance + 1, level.minx);
-		int miny = PApplet.max(y - viewDistance + 1, level.miny);
-		int maxx = PApplet.min(x + viewDistance - 1, level.maxx);
-		int maxy = PApplet.min(y + viewDistance - 1, level.maxy);
+		int minx = PApplet.max(xInitial - viewDistance + 1, level.minx);
+		int miny = PApplet.max(yInitial - viewDistance + 1, level.miny);
+		int maxx = PApplet.min(xInitial + viewDistance - 1, level.maxx);
+		int maxy = PApplet.min(yInitial + viewDistance - 1, level.maxy);
 
 		for (int dx = minx; dx <= maxx; ++dx) {
-			Trace.ray(x, y, dx, miny, op);
-			Trace.ray(x, y, dx, maxy, op);
+			Trace.ray(xInitial, yInitial, dx, miny, op);
+			Trace.ray(xInitial, yInitial, dx, maxy, op);
 			//DEBUG
 			//array[miny*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
 			//array[maxy*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
 		for (int dy = miny + 1; dy < maxy; ++dy) {
-			Trace.ray(x, y, minx, dy, op);
-			Trace.ray(x, y, maxx, dy, op);
+			Trace.ray(xInitial, yInitial, minx, dy, op);
+			Trace.ray(xInitial, yInitial, maxx, dy, op);
 			//DEBUG
 			//array[dy*level.LEVEL_WIDTH + minx] = Entity.COLOR_ENEMY_COM;
 			//array[dy*level.LEVEL_WIDTH + maxx] = Entity.COLOR_ENEMY_COM;
