@@ -59,8 +59,13 @@ public class InputHandler {
 	}
 	
 	public static boolean isPressed(int keyConstant) {
-		//TODO: consider making this search for the value instead of assuming that it will map correctly to the array
-		return pressed[keyConstant];
+		//now searches for keyConstant in the bindings instead of assuming that it will map correctly to the array index
+		for (int i = 0; i < bindings.length; ++i) {
+			if (bindings[i][0] == keyConstant) {
+				return pressed[i];
+			}
+		}
+		return false;
 	}
 	
 	public static void addBehaviour(char key, Interaction behavior) {
@@ -83,15 +88,15 @@ public class InputHandler {
 	
 	private static String toKeyImpl(int keyCode) {
 		switch(keyCode) {
-		case PConstants.BACKSPACE:	return "BACKSP";
-		case ' ':					return "SPACE";
-		case PConstants.TAB:		return "TAB";
-		case PConstants.ESC:		return "ESC";
-		case PConstants.ENTER:		return "ENTER";
-		case PConstants.RIGHT:		return "" + (char)Font.ARROW_RIGHT;
-		case PConstants.LEFT:		return "" + (char)Font.ARROW_LEFT;
-		case PConstants.UP:			return "" + (char)Font.ARROW_UP;
-		case PConstants.DOWN:		return "" + (char)Font.ARROW_DOWN;
+			case ' ':					return "SPACE";
+			case PConstants.BACKSPACE:	return "BACKSP";
+			case PConstants.TAB:		return "TAB";
+			case PConstants.ESC:		return "ESC";
+			case PConstants.ENTER:		return "ENTER";
+			case PConstants.RIGHT:		return "" + (char)Font.ARROW_RIGHT;
+			case PConstants.LEFT:		return "" + (char)Font.ARROW_LEFT;
+			case PConstants.UP:			return "" + (char)Font.ARROW_UP;
+			case PConstants.DOWN:		return "" + (char)Font.ARROW_DOWN;
 		}
 		
 		if (keyCode > 0 && keyCode < 128)
