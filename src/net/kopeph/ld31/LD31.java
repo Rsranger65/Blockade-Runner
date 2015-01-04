@@ -133,7 +133,8 @@ public class LD31 extends PApplet {
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
 			for (int col = 1; col < widgets[row].length; ++col) {
 				//$LAMBDA:Interaction
-				widgets[row][col] = new MenuButton(fontWhite, "" + (char)InputHandler.bindings[row][col], widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
+				widgets[row][col] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[row][col]),
+												   widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
 					//no-op for now
 				});
 				settingsMenu.add(widgets[row][col]); //adding widgets to the menu as we go
@@ -394,12 +395,12 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		InputHandler.handleInput(key == CODED ? keyCode : key, true);
+		InputHandler.handleInput(key, keyCode, true);
 	}
 
 	@Override
 	public void keyReleased() {
-		InputHandler.handleInput(key == CODED ? keyCode : key, false);
+		InputHandler.handleInput(key, keyCode, false);
 	}
 
 	/** Global Entry Point */
