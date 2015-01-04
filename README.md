@@ -1,4 +1,4 @@
-Blockade-Runner ([Releases](http://rsranger65.github.io/Blockade-Runner/releases.html))
+Blockade-Runner
 ===============
 
 Contributors:
