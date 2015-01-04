@@ -73,11 +73,11 @@ public class InputHandler {
 	}
 	
 	public static String toKey(int keyCode) {
-		String ret = toKeyImpl(keyCode);
+		String ret = toKeyImpl(keyCode); //we don't know if this is coming to us already shifted or not, so try normal first
 		if (ret != "") return ret;
-		ret = toKeyImpl(keyCode >> 16);
+		ret = toKeyImpl(keyCode >> 16); //if it fails that test, it's probably left-shifted, so right-shift and try again
 		if (ret != "") return ret;
-		return "---";
+		return "---"; //key not found
 	}
 	
 	private static String toKeyImpl(int keyCode) {
