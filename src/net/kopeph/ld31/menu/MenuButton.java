@@ -18,7 +18,7 @@ public class MenuButton extends TextBox {
 	 * @param yPos        see TextBox constructor
 	 * @param interaction method to be called when the button is clicked
 	 */
-	public MenuButton(Font font, String text, int xPos, int yPos, int width, int height, Interaction interaction) {
+	public MenuButton(Font font, String text, float xPos, float yPos, float width, float height, Interaction interaction) {
 		super(font, text, xPos, yPos);
 
 		this.xPos += (LD31.getContext().width - width) / 2;

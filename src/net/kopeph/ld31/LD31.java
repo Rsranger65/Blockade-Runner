@@ -118,10 +118,30 @@ public class LD31 extends PApplet {
 		//setup settings menu
 		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
+		//add buttons for key bindings
+		MenuWidget[][] widgets = new MenuWidget[InputHandler.bindings.length][InputHandler.bindings[0].length];
+		//seed the (unused) top left corner of the table
+		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length);
+		//fill in the first row with positions relative to the seed (corner)
+		for (int col = 1; col < widgets[0].length; ++col) {
+			widgets[0][col] = new TextBox(fontWhite, "" + col, widgets[0][col - 1].xPos + 60, widgets[0][0].yPos);
+			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
+		}
+		//fill in each row with positions relative to the positions of the top row
+		for (int row = 1; row < widgets.length; ++row) {
+			widgets[row][0] = new TextBox(fontWhite, "" + row, widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
+			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
+			for (int col = 1; col < widgets[row].length; ++col) {
+				//$LAMBDA:Interaction
+				widgets[row][col] = new MenuButton(fontWhite, "" + (char)InputHandler.bindings[row][col], widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
+					//no-op for now
+				});
+				settingsMenu.add(widgets[row][col]); //adding widgets to the menu as we go
+			}
+		}
+
 		//$LAMBDA:Interaction
-		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
-		settingsMenu.add(new TextBox(fontWhite, "No settings to change yet :(", 0,  150));
-		//TODO: add options for key bindings
+		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
 
 		//setup pause menu
 		pauseMenu = new Menu(Menu.DEFAULT_WIDTH, Menu.DEFAULT_HEIGHT);

@@ -19,7 +19,7 @@ public class InputHandler {
 		PAUSE   = 5,
 		ESCAPE  = 6;
 	
-	private static int[][] bindings = {
+	public static int[][] bindings = {
 		{ UP     , 'w', 'W', '8', PConstants.UP    },
 		{ DOWN   , 's', 'S', '2', PConstants.DOWN  },
 		{ LEFT   , 'a', 'A', '4', PConstants.LEFT  },

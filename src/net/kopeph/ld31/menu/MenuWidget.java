@@ -15,16 +15,16 @@ public abstract class MenuWidget {
 
 	protected final PApplet context = LD31.getContext();
 
-	public double xPos, yPos, width, height;
+	public float xPos, yPos, width, height;
 	public int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
 
 	private int curCtxWidth, curCtxHeight;
 
-	public MenuWidget(int xPos, int yPos, int width, int height) {
+	public MenuWidget(float xPos, float yPos, float width, float height) {
 		setBounds(xPos, yPos, width, height);
 	}
 
-	public void setBounds(int xPos, int yPos, int width, int height)  {
+	public void setBounds(float xPos, float yPos, float width, float height)  {
 		updateBounds(); //clear out inconsistencies in curCtx* vars
 		this.xPos = xPos;
 		this.yPos = yPos;
