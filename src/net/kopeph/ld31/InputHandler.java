@@ -66,14 +66,9 @@ public class InputHandler {
 		return false;
 	}
 	
-	public static void addBehaviour(char key, Interaction behavior) {
-		behaviors.put((int)key, behavior);
-	}
-	
-	public static void addBehavior(int keyCode, Interaction behavior) {
-		if ((keyCode & 0xFFFF0000) != 0) return; //no truncation
+	public static void addBehavior(int keyConstant, Interaction behavior) {
 		//TODO: find a way to differentiate between key-down and key-up events
-		behaviors.put(keyCode << 16, behavior);
+		behaviors.put(keyConstant, behavior);
 	}
 	
 	public static String toKey(int keyCode) {
