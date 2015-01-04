@@ -19,10 +19,6 @@ Building Directions (Eclipse Java 8)
 3. Add the following libraries to the class path:
   1. [`core.jar`](http://rsranger65.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) from **Processing 2.2.1**.
   2. [`library/*.jar`](http://code.compartmental.net/minim/distro/minim-2.2.0.zip) from **Minim 2.2.0**.
-4. Add `build.xml` as a **Builder**: (**Project Settings > Builders > New > Ant Builder**)
-  1. **Buildfile**: `${project_loc}/build.xml`
-  2. **Base Directory**: `${project_loc}`
-5. Deselect **Project > Build Automatically**.
 6. Build and run as necessary. (Launch path: `net.kopeph.ld31.LD31`)
 7. When ready to export, export as a **Runnable Jar**, and place the `res` folder next to the `.jar` file.
 
