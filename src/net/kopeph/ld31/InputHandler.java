@@ -60,11 +60,9 @@ public class InputHandler {
 	
 	public static boolean isPressed(int keyConstant) {
 		//now searches for keyConstant in the bindings instead of assuming that it will map correctly to the array index
-		for (int i = 0; i < bindings.length; ++i) {
-			if (bindings[i][0] == keyConstant) {
+		for (int i = 0; i < bindings.length; ++i)
+			if (bindings[i][0] == keyConstant)
 				return pressed[i];
-			}
-		}
 		return false;
 	}
 	
