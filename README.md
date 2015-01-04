@@ -7,6 +7,8 @@ Contributors:
 - Miles Fogle (Code)
 - Alex Gittemeier (Code)
 
+[Releases](http://rsranger65.github.io/Blockade-Runner/releases.html)
+
 Building Directions (Eclipse Java 8)
 ------------------------------------
 
@@ -15,7 +17,7 @@ Building Directions (Eclipse Java 8)
   1. **Project Settings > Java Compiler > Compiler Compliance Level**: `1.8`
   2. **Project Settings > Java Build Path > Libraries** Remove any existing libraries
   3. **Project Settings > Java Build Path > Libraries > Add Library > JRE System** choose jdk1.8
-3. Add [`core.jar`](http://rsranger65.github.io/Blockade-Runner/libs/processing_core-2.2.1.jar) for **Processing 2.2.1** to the classpath.
+3. Add [`core.jar`](http://rsranger65.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) for **Processing 2.2.1** to the classpath.
 4. Add `build.xml` as a **Builder**: (**Project Settings > Builders > New > Ant Builder**)
   1. **Buildfile**: `${project_loc}/build.xml`
   2. **Base Directory**: `${project_loc}`
