@@ -76,6 +76,7 @@ public class Enemy extends Entity {
 
 	public void draw() {
 		draw(color);
+
 		//$LAMBDA:PointPredicate
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))

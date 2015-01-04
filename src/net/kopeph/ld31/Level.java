@@ -229,9 +229,11 @@ public class Level implements AutoCloseable {
 		maxy = PApplet.max(maxy, y0 + h - 1);
 
 		//this does the clearing
-		for (int y = y0; y < y0 + h; ++y)
-			for (int x = x0; x < x0 + w; ++x)
-				tiles[y*LEVEL_WIDTH + x] = color;
+		//$LAMBDA:PointPredicate
+		Trace.rectangle(x0, y0, w, h, (x, y) -> {
+			tiles[y*LEVEL_WIDTH + x] = color;
+			return true;
+		});
 	}
 
 	//helper function for constructor/player placement
@@ -254,6 +256,8 @@ public class Level implements AutoCloseable {
 			//create a new thread to run the lighting process of each enemy
 			//this is extremely simple because the lighting is an embarrassingly parallel operation
 			//Pray to the java gods that this doesn't have actual data races
+			//lol it really might tho
+
 			//$LAMBDA:java.lang.Runnable
 			lightingThreadPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
