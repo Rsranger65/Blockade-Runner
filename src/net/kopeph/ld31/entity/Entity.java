@@ -181,12 +181,10 @@ public class Entity {
 	}
 
 	public void draw(int color) {
-		for (int dy = -SIZE; dy <= SIZE; ++dy) {
-			for (int dx = -SIZE; dx <= SIZE; ++dx) {
-				int loc = (y() + dy)*context.width + x() + dx;
-				if (loc >= 0 && loc < context.pixels.length)
-					context.pixels[loc] = color;
-			}
-		}
+		Trace.rectangle(x() - SIZE, y() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
+			if (!level.inBounds(x, y)) return false;
+			context.pixels[y*level.LEVEL_WIDTH + x] = color;
+			return true;
+		});
 	}
 }

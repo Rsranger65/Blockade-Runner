@@ -75,6 +75,7 @@ public class Enemy extends Entity {
 
 	public void draw() {
 		draw(color);
+		
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
 				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;

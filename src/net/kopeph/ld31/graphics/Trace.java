@@ -108,8 +108,8 @@ public class Trace {
 	}
 	
 	public static void rectangle(int x, int y, int width, int height, PointPredicate op) {
-		for (int dx =  width; dx-- > 0;) {
-			for (int dy = height; dy-- > 0;) {
+		for (int dx =  width; dx-- != 0;) {
+			for (int dy = height; dy-- != 0;) {
 				op.on(x + dx, y + dy);
 			}
 		}

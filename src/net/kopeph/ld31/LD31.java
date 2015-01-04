@@ -249,11 +249,10 @@ public class LD31 extends PApplet {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
 			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
-			for (int dy = -Entity.SIZE; dy <= Entity.SIZE; ++dy) {
-				for (int dx = -Entity.SIZE; dx <= Entity.SIZE; ++dx) {
-					set(level.player.x() + dx, level.player.y() + dy, Entity.COLOR_PLAYER);
-				}
-			}
+			Trace.rectangle(level.player.x() - Entity.SIZE, level.player.y() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
+				set(x, y, Entity.COLOR_PLAYER);
+				return true;
+			});
 			//draw a circle closing in on the player
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
 				set(x, y, Entity.COLOR_PLAYER);
