@@ -92,9 +92,8 @@ public class LD31 extends PApplet {
 
 		fontWhite = new Font("res/font-16-white.png"); //$NON-NLS-1$
 
-		buildVersion = new TextBox(fontWhite, 0, height - 12, width, 8, buildVersion());
+		buildVersion = new TextBox(fontWhite, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
-		buildVersion.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
 		footer = new TextBox(fontWhite, 4, height - 12, width, 8, MSG_FOOTER);
@@ -406,16 +405,21 @@ public class LD31 extends PApplet {
 			//If the version file doesn't exist, make a version string based on
 			//auto-increment and the branch name
 
-			String buildNum = "?"; //$NON-NLS-1$
 			String branchName = "?"; //$NON-NLS-1$
+			String branchHash = "?"; //$NON-NLS-1$
 			try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
 				branchName = gitHead.readLine();
 				branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
-				buildNum = ResourceBundle.getBundle("buildNum").getString("build.number"); //$NON-NLS-1$ //$NON-NLS-2$
-			} catch (IOException | MissingResourceException e2) {
+				try (BufferedReader gitRefHead = new BufferedReader(new FileReader(".git/refs/heads/" + branchName))) { //$NON-NLS-1$
+					branchHash = gitRefHead.readLine().substring(0, 7);
+				} catch (IOException ew) {
+					//Oops. Ignore
+				}
+			} catch (IOException ew) {
 				//Oops. Ignore
 			}
-			return String.format("VER:%s.%sa", branchName, buildNum); //$NON-NLS-1$
+
+			return String.format("git %S.%s", branchName, branchHash); //$NON-NLS-1$
 		}
 	}
 }
