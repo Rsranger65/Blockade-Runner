@@ -42,7 +42,8 @@ public class LD31 extends PApplet {
 		ST_WIN        =  2,  // Displaying win screen
 		ST_PAUSE      =  3,  // Displaying Pause Menu
 		ST_MENU       =  4,  // Displaying Main Menu
-		ST_SETTINGS   =  5;  // Displaying Settings Menu
+		ST_SETTINGS   =  5,  // Displaying Settings Menu
+		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 	private static TextBox buildVersion, footer;
@@ -52,7 +53,7 @@ public class LD31 extends PApplet {
 
 	private Level level;
 	private EndScreen win, die;
-	private Menu mainMenu, settingsMenu, pauseMenu;
+	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
 	private volatile int gameState;
 	private int fadePhase;
 
@@ -109,7 +110,7 @@ public class LD31 extends PApplet {
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
 		//$LAMBDA:Interaction
-		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { /*SPACE FOR RENT */        }));
+		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
 		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
 		//$LAMBDA:Interaction
@@ -122,6 +123,13 @@ public class LD31 extends PApplet {
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
 		settingsMenu.add(new TextBox(fontWhite, "No settings to change yet :(", 0,  150));
 		//TODO: add options for key bindings
+
+		//setup dummy campaign menu
+		dummyCampaignMenu = new Menu();
+		dummyCampaignMenu.add(new TextBox(fontWhite, "Campaign Mode", 0, -175));
+		//$LAMBDA:Interaction
+		dummyCampaignMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(fontWhite, "This game mode hasn't been implemented yet :(", 0,  150));
 
 		//setup pause menu
 		pauseMenu = new Menu(); //Dynamic size. see drawPause();
@@ -159,6 +167,7 @@ public class LD31 extends PApplet {
 			case ST_PAUSE:      drawPause();    break;
 			case ST_MENU:       drawMenu();     break;
 			case ST_SETTINGS:   drawSettings(); break;
+			case ST_CAMPAIGN:   drawCampaign(); break;
 		}
 		buildVersion.render();
 
@@ -332,6 +341,11 @@ public class LD31 extends PApplet {
 	private void drawSettings() {
 		image(rawTextureBlue, 0, 0); //TODO: placeholder background
 		settingsMenu.render();
+	}
+
+	private void drawCampaign() {
+		image(rawTextureGreen, 0, 0); //TODO: placeholder background
+		dummyCampaignMenu.render();
 	}
 
 	@Override
