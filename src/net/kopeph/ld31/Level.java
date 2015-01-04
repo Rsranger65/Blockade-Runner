@@ -193,7 +193,6 @@ public class Level implements AutoCloseable {
 
 	//checks to make sure the level is continuous by doing a flood fill and then checking for any pixels not reached
 	private boolean validateLevel() {
-		//$LAMBDA:PointPredicate
 		PointPredicate op = (x, y) -> {
 			if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
 				return false;
@@ -204,7 +203,6 @@ public class Level implements AutoCloseable {
 		for (int i = 0; i < tiles.length; ++i) {
 			if (tiles[i] == FLOOR_BLACK) {
 				//find the first pixel of floor and flood fill from there
-				//$LAMBDA:PointPredicate
 				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x, y) -> {
 					return validTile(x, y, op);
 				});
@@ -229,7 +227,6 @@ public class Level implements AutoCloseable {
 		maxy = PApplet.max(maxy, y0 + h - 1);
 
 		//this does the clearing
-		//$LAMBDA:PointPredicate
 		Trace.rectangle(x0, y0, w, h, (x, y) -> {
 			tiles[y*LEVEL_WIDTH + x] = color;
 			return true;
@@ -257,8 +254,6 @@ public class Level implements AutoCloseable {
 			//this is extremely simple because the lighting is an embarrassingly parallel operation
 			//Pray to the java gods that this doesn't have actual data races
 			//lol it really might tho
-
-			//$LAMBDA:java.lang.Runnable
 			lightingThreadPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
 

@@ -106,13 +106,9 @@ public class LD31 extends PApplet {
 		//setup main menu
 		mainMenu = new Menu();
 		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
-		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
-		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
-		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
-		//$LAMBDA:Interaction
 		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
@@ -132,7 +128,6 @@ public class LD31 extends PApplet {
 			widgets[row][0] = new TextBox(fontWhite, "" + row, widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
 			for (int col = 1; col < widgets[row].length; ++col) {
-				//$LAMBDA:Interaction
 				widgets[row][col] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[row - 1][col]),
 												   widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
 					//no-op for now
@@ -141,30 +136,23 @@ public class LD31 extends PApplet {
 			}
 		}
 
-		//$LAMBDA:Interaction
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
 		dummyCampaignMenu.add(new TextBox(fontWhite, "Campaign Mode", 0, -175));
-		//$LAMBDA:Interaction
 		dummyCampaignMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
 		dummyCampaignMenu.add(new TextBox(fontWhite, "This game mode hasn't been implemented yet :(", 0,  150));
 
 		//setup pause menu
 		pauseMenu = new Menu(); //Dynamic size. see drawPause();
 		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
-		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
-		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
-		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
-		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		//setup input interaction
-		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.RESTART, () -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
@@ -173,7 +161,6 @@ public class LD31 extends PApplet {
 				gameState = ST_RESET;
 			}
 		});
-		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
@@ -182,7 +169,6 @@ public class LD31 extends PApplet {
 				gameState = ST_RUNNING;
 			}
 		});
-		//$LAMBDA:Interaction
 		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
 			//capture ESC key so it takes us to the menu instead of quitting our program
 			key = 0;
@@ -289,7 +275,6 @@ public class LD31 extends PApplet {
 		float taskSize = pixels.length/texturingPool.poolSize;
 		for (int i = 0; i < texturingPool.poolSize; ++i) {
 			final int j = i;
-			//$LAMBDA:java.lang.Runnable
 			texturingPool.post(() -> { applyTexture(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
 		}
 
@@ -303,7 +288,6 @@ public class LD31 extends PApplet {
 			e.draw();
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
-		//$LAMBDA:PointPredicate
 		Trace.circle(level.objective.x(), level.objective.y(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
 			if (level.inBounds(x, y))
 				pixels[y*width + x] = Entity.COLOR_OBJECTIVE;
@@ -320,13 +304,11 @@ public class LD31 extends PApplet {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
 			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
-			//$LAMBDA:PointPredicate
 			Trace.rectangle(level.player.x() - Entity.SIZE, level.player.y() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
 				set(x, y, Entity.COLOR_PLAYER);
 				return true;
 			});
 			//draw a circle closing in on the player
-			//$LAMBDA:PointPredicate
 			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
 				set(x, y, Entity.COLOR_PLAYER);
 				return true;
