@@ -1,0 +1,10 @@
+.classpath
+.project
+.externalToolBuilders/
+.settings/
+bin/
+.DS_Store
+libs/
+res-src/
+src/
+src-7/
