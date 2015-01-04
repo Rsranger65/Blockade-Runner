@@ -313,7 +313,7 @@ public class LD31 extends PApplet {
 		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
 
 		pauseMenu.setBounds(240, menuHeight);
-		if (menuHeight > 200) { //MAGIC NUMBERS EVERYWHERE!!!
+		if (menuHeight > 200) { //XXX: MAGIC NUMBERS EVERYWHERE!!!
 			pauseMenu.render();
 		} else {
 			pushStyle();
@@ -325,14 +325,14 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		image(rawTextureRed, 0, 0); //placeholder background
 		mainMenu.setBounds(width - 200, height - 200);
+		image(rawTextureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		image(rawTextureBlue, 0, 0); //placeholder background
 		settingsMenu.setBounds(width - 200, height - 200);
+		image(rawTextureBlue, 0, 0); //TODO: placeholder background
 		settingsMenu.render();
 	}
 
