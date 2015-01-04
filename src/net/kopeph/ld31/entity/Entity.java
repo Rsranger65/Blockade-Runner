@@ -183,7 +183,6 @@ public class Entity {
 	}
 
 	public void draw(int color) {
-		//TODO: factor out pixels[]
 		//$LAMBDA:PointPredicate
 		Trace.rectangle(x() - SIZE, y() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
 			if (!level.inBounds(x, y)) return false;

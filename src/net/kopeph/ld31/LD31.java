@@ -134,6 +134,37 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
 		//$LAMBDA:Interaction
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
+		
+		//setup input interaction
+		//$LAMBDA:Interaction
+		InputHandler.addBehavior(InputHandler.RESTART, () -> {
+			if (gameState == ST_RUNNING ||
+				gameState == ST_WIN ||
+				gameState == ST_DIE) {
+				loop();
+				gameState = ST_RESET;
+			}
+		});
+		//$LAMBDA:Interaction
+		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
+			if (gameState == ST_RUNNING) {
+				gameState = ST_PAUSE;
+				menuHeight = 1;
+			} else if (gameState == ST_PAUSE) {
+				gameState = ST_RUNNING;
+			}
+		});
+		//$LAMBDA:Interaction
+		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
+			//capture ESC key so it takes us to the menu instead of quitting our program
+			key = 0;
+			if (gameState == ST_MENU) {
+				exit();
+			} else {
+				loop();
+				gameState = ST_MENU;
+			}
+		});
 
 		gameState = ST_MENU;
 	}
@@ -313,7 +344,7 @@ public class LD31 extends PApplet {
 		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
 
 		pauseMenu.setBounds(240, menuHeight);
-		if (menuHeight > 200) { //MAGIC NUMBERS EVERYWHERE!!!
+		if (menuHeight > 300) { //MAGIC NUMBERS EVERYWHERE!!!
 			pauseMenu.render();
 		} else {
 			pushStyle();
@@ -343,37 +374,6 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		//TODO: move this into setup()
-		//$LAMBDA:Interaction
-		InputHandler.addBehavior(InputHandler.RESTART, () -> {
-			if (gameState == ST_RUNNING ||
-				gameState == ST_WIN ||
-				gameState == ST_DIE) {
-				loop();
-				gameState = ST_RESET;
-			}
-		});
-		//$LAMBDA:Interaction
-		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
-			if (gameState == ST_RUNNING) {
-				gameState = ST_PAUSE;
-				menuHeight = 1;
-			} else if (gameState == ST_PAUSE) {
-				gameState = ST_RUNNING;
-			}
-		});
-		//$LAMBDA:Interaction
-		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
-			//capture ESC key so it takes us to the menu instead of quitting our program
-			key = 0;
-			if (gameState == ST_MENU) {
-				exit();
-			} else {
-				loop();
-				gameState = ST_MENU;
-			}
-		});
-
 		InputHandler.handleInput(key == CODED ? keyCode : key, true);
 	}
 
