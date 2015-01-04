@@ -51,9 +51,9 @@ Caveats with supporting Java 7
 - Function pointer syntax is not supported.
 - Lambdas must use curly brackets
 - Lambda arguments *must* match those in the interface's method signature.
-- All functional interfaces must reside in `net.kopeph.ld31.spi` in the `src/' folder
+- All functional interfaces must reside in `net.kopeph.ld31.spi` in the `src/` folder
 - Functional interfaces in the Java API must have a dummy interface located in the concatenation of `net.kopeph.ld31.spi` and the fully qualified interface name (`class.getName()`)
   - For example `Java.lang.Runnable` has a dummy interface located at `net.kopeph.ld31.spi.java.lang.Runnable`
 - Every time a lambda is used, the following comment marker must come somewhere before the lambda itself: `//$LAMBDA:InterfaceName` where InterfaceName is:
   - Unqualified if directly inside `net.kopeph.ld31.spi`.
-  - Fully qualified if part of the Java API
+  - Fully qualified if part of the Java API.
