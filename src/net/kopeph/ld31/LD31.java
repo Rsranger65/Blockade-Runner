@@ -115,23 +115,42 @@ public class LD31 extends PApplet {
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
 		//add buttons for key bindings
-		MenuWidget[][] widgets = new MenuWidget[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
+		TextBox[][] widgets = new TextBox[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
 		//seed the (unused) top left corner of the table
 		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length);
+		
 		//fill in the first row with positions relative to the seed (corner)
 		for (int col = 1; col < widgets[0].length; ++col) {
 			widgets[0][col] = new TextBox(fontWhite, "" + col, widgets[0][col - 1].xPos + 60, widgets[0][0].yPos);
 			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
 		}
+		
 		//fill in each row with positions relative to the positions of the top row
 		for (int row = 1; row < widgets.length; ++row) {
 			widgets[row][0] = new TextBox(fontWhite, "" + row, widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
+			
 			for (int col = 1; col < widgets[row].length; ++col) {
-				widgets[row][col] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[row - 1][col]),
-												   widgets[0][col].xPos, widgets[row][0].yPos, 50, 20, () -> {
-					//no-op for now
+				final int r = row, c = col; //needed for the behavior to work
+				widgets[r][c] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[r - 1][c]),
+											   widgets[0][c].xPos, widgets[r][0].yPos, 50, 20, () -> {
+					//update the text on all the buttons to avoid "???" getting stuck on some of them
+					updateText(widgets);
+					widgets[r][c].text = "???";
+					
+					//adds a self-removing listener to catch any key that's pressed and bind it
+					InputHandler.addBehavior(InputHandler.UNCAUGHT, () -> {
+						//update key binding
+						if (gameState == ST_SETTINGS)
+							InputHandler.bindings[r - 1][c] = (key == CODED? keyCode : Character.toUpperCase(key));
+						
+						updateText(widgets);
+						
+						//behavior removes itself so that it will only run once (warning: may contain hacks)
+						InputHandler.removeBehavior(InputHandler.UNCAUGHT);
+					});
 				});
+				
 				settingsMenu.add(widgets[row][col]); //adding widgets to the menu as we go
 			}
 		}
@@ -181,6 +200,13 @@ public class LD31 extends PApplet {
 		});
 
 		gameState = ST_MENU;
+	}
+	
+	//helper function for constructor
+	private void updateText(TextBox[][] widgets) {
+		for (int i = 1; i < widgets.length; ++i)
+			for (int j = 1; j < widgets[i].length; ++j)
+				widgets[i][j].text = InputHandler.toKey(InputHandler.bindings[i - 1][j]);
 	}
 
 	public static LD31 getContext() {

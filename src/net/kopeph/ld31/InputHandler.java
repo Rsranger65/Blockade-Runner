@@ -12,22 +12,37 @@ import processing.core.PConstants;
  */
 public class InputHandler {
 	public static final int
-		UP      = 0,
-		LEFT    = 2,
-		DOWN    = 1,
-		RIGHT   = 3,
-		RESTART = 4,
-		PAUSE   = 5,
-		ESCAPE  = 6;
+		UP       = 0,
+		LEFT     = 2,
+		DOWN     = 1,
+		RIGHT    = 3,
+		RESTART  = 4,
+		PAUSE    = 5,
+		ESCAPE   = 6,
+		UNCAUGHT = 7;
+	
+	//there may be a better way to do this
+	public static String getControlString(int controlCode) {
+		switch (controlCode) {
+			case UP     : return "UP     ";
+			case LEFT   : return "LEFT   ";
+			case DOWN   : return "DOWN   ";
+			case RIGHT  : return "RIGHT  ";
+			case RESTART: return "RESTART";
+			case PAUSE  : return "PAUSE  ";
+			case ESCAPE : return "ESCAPE ";
+		}
+		return "UNCAUGHT";
+	}
 	
 	public static int[][] bindings = {
-		{ UP     , 'w', 'W', '8' , PConstants.UP    << 16 },
-		{ LEFT   , 'a', 'A', '4' , PConstants.LEFT  << 16 },
-		{ DOWN   , 's', 'S', '2' , PConstants.DOWN  << 16 },
-		{ RIGHT  , 'd', 'D', '6' , PConstants.RIGHT << 16 },
-		{ RESTART, 'r', 'R', ' ' , PConstants.ENTER << 16 },
-		{ PAUSE  , 'p', 'P', '\t', PConstants.TAB   << 16 },
-		{ ESCAPE ,  0 ,  0 ,  0  , PConstants.ESC   << 16 }
+		{ UP     , 'W', '8' , PConstants.UP    << 16 },
+		{ LEFT   , 'A', '4' , PConstants.LEFT  << 16 },
+		{ DOWN   , 'S', '2' , PConstants.DOWN  << 16 },
+		{ RIGHT  , 'D', '6' , PConstants.RIGHT << 16 },
+		{ RESTART, 'R', ' ' , PConstants.ENTER << 16 },
+		{ PAUSE  , 'P', '\t', PConstants.TAB   << 16 },
+		{ ESCAPE ,  0 ,  0  , PConstants.ESC   << 16 }
 	};
 	
 	private static boolean[] pressed = new boolean[bindings.length];
@@ -36,6 +51,8 @@ public class InputHandler {
 	
 	public static void handleInput(int key, int keyCode, boolean down) {
 		if (key == 0 || (key == PConstants.CODED && keyCode == 0)) return; //just to be safe, like, you never know, y'know?
+		
+		key = Character.toUpperCase(key); //make input case insensitive
 		
 		//the canonical values of PApplet.keyCode overlap with the ASCII set, which is annoying and means we have to do a bit shift
 		if ((keyCode & 0xFFFF0000) != 0) return; //no truncation
@@ -48,10 +65,15 @@ public class InputHandler {
 					//currently only acts on keyDown events
 					if (behaviors.containsKey(bindings[i][0]) && down)
 						behaviors.get(bindings[i][0]).interact();
+					else if (behaviors.containsKey(UNCAUGHT))
+						behaviors.get(UNCAUGHT).interact();
 					return;
 				}
 			}
 		}
+		
+		if (behaviors.containsKey(UNCAUGHT))
+			behaviors.get(UNCAUGHT).interact();
 	}
 	
 	private static void setPressed(int i, int j, boolean down) {
@@ -71,6 +93,10 @@ public class InputHandler {
 		behaviors.put(keyConstant, behavior);
 	}
 	
+	public static void removeBehavior(int key) {
+		behaviors.remove(key);
+	}
+	
 	public static String toKey(int keyCode) {
 		String ret = toKeyImpl(keyCode); //we don't know if this is coming to us already shifted or not, so try normal first
 		if (ret != "") return ret;
@@ -86,14 +112,15 @@ public class InputHandler {
 			case PConstants.TAB:		return "TAB";
 			case PConstants.ESC:		return "ESC";
 			case PConstants.ENTER:		return "ENTER";
-			case PConstants.RIGHT:		return "" + (char)Font.ARROW_RIGHT;
-			case PConstants.LEFT:		return "" + (char)Font.ARROW_LEFT;
-			case PConstants.UP:			return "" + (char)Font.ARROW_UP;
-			case PConstants.DOWN:		return "" + (char)Font.ARROW_DOWN;
+			case PConstants.SHIFT:		return "SHIFT";
+			case PConstants.RIGHT:		return String.valueOf((char)Font.ARROW_RIGHT);
+			case PConstants.LEFT:		return String.valueOf((char)Font.ARROW_LEFT );
+			case PConstants.UP:			return String.valueOf((char)Font.ARROW_UP   );
+			case PConstants.DOWN:		return String.valueOf((char)Font.ARROW_DOWN );
 		}
 		
 		if (keyCode > 0 && keyCode < 128)
-			return "" + (char)keyCode;
+			return String.valueOf((char)keyCode);
 		return ""; //no match
 	}
 }
