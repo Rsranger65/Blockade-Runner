@@ -117,7 +117,7 @@ public class LD31 extends PApplet {
 		//add buttons for key bindings
 		TextBox[][] widgets = new TextBox[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
 		//seed the (unused) top left corner of the table
-		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length);
+		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length + 10);
 		
 		//fill in the first row with positions relative to the seed (corner)
 		for (int col = 1; col < widgets[0].length; ++col) {
@@ -127,7 +127,7 @@ public class LD31 extends PApplet {
 		
 		//fill in each row with positions relative to the positions of the top row
 		for (int row = 1; row < widgets.length; ++row) {
-			widgets[row][0] = new TextBox(fontWhite, "" + row, widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
+			widgets[row][0] = new TextBox(fontWhite, InputHandler.getControlString(InputHandler.bindings[row - 1][0]), widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
 			
 			for (int col = 1; col < widgets[row].length; ++col) {
