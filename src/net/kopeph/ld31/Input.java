@@ -39,9 +39,17 @@ public class Input {
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
 	public void eventKey(char pKey, int pKeyCode, boolean isDown) {
+		//This is a way to stuff two values into one because its harder to work
+		//with two values. the shift moves past the range of a char, so the
+		//resulting value has a 1:1 correspondence, with the assumption that
+		//pKeyCode > 0xFFFF
 		int keyId = pKey | pKeyCode << 16;
 
 		//Need to blacklist a key from processing? do it here.
+
+		if (pKeyCode > 0xFFFF)
+			//this breaks the 1:1 described above, so nix it
+			return;
 
 
 		keyStates.put(keyId, isDown);
