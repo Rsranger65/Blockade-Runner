@@ -17,8 +17,9 @@ import processing.core.PConstants;
 //TODO: make addAction() and handleBind() read and write to a config.
 public class Input {
 	public static final int
-		K_UNBOUND = 1 << 16,
-		K_BINDING = 2 << 16,
+		K_UNBOUND = -1, //These fill both halves of the word, so they can't collide
+		K_BINDING = -2,
+
 		K_ESC     = PConstants.ESC,
 		K_TAB     = PConstants.TAB,
 		K_ENTER   = PConstants.ENTER,
@@ -48,10 +49,12 @@ public class Input {
 		//ALL CAPS FOR CASE INSENSITIVITY
 		pKey = Character.toUpperCase(pKey);
 
-		//This is a way to stuff two values into one because its harder to work
-		//with two values. the shift moves past the range of a char, so the
-		//resulting value has a 1:1 correspondence, with the assumption that
-		//pKeyCode > 0xFFFF
+		//chars (pKey) are only 16 bits in size, and all pKeyCodes that we care about
+		//will also fit into 16 bits, so for simplicity in other parts of the code,
+		//we are squashing these together into an int (0xAAAABBBB) A: pKeyCode B: pKey
+		//We only care about the A values if B says we should, so really keyId =
+		//0x0000BBBB when B != CODED
+		//0xAAAA0000 when A == CODED
 		int keyId = (pKey == PConstants.CODED) ? pKeyCode << 16 : pKey;
 
 		keyStates.put(keyId, isDown);
