@@ -23,13 +23,13 @@ public class Input {
 		K_TAB     = PConstants.TAB,
 		K_ENTER   = PConstants.ENTER,
 		K_BKSP    = PConstants.BACKSPACE,
-		K_SHIFT   = PConstants.SHIFT   << 16 | PConstants.CODED,
-		K_CTRL    = PConstants.CONTROL << 16 | PConstants.CODED,
-		K_ALT     = PConstants.ALT     << 16 | PConstants.CODED,
-		K_UP      = PConstants.UP      << 16 | PConstants.CODED,
-		K_DOWN    = PConstants.DOWN    << 16 | PConstants.CODED,
-		K_LEFT    = PConstants.LEFT    << 16 | PConstants.CODED,
-		K_RIGHT   = PConstants.RIGHT   << 16 | PConstants.CODED;
+		K_SHIFT   = PConstants.SHIFT   << 16,
+		K_CTRL    = PConstants.CONTROL << 16,
+		K_ALT     = PConstants.ALT     << 16,
+		K_UP      = PConstants.UP      << 16,
+		K_DOWN    = PConstants.DOWN    << 16,
+		K_LEFT    = PConstants.LEFT    << 16,
+		K_RIGHT   = PConstants.RIGHT   << 16;
 
 	private Map<Integer, Boolean> keyStates = new HashMap<>();
 
@@ -39,21 +39,22 @@ public class Input {
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
 	public void eventKey(char pKey, int pKeyCode, boolean isDown) {
+		//Need to blacklist/transform a key from processing? do it here.
+
+		if (pKeyCode > 0xFFFF)
+			//this breaks the 1:1 assumption described below, so nix it
+			return;
+
+		//ALL CAPS FOR CASE INSENSITIVITY
+		pKey = Character.toUpperCase(pKey);
+
 		//This is a way to stuff two values into one because its harder to work
 		//with two values. the shift moves past the range of a char, so the
 		//resulting value has a 1:1 correspondence, with the assumption that
 		//pKeyCode > 0xFFFF
-		int keyId = pKey | pKeyCode << 16;
-
-		//Need to blacklist a key from processing? do it here.
-
-		if (pKeyCode > 0xFFFF)
-			//this breaks the 1:1 described above, so nix it
-			return;
-
+		int keyId = (pKey == PConstants.CODED) ? pKeyCode << 16 : pKey;
 
 		keyStates.put(keyId, isDown);
-
 
 		if (isDown) {
 			//Triggers take precedence
