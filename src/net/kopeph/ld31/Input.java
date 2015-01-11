@@ -89,7 +89,7 @@ public class Input {
 	}
 
 	public static String getKeyTitle(int keyId) {
-		if (keyId >= 0x21 && keyId <= 0x7E) //ASCII range minus SPACE
+		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes
 			return String.valueOf((char) keyId);
 		switch (keyId) {
 		case ' '      : return "SPACE";
