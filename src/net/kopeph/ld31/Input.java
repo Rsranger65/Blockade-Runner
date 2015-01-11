@@ -72,18 +72,22 @@ public class Input {
 		}
 	}
 
-	public void addAction(String id, Interaction lambda, int[] keyIds) {
-		KeyAction action = new KeyAction(lambda, keyIds);
+	public void addAction(String id, int[] keyIds, Interaction lambda) {
+		KeyAction action = new KeyAction(id, keyIds, lambda);
 		actions.put(id, action);
 		for (int keyId : keyIds)
 			keyMap.put(keyId, action);
 	}
 
-	public Map<Interaction, List<String>> actionKeyMappings() {
-		Map<Interaction, List<String>> retMap = new HashMap<>();
+
+	/**
+	 * Returns a mapping between ids and a list of button titles for the settings menu.
+	 */
+	public Map<String, List<String>> actionKeyMappings() {
+		Map<String, List<String>> retMap = new HashMap<>();
 
 		for (KeyAction action : keyMap.values())
-			retMap.put(action.lambda, action.keyIdTitles());
+			retMap.put(action.id, action.keyIdTitles());
 
 		return retMap;
 	}
@@ -141,10 +145,12 @@ public class Input {
 	}
 
 	private static class KeyAction {
+		public final String id;
 		public final Interaction lambda;
 		public final List<Integer> keyIds = new ArrayList<>();
 
-		public KeyAction(Interaction lambda, int[] keyIds) {
+		public KeyAction(String id, int[] keyIds, Interaction lambda) {
+			this.id = id;
 			this.lambda = lambda;
 			for (int keyId : keyIds)
 				this.keyIds.add(keyId);
