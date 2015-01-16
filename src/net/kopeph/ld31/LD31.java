@@ -489,7 +489,7 @@ public class LD31 extends PApplet {
 			return ResourceBundle.getBundle("version").getString("build.versionString");
 		} catch (MissingResourceException e) {
 			//If the version file doesn't exist, make a version string based on
-			//auto-increment and the branch name
+			//branch name and short hash
 
 			String branchName = "?"; //$NON-NLS-1$
 			String branchHash = "?"; //$NON-NLS-1$
