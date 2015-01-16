@@ -41,6 +41,14 @@ public class Menu extends MenuWidget {
 		widgets.add(b);
 	}
 
+	public MenuWidget getChild(int index) { //hide yo kids, hide yo wife
+		return widgets.get(index);
+	}
+
+	public int getChildCount() {
+		return widgets.size();
+	}
+
 	@Override
 	public void render() {
 		updateBounds();

@@ -17,6 +17,7 @@ public abstract class MenuWidget {
 
 	public float xPos, yPos, width, height;
 	public int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
+	public String tag; //General purpose
 
 	private int curCtxWidth, curCtxHeight;
 
