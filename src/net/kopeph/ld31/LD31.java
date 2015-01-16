@@ -3,6 +3,10 @@ package net.kopeph.ld31;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -45,12 +49,44 @@ public class LD31 extends PApplet {
 		ST_SETTINGS   =  5,  // Displaying Settings Menu
 		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
+	//XXX: this is a lot of repeated values
+	private static final String //control ID enum
+		CTL_UP       = "game.up",    //$NON-NLS-1$
+		CTL_LEFT     = "game.left",  //$NON-NLS-1$
+		CTL_DOWN     = "game.down",  //$NON-NLS-1$
+		CTL_RIGHT    = "game.right", //$NON-NLS-1$
+		CTL_RESTART  = "game.reset", //$NON-NLS-1$
+		CTL_PAUSE    = "game.pause", //$NON-NLS-1$
+		CTL_ESCAPE   = "sys.esc"; 	 //$NON-NLS-1$
+
+	private static final int CTL_SLOTS = 3; //how many columns to show the user
+	private static final List<String> CTL_IDS = Arrays.asList(
+			CTL_UP,
+			CTL_LEFT,
+			CTL_DOWN,
+			CTL_RIGHT,
+			CTL_RESTART,
+			CTL_PAUSE,
+			CTL_ESCAPE
+			);
+	private static final Map<String, String> CTL_NAMES = new HashMap<>();
+	static {
+		CTL_NAMES.put(CTL_UP     , "Up"   );
+		CTL_NAMES.put(CTL_LEFT   , "Left" );
+		CTL_NAMES.put(CTL_DOWN   , "Down" );
+		CTL_NAMES.put(CTL_RIGHT  , "Right");
+		CTL_NAMES.put(CTL_RESTART, "Reset");
+		CTL_NAMES.put(CTL_PAUSE  , "Pause");
+		CTL_NAMES.put(CTL_ESCAPE , "Menu"); //TODO: merge pause and main menu controls
+	}
+
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 	private static TextBox buildVersion, footer;
 
 	private final Profiler profiler = new Profiler();
 	private final ThreadPool texturingPool = new ThreadPool();
 
+	private Input input = new Input();
 	private Level level;
 	private EndScreen win, die;
 	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
@@ -114,45 +150,44 @@ public class LD31 extends PApplet {
 		//setup settings menu
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
-		//add buttons for key bindings
-		TextBox[][] widgets = new TextBox[InputHandler.bindings.length + 1][InputHandler.bindings[0].length];
+
+		TextBox[][] widgets = new TextBox[CTL_NAMES.size() + 1][CTL_SLOTS + 1]; //[y][x]
 		//seed the (unused) top left corner of the table
-		widgets[0][0] = new TextBox(fontWhite, "", -30*widgets[0].length, -20*widgets.length + 10);
-		
-		//fill in the first row with positions relative to the seed (corner)
+		widgets[0][0] = new TextBox(fontWhite, "",
+									-30*widgets[0].length,
+									-20*widgets.length + 10);
+
+		//TODO: move relative calculation based layout to TextBox ctor
+		//fill in the first row with slot numbers
 		for (int col = 1; col < widgets[0].length; ++col) {
-			widgets[0][col] = new TextBox(fontWhite, "" + col, widgets[0][col - 1].xPos + 60, widgets[0][0].yPos);
+			widgets[0][col] = new TextBox(fontWhite, String.valueOf(col),
+										  widgets[0][col - 1].xPos + 60,
+										  widgets[0][0].yPos);
 			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
 		}
-		
-		//fill in each row with positions relative to the positions of the top row
-		for (int row = 1; row < widgets.length; ++row) {
-			widgets[row][0] = new TextBox(fontWhite, InputHandler.getControlString(InputHandler.bindings[row - 1][0]), widgets[0][0].xPos, widgets[row - 1][0].yPos + 30);
+
+		//Fill each row with key title, then a set of buttons for each slot
+		int row = 1;
+		for (final String id : CTL_IDS) {
+			widgets[row][0] = new TextBox(fontWhite, CTL_NAMES.get(id),
+										  widgets[0][0].xPos,
+										  widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
-			
+
 			for (int col = 1; col < widgets[row].length; ++col) {
 				final int r = row, c = col; //needed for the behavior to work
-				widgets[r][c] = new MenuButton(fontWhite, InputHandler.toKey(InputHandler.bindings[r - 1][c]),
-											   widgets[0][c].xPos, widgets[r][0].yPos, 50, 20, () -> {
-					//update the text on all the buttons to avoid "???" getting stuck on some of them
-					updateText(widgets);
-					widgets[r][c].text = "???";
-					
-					//adds a self-removing listener to catch any key that's pressed and bind it
-					InputHandler.addBehavior(InputHandler.UNCAUGHT, () -> {
-						//update key binding
-						if (gameState == ST_SETTINGS)
-							InputHandler.bindings[r - 1][c] = (key == CODED? keyCode : Character.toUpperCase(key));
-						
-						updateText(widgets);
-						
-						//behavior removes itself so that it will only run once (warning: may contain hacks)
-						InputHandler.removeBehavior(InputHandler.UNCAUGHT);
-					});
+				//Don't bother with the displayed until draw time
+				widgets[r][c] = new MenuButton(fontWhite, "",
+											   widgets[0][c].xPos,
+											   widgets[r][0].yPos,
+											   50, 20,
+				() -> {
+					input.handleBind(id, c - 1, CTL_ESCAPE);
 				});
-				
-				settingsMenu.add(widgets[row][col]); //adding widgets to the menu as we go
+				widgets[r][c].tag = id;
+				settingsMenu.add(widgets[r][c]); //adding widgets to the menu as we go
 			}
+			row++;
 		}
 
 		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
@@ -172,7 +207,7 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		//setup input interaction
-		InputHandler.addBehavior(InputHandler.RESTART, () -> {
+		input.addAction(CTL_RESTART, new int[] {'R', ' ', Input.K_ENTER}, () -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
@@ -180,7 +215,7 @@ public class LD31 extends PApplet {
 				gameState = ST_RESET;
 			}
 		});
-		InputHandler.addBehavior(InputHandler.PAUSE, () -> {
+		input.addAction(CTL_PAUSE, new int[] {'P', Input.K_TAB}, () -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
@@ -188,9 +223,7 @@ public class LD31 extends PApplet {
 				gameState = ST_RUNNING;
 			}
 		});
-		InputHandler.addBehavior(InputHandler.ESCAPE, () -> {
-			//capture ESC key so it takes us to the menu instead of quitting our program
-			key = 0;
+		input.addAction(CTL_ESCAPE, new int[] {Input.K_ESC}, () -> {
 			if (gameState == ST_MENU) {
 				exit();
 			} else {
@@ -198,16 +231,15 @@ public class LD31 extends PApplet {
 				gameState = ST_MENU;
 			}
 		});
+		input.addMonitor(CTL_UP,	new int[] {'W', '8', Input.K_UP});
+		input.addMonitor(CTL_LEFT,	new int[] {'A', '4', Input.K_LEFT});
+		input.addMonitor(CTL_DOWN,	new int[] {'S', '2', Input.K_DOWN});
+		input.addMonitor(CTL_RIGHT,	new int[] {'D', '6', Input.K_RIGHT});
 
 		gameState = ST_MENU;
 	}
-	
-	//helper function for constructor
-	private void updateText(TextBox[][] widgets) {
-		for (int i = 1; i < widgets.length; ++i)
-			for (int j = 1; j < widgets[i].length; ++j)
-				widgets[i][j].text = InputHandler.toKey(InputHandler.bindings[i - 1][j]);
-	}
+
+
 
 	public static LD31 getContext() {
 		return context;
@@ -262,10 +294,10 @@ public class LD31 extends PApplet {
 	private void drawRunning() {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
-		level.player.move(InputHandler.isPressed(InputHandler.UP   ),
-		                  InputHandler.isPressed(InputHandler.DOWN ),
-		                  InputHandler.isPressed(InputHandler.LEFT ),
-		                  InputHandler.isPressed(InputHandler.RIGHT));
+		level.player.move(input.getKey(CTL_UP   ),
+		                  input.getKey(CTL_DOWN ),
+		                  input.getKey(CTL_LEFT ),
+		                  input.getKey(CTL_RIGHT));
 		//check win condition
 		if (dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
 			gameState = ST_WIN;
@@ -399,7 +431,31 @@ public class LD31 extends PApplet {
 
 	private void drawSettings() {
 		image(rawTextureBlue, 0, 0); //TODO: placeholder background
+		syncKeyMaps();
 		settingsMenu.render();
+	}
+
+	private void syncKeyMaps() {
+		Map<String, List<String>> keyMap = input.keyMap();
+		Map<String, Integer> indices = new HashMap<>();
+
+		for (int i = 0; i < settingsMenu.getChildCount(); i++) {
+			MenuWidget widget = settingsMenu.getChild(i);
+
+			if (widget instanceof MenuButton && widget.tag != null) {
+				TextBox textBoxWidget = (TextBox) widget;
+				List<String> keyRow = keyMap.get(widget.tag);
+				Integer index = indices.get(widget.tag);
+				if (index == null)
+					index = 0;
+
+				if (keyRow != null && index < keyRow.size())
+					textBoxWidget.text = keyRow.get(index++);
+				else
+					textBoxWidget.text = Input.getKeyTitle(Input.K_UNBOUND);
+				indices.put(widget.tag, index);
+			}
+		}
 	}
 
 	private void drawCampaign() {
@@ -414,12 +470,13 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		InputHandler.handleInput(key, keyCode, true);
+		input.eventKey(key, keyCode, true);
+		key = 0; //Stop ESC from closing the program
 	}
 
 	@Override
 	public void keyReleased() {
-		InputHandler.handleInput(key, keyCode, false);
+		input.eventKey(key, keyCode, false);
 	}
 
 	/** Global Entry Point */
