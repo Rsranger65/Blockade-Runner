@@ -36,11 +36,15 @@ public class Input {
 
 	private Map<String, KeyAction> actions = new HashMap<>();
 	private Map<Integer, KeyAction> keyMap = new HashMap<>();
-
 	private List<KeyPredicate> triggers = new ArrayList<>();
+
 
 	public void eventKey(char pKey, int pKeyCode, boolean isDown) {
 		//Need to blacklist/transform a key from processing? do it here.
+
+		//These are the same thing on the keyboard...
+		if (pKey == PConstants.RETURN)
+			pKey = PConstants.ENTER;
 
 		if (pKeyCode > 0xFFFF)
 			//this breaks the 1:1 assumption described below, so nix it
@@ -79,13 +83,17 @@ public class Input {
 			keyMap.put(keyId, action);
 	}
 
+	public void addMonitor(String id, int[] keyIds) {
+		addAction(id, keyIds, () -> { /* no action */ });
+	}
 
 	/**
 	 * Returns a mapping between ids and a list of button titles for the settings menu.
 	 */
-	public Map<String, List<String>> actionKeyMappings() {
+	public Map<String, List<String>> keyMap() {
 		Map<String, List<String>> retMap = new HashMap<>();
 
+		//KeyMap output
 		for (KeyAction action : keyMap.values())
 			retMap.put(action.id, action.keyIdTitles());
 
@@ -98,7 +106,7 @@ public class Input {
 		switch (keyId) {
 		case ' '      : return "SPACE";
 		case K_UNBOUND: return "---";
-		case K_BINDING: return "???";
+		case K_BINDING: return "<???>";
 		case K_ESC    : return "ESC";
 		case K_TAB    : return "TAB";
 		case K_ENTER  : return "ENTER";
@@ -116,24 +124,69 @@ public class Input {
 		return "!!!";
 	}
 
+	public static List<String> getKeyTitle(List<Integer> keyIds) {
+		List<String> retList = new ArrayList<>();
+		for (Integer keyId : keyIds)
+			retList.add(getKeyTitle(keyId));
+		return retList;
+	}
+
 	public boolean getKey(int keyId) {
 		if (keyStates.containsKey(keyId))
 			return keyStates.get(keyId);
 		return false;
 	}
 
-	public void handleBind(String id, final int index) {
+	public boolean getKey(String id) {
+		for (Integer keyId : actions.get(id).keyIds) {
+			if (getKey(keyId))
+				return true;
+		}
+		return false;
+	}
+
+	public void handleBind(String id, final int index, final String escapeId) {
 		final KeyAction action = actions.get(id);
 
-		//Remove the binding from keyMap, then set the id in action to ---
-		keyMap.remove(action.keyIds.get(index));
-		action.keyIds.set(index, K_UNBOUND);
+		if (action != null) {
+			//Remove the binding from keyMap, then set the keyId in action to ???
+			while (index >= action.keyIds.size())
+				action.keyIds.add(K_UNBOUND); //expand list as needed
 
-		//Wait until a key is pressed, and lock onto it
-		postTrigger((keyId) -> {
-			action.keyIds.set(index, keyId);
-			return true;
-		});
+			keyMap.remove(action.keyIds.get(index));
+			action.keyIds.set(index, K_BINDING);
+
+			//Wait until a key is pressed, and lock onto it
+			postTrigger((keyId) -> {
+				if (getKey(escapeId)) {
+					//change from ??? to ---
+					action.keyIds.set(index, K_UNBOUND);
+				}
+				else {
+					//Update internal key array of clobbered mapping if applicable
+					KeyAction clobbered = keyMap.remove(keyId);
+					if (clobbered != null)
+						unlinkMapping(clobbered, keyId);
+
+					//Then add the new value
+					action.keyIds.set(index, keyId);
+					keyMap.put(keyId, action);
+				}
+				//Capture and remove
+				return true;
+			});
+		}
+		else
+			throw new IllegalArgumentException("id=" + id);
+	}
+
+	private static void unlinkMapping(KeyAction action, int keyId) {
+		for (int i = 0; i < action.keyIds.size(); i++) {
+			if (action.keyIds.get(i) == keyId) {
+				action.keyIds.set(i, K_UNBOUND);
+				break;
+			}
+		}
 	}
 
 	/**
