@@ -1,6 +1,7 @@
 package net.kopeph.ld31;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,13 +79,21 @@ public class Input {
 		}
 	}
 
-	public void addAction(String id, List<Integer> keyIds, Interaction lambda) {
+	public void addAction(String id, Interaction lambda, Integer...keyIds) {
+		addAction(id, lambda, Arrays.asList(keyIds));
+	}
+
+	public void addAction(String id, Interaction lambda, List<Integer> keyIds) {
 		actions.put(id, lambda);
 		keyMap.put(id, keyIds);
 	}
 
+	public void addMonitor(String id, Integer...keyIds) {
+		addMonitor(id, Arrays.asList(keyIds));
+	}
+
 	public void addMonitor(String id, List<Integer> keyIds) {
-		addAction(id, keyIds, () -> { /* no action */ });
+		addAction(id, () -> { /* no action */ }, keyIds);
 	}
 
 	/**
