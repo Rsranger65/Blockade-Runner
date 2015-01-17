@@ -1,5 +1,6 @@
 package net.kopeph.ld31.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,8 @@ public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 
 	@Override
 	public List<R> put(L key, List<R> values) {
-		List<R> prevList = fwdMap.put(key, values);
+		//Copy list to guard against read-only lists
+		List<R> prevList = fwdMap.put(key, new ArrayList<>(values));
 
 		for (R value : values) {
 			L prevKey = backMap.put(value, key);
@@ -67,6 +69,8 @@ public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 
 	public R putIndex(L key, int index, R value, R fillValue) {
 		//ensure sized properly
+		if (!fwdMap.containsKey(key))
+			fwdMap.put(key, new ArrayList<>());
 		while (index >= fwdMap.get(key).size())
 			fwdMap.get(key).add(fillValue);
 
