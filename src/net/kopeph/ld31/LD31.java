@@ -77,7 +77,7 @@ public class LD31 extends PApplet {
 		CTL_NAMES.put(CTL_RIGHT  , "Right");
 		CTL_NAMES.put(CTL_RESTART, "Reset");
 		CTL_NAMES.put(CTL_PAUSE  , "Pause");
-		CTL_NAMES.put(CTL_ESCAPE , "Menu"); //TODO: merge pause and main menu controls
+		CTL_NAMES.put(CTL_ESCAPE , "Menu");
 	}
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
@@ -226,7 +226,11 @@ public class LD31 extends PApplet {
 		input.addAction(CTL_ESCAPE, new int[] {Input.K_ESC}, () -> {
 			if (gameState == ST_MENU) {
 				exit();
-			} else {
+			} else if (gameState == ST_RUNNING) {
+				gameState = ST_PAUSE;
+				menuHeight = 1;
+			}
+			else {
 				loop();
 				gameState = ST_MENU;
 			}
