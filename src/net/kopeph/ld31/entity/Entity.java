@@ -80,32 +80,34 @@ public class Entity {
 	}
 
 	/** This only checks and executes the specified move operation or one of its components */
-	private boolean move0(Vector2 offset, boolean tryComponents) {
+	private boolean move0(Vector2 offset, boolean tryBop) {
 		if (checkOffset(offset)) {
 			pos = pos.add(offset); //not having operator overloads is such a drag.
 			return true;
 		}
 
-		if (offset.x != 0 && offset.y != 0) {
-			if (tryComponents) {
-				if (move0(new Vector2(0, offset.y), false)) return true;
-				if (move0(new Vector2(offset.x, 0), false)) return true;
+		//TODO:extract to constant
+		if (tryBop) {
+			if (Math.abs(offset.x) > 0.0001 && Math.abs(offset.y) > 0.0001) {
+				if (move0(new Vector2(0, offset.y), true)) return true;
+				if (move0(new Vector2(offset.x, 0), true)) return true;
+			}
+			else {
+				//if this is in a cardinal direction, try "bopping" around the corner
+				if (Math.abs(offset.x) < 0.0001) { // ~== 0
+					for (int i = 1; i < SIZE * 4; i++) {
+						if (move0(new Vector2( i, offset.y), false)) return true;
+						if (move0(new Vector2(-i, offset.y), false)) return true;
+					}
+				}
+				else { //offset.y ~== 0
+					for (int i = 1; i < SIZE * 4; i++) {
+						if (move0(new Vector2(offset.x,  i), false)) return true;
+						if (move0(new Vector2(offset.x, -i), false)) return true;
+					}
+				}
 			}
 		}
-		//SORRY DON'T WANT TO WORK ON THIS RN
-		//if this is in a cardinal direction, try "bopping" around the corner
-//		else if (offset.x == 0) {
-//			for (int i = 1; i < SIZE * 2; i++) {
-//				if (move0(new Vector2( i, offset.y), false)) return true;
-//				if (move0(new Vector2(-i, offset.y), false)) return true;
-//			}
-//		}
-//		else { //offset.y == 0
-//			for (int i = 1; i < SIZE * 2; i++) {
-//				if (move0(new Vector2(offset.x,  i), false)) return true;
-//				if (move0(new Vector2(offset.x, -i), false)) return true;
-//			}
-//		}
 		return false;
 	}
 
