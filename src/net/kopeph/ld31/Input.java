@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 import net.kopeph.ld31.spi.KeyPredicate;
 import net.kopeph.ld31.util.OneToManyBiMap;
+import net.kopeph.ld31.util.Util;
 import processing.core.PConstants;
 
 /**
@@ -39,6 +41,7 @@ public class Input {
 
 	private Map<String, Interaction> actions = new HashMap<>();
 	private OneToManyBiMap<String, Integer> keyMap = new OneToManyBiMap<>();
+	private Preferences keyMapStorage = Preferences.userNodeForPackage(getClass());
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
 
@@ -85,7 +88,29 @@ public class Input {
 
 	public void addAction(String id, Interaction lambda, List<Integer> keyIds) {
 		actions.put(id, lambda);
-		keyMap.put(id, keyIds);
+		if (!loadKeys(id))
+			keyMap.put(id, keyIds);
+	}
+
+	public void setKey(String id, int index, int keyId) {
+		keyMap.putIndex(id, index, keyId);
+		saveKeys(id);
+	}
+
+
+	private boolean loadKeys(String id) {
+		String property = keyMapStorage.get(id, null);
+		if (property != null) {
+			String[] properties = property.split(","); //TODO: extract to constant
+			for (int i = 0; i < properties.length; i++)
+				keyMap.putIndex(id, i, Integer.parseInt(properties[i]));
+			return true;
+		}
+		return false;
+	}
+
+	private void saveKeys(String id) {
+		keyMapStorage.put(id, Util.join(keyMap.get(id), ","));
 	}
 
 	public void addMonitor(String id, Integer...keyIds) {
@@ -161,10 +186,9 @@ public class Input {
 		//Wait until a key is pressed, and lock onto it
 		postTrigger((keyId) -> {
 			if (getKey(escapeId))
-				//change from ??? to ---
-				keyMap.putIndex(id, index, K_UNBOUND);
-			else
-				keyMap.putIndex(id, index, keyId);
+				keyId = K_UNBOUND;
+
+			setKey(id, index, keyId);
 			//Capture and remove
 			return true;
 		});
