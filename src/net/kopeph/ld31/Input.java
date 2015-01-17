@@ -1,13 +1,18 @@
 package net.kopeph.ld31;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 import net.kopeph.ld31.spi.KeyPredicate;
+import net.kopeph.ld31.util.OneToManyBiMap;
+import net.kopeph.ld31.util.Util;
 import processing.core.PConstants;
 
 /**
@@ -34,8 +39,9 @@ public class Input {
 
 	private Map<Integer, Boolean> keyStates = new HashMap<>();
 
-	private Map<String, KeyAction> actions = new HashMap<>();
-	private Map<Integer, KeyAction> keyMap = new HashMap<>();
+	private Map<String, Interaction> actions = new HashMap<>();
+	private OneToManyBiMap<String, Integer> keyMap = new OneToManyBiMap<>();
+	private Preferences keyMapStorage = Preferences.userNodeForPackage(getClass());
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
 
@@ -71,20 +77,48 @@ public class Input {
 					return;
 				}
 			}
-			if (keyMap.containsKey(keyId))
-				keyMap.get(keyId).lambda.interact();
+			if (keyMap.containsValue(keyId))
+				actions.get(keyMap.getRev(keyId)).interact();
 		}
 	}
 
-	public void addAction(String id, int[] keyIds, Interaction lambda) {
-		KeyAction action = new KeyAction(id, keyIds, lambda);
-		actions.put(id, action);
-		for (int keyId : keyIds)
-			keyMap.put(keyId, action);
+	public void addAction(String id, Interaction lambda, Integer...keyIds) {
+		addAction(id, lambda, Arrays.asList(keyIds));
 	}
 
-	public void addMonitor(String id, int[] keyIds) {
-		addAction(id, keyIds, () -> { /* no action */ });
+	public void addAction(String id, Interaction lambda, List<Integer> keyIds) {
+		actions.put(id, lambda);
+		if (!loadKeys(id))
+			keyMap.put(id, keyIds);
+	}
+
+	public void setKey(String id, int index, int keyId) {
+		keyMap.putIndex(id, index, keyId);
+		saveKeys(id);
+	}
+
+
+	private boolean loadKeys(String id) {
+		String property = keyMapStorage.get(id, null);
+		if (property != null) {
+			String[] properties = property.split(","); //TODO: extract to constant
+			for (int i = 0; i < properties.length; i++)
+				keyMap.putIndex(id, i, Integer.parseInt(properties[i]));
+			return true;
+		}
+		return false;
+	}
+
+	private void saveKeys(String id) {
+		keyMapStorage.put(id, Util.join(keyMap.get(id), ","));
+	}
+
+	public void addMonitor(String id, Integer...keyIds) {
+		addMonitor(id, Arrays.asList(keyIds));
+	}
+
+	public void addMonitor(String id, List<Integer> keyIds) {
+		addAction(id, () -> { /* no action */ }, keyIds);
 	}
 
 	/**
@@ -94,8 +128,8 @@ public class Input {
 		Map<String, List<String>> retMap = new HashMap<>();
 
 		//KeyMap output
-		for (KeyAction action : keyMap.values())
-			retMap.put(action.id, action.keyIdTitles());
+		for (Entry<String, List<Integer>> entry : keyMap.entrySet())
+			retMap.put(entry.getKey(), getKeyTitle(entry.getValue()));
 
 		return retMap;
 	}
@@ -138,7 +172,7 @@ public class Input {
 	}
 
 	public boolean getKey(String id) {
-		for (Integer keyId : actions.get(id).keyIds) {
+		for (Integer keyId : keyMap.get(id)) {
 			if (getKey(keyId))
 				return true;
 		}
@@ -146,47 +180,18 @@ public class Input {
 	}
 
 	public void handleBind(String id, final int index, final String escapeId) {
-		final KeyAction action = actions.get(id);
+		//Set key to ???
+		keyMap.putIndex(id, index, K_BINDING, K_UNBOUND);
 
-		if (action != null) {
-			//Remove the binding from keyMap, then set the keyId in action to ???
-			while (index >= action.keyIds.size())
-				action.keyIds.add(K_UNBOUND); //expand list as needed
+		//Wait until a key is pressed, and lock onto it
+		postTrigger((keyId) -> {
+			if (getKey(escapeId))
+				keyId = K_UNBOUND;
 
-			keyMap.remove(action.keyIds.get(index));
-			action.keyIds.set(index, K_BINDING);
-
-			//Wait until a key is pressed, and lock onto it
-			postTrigger((keyId) -> {
-				if (getKey(escapeId)) {
-					//change from ??? to ---
-					action.keyIds.set(index, K_UNBOUND);
-				}
-				else {
-					//Update internal key array of clobbered mapping if applicable
-					KeyAction clobbered = keyMap.remove(keyId);
-					if (clobbered != null)
-						unlinkMapping(clobbered, keyId);
-
-					//Then add the new value
-					action.keyIds.set(index, keyId);
-					keyMap.put(keyId, action);
-				}
-				//Capture and remove
-				return true;
-			});
-		}
-		else
-			throw new IllegalArgumentException("id=" + id);
-	}
-
-	private static void unlinkMapping(KeyAction action, int keyId) {
-		for (int i = 0; i < action.keyIds.size(); i++) {
-			if (action.keyIds.get(i) == keyId) {
-				action.keyIds.set(i, K_UNBOUND);
-				break;
-			}
-		}
+			setKey(id, index, keyId);
+			//Capture and remove
+			return true;
+		});
 	}
 
 	/**
@@ -195,27 +200,5 @@ public class Input {
 	 */
 	public void postTrigger(KeyPredicate action) {
 		triggers.add(action);
-	}
-
-	private static class KeyAction {
-		public final String id;
-		public final Interaction lambda;
-		public final List<Integer> keyIds = new ArrayList<>();
-
-		public KeyAction(String id, int[] keyIds, Interaction lambda) {
-			this.id = id;
-			this.lambda = lambda;
-			for (int keyId : keyIds)
-				this.keyIds.add(keyId);
-		}
-
-		public List<String> keyIdTitles() {
-			List<String> retList = new ArrayList<>();
-
-			for(int keyId : keyIds)
-				retList.add(getKeyTitle(keyId));
-
-			return retList;
-		}
 	}
 }

@@ -77,7 +77,7 @@ public class LD31 extends PApplet {
 		CTL_NAMES.put(CTL_RIGHT  , "Right");
 		CTL_NAMES.put(CTL_RESTART, "Reset");
 		CTL_NAMES.put(CTL_PAUSE  , "Pause");
-		CTL_NAMES.put(CTL_ESCAPE , "Menu"); //TODO: merge pause and main menu controls
+		CTL_NAMES.put(CTL_ESCAPE , "Menu");
 	}
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
@@ -207,39 +207,41 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		//setup input interaction
-		input.addAction(CTL_RESTART, new int[] {'R', ' ', Input.K_ENTER}, () -> {
+		input.addAction(CTL_RESTART, () -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
 				loop();
 				gameState = ST_RESET;
 			}
-		});
-		input.addAction(CTL_PAUSE, new int[] {'P', Input.K_TAB}, () -> {
+		}, (int)'R', (int)' ', Input.K_ENTER);
+		input.addAction(CTL_PAUSE, () -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
 			} else if (gameState == ST_PAUSE) {
 				gameState = ST_RUNNING;
 			}
-		});
-		input.addAction(CTL_ESCAPE, new int[] {Input.K_ESC}, () -> {
+		}, (int)'P', Input.K_TAB);
+		input.addAction(CTL_ESCAPE, () -> {
 			if (gameState == ST_MENU) {
 				exit();
-			} else {
+			} else if (gameState == ST_RUNNING) {
+				gameState = ST_PAUSE;
+				menuHeight = 1;
+			}
+			else {
 				loop();
 				gameState = ST_MENU;
 			}
-		});
-		input.addMonitor(CTL_UP,	new int[] {'W', '8', Input.K_UP});
-		input.addMonitor(CTL_LEFT,	new int[] {'A', '4', Input.K_LEFT});
-		input.addMonitor(CTL_DOWN,	new int[] {'S', '2', Input.K_DOWN});
-		input.addMonitor(CTL_RIGHT,	new int[] {'D', '6', Input.K_RIGHT});
+		}, Input.K_ESC);
+		input.addMonitor(CTL_UP,	(int)'W', (int)'8', Input.K_UP);
+		input.addMonitor(CTL_LEFT,	(int)'A', (int)'4', Input.K_LEFT);
+		input.addMonitor(CTL_DOWN,	(int)'S', (int)'2', Input.K_DOWN);
+		input.addMonitor(CTL_RIGHT, (int)'D', (int)'6', Input.K_RIGHT);
 
 		gameState = ST_MENU;
 	}
-
-
 
 	public static LD31 getContext() {
 		return context;

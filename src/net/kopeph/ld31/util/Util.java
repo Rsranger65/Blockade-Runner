@@ -2,6 +2,7 @@ package net.kopeph.ld31.util;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Iterator;
 
 import net.kopeph.ld31.LD31;
 import processing.core.PConstants;
@@ -59,5 +60,28 @@ public class Util {
 	                                  double xTest, double yTest) {
 		return xTest > x     && yTest > y &&
 		       xTest < x + w && yTest < y + h;
+	}
+
+	/**
+	 * Missing counterpart for String.split()
+	 *
+	 * @param array
+	 * @param joiner The delimiter to add between each element
+	 * @return The joined string
+	 */
+	public static <T> String join(Iterable<T> array, String joiner) {
+		StringBuilder b = new StringBuilder();
+		Iterator<T> i = array.iterator();
+		boolean first = true;
+
+		while (i.hasNext()) {
+			if (first)
+				first = false;
+			else
+				b.append(joiner);
+			b.append(i.next());
+		}
+
+		return b.toString();
 	}
 }
