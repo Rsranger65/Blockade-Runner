@@ -60,7 +60,7 @@ public class Entity implements Renderable {
 	private boolean validPosition(int x, int y) {
 		for(int i = 0 - SIZE; i < SIZE + 1; i++)
 			for(int j = 0 - SIZE; j < SIZE + 1; j++)
-				if(level.tiles[(y + i)*level.LEVEL_WIDTH + x + j] == Level.FLOOR_NONE)
+				if (!level.validTile(x + j, y + i))
 					return false;
 		return true;
 	}
@@ -136,6 +136,14 @@ public class Entity implements Renderable {
 	public int y() {
 		return (int)Math.round(pos.y);
 	}
+	
+	public int screenX() {
+		return x() - context.renderer.viewX;
+	}
+	
+	public int screenY() {
+		return y() - context.renderer.viewY;
+	}
 
 	public Vector2 pos() {
 		return pos;
@@ -146,53 +154,56 @@ public class Entity implements Renderable {
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		final int xInitial = x() - context.renderer.viewX; //pre-calculating these gives us at least a 30% performance improvement
-		final int yInitial = y() - context.renderer.viewY; //holy shit
+		final int xInitial = screenX(); //pre-calculating these gives us at least a 30% performance improvement
+		final int yInitial = screenY(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 
 		PointPredicate op = (x, y) -> {
-			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
-			if (!context.contains(x, y)) return true;
-			if (array[i] == Level.FLOOR_NONE) return false;
 			//restrict it to a circle
 			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
 			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+			//restrict to the window (avoid out-of-bounds exceptions)
+			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
+			if (!context.contains(x, y)) return true;
+			if (array[i] == Level.FLOOR_NONE) return false;
+			
 			array[i] |= color;
 			return true;
 		};
 
 		//change the bounds of the for loop to stay within the level
 		//this way we don't have to do bounds checking per pixel inside of op.on()
-		int minx = PApplet.max(xInitial - viewDistance + 1, level.minx);
-		int miny = PApplet.max(yInitial - viewDistance + 1, level.miny);
-		int maxx = PApplet.min(xInitial + viewDistance - 1, level.maxx);
-		int maxy = PApplet.min(yInitial + viewDistance - 1, level.maxy);
+		int minx = PApplet.max(xInitial - viewDistance + 1, 0);
+		int miny = PApplet.max(yInitial - viewDistance + 1, 0);
+		int maxx = PApplet.min(xInitial + viewDistance - 1, context.width - 1);
+		int maxy = PApplet.min(yInitial + viewDistance - 1, context.height - 1);
+		
+		PApplet.println(minx + ", " + miny + ", " + maxx + ", " + maxy); //debug
 
+		PApplet.println("tracing rays"); //debug
 		for (int dx = minx; dx <= maxx; ++dx) {
 			Trace.ray(xInitial, yInitial, dx, miny, op);
 			Trace.ray(xInitial, yInitial, dx, maxy, op);
 			//DEBUG
-			//array[miny*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
-			//array[maxy*level.LEVEL_WIDTH + dx] = Entity.COLOR_OBJECTIVE;
+			//array[miny*context.width + dx] = Entity.COLOR_OBJECTIVE;
+			//array[maxy*context.width + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
 		for (int dy = miny + 1; dy < maxy; ++dy) {
 			Trace.ray(xInitial, yInitial, minx, dy, op);
 			Trace.ray(xInitial, yInitial, maxx, dy, op);
 			//DEBUG
-			//array[dy*level.LEVEL_WIDTH + minx] = Entity.COLOR_ENEMY_COM;
-			//array[dy*level.LEVEL_WIDTH + maxx] = Entity.COLOR_ENEMY_COM;
+			//array[dy*context.width + minx] = Entity.COLOR_ENEMY_COM;
+			//array[dy*context.width + maxx] = Entity.COLOR_ENEMY_COM;
 		}
+		PApplet.println("rays traced"); //debug
 	}
 
 	@Override
 	public void render() {
-		int screenX = x() - context.renderer.viewX;
-		int screenY = y() - context.renderer.viewY;
-		
-		Trace.rectangle(screenX - SIZE, screenY - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
-			if (!level.inBounds(x, y)) return false;
-			context.pixels[y*level.LEVEL_WIDTH + x] = color;
+		Trace.rectangle(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
+			if (!context.contains(x, y)) return false;
+			context.pixels[y*context.width + x] = color;
 			return true;
 		});
 	}

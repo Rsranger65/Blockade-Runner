@@ -60,16 +60,22 @@ public class Renderer {
 		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.width, level.player.x() - context.width/2));
 		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.height, level.player.y() - context.height/2));
 		
-		System.arraycopy(level.tiles, 0, lighting, 0, level.tiles.length);
+		PApplet.println("copying array"); //debug
+		//crop the tiles array into the pixels array
+		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
+		for (int y = 0; y < PApplet.min(context.height, level.LEVEL_HEIGHT); ++y) {
+			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.width, PApplet.min(context.width, level.LEVEL_WIDTH));
+		}
+		
+		PApplet.println("running lighting threads"); //debu
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
-			//this is extremely simple because the lighting is an embarrassingly parallel operation
-			//Pray to the java gods that this doesn't have actual data races
-			//lol it really might tho
-			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+			//renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+			e.rayTrace(lighting, e.viewDistance, e.color);
 		}
-
-		renderingPool.forceSync();
+		
+		//PApplet.println("waiting for thread sync");
+		//renderingPool.forceSync();
 	}
 	
 	public void applyTexture(int[] pixels) {
@@ -112,9 +118,5 @@ public class Renderer {
 		level.player.render();
 		for (Enemy e : level.enemies)
 			e.render();
-	}
-	
-	public boolean inWindow(int x, int y) {
-		return (x >= 0 && y >= 0 && x < context.width && y < context.height);
 	}
 }

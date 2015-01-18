@@ -38,7 +38,7 @@ public class Enemy extends Entity {
 		//establish whether or not we have line of sight
 		referrer = this; //guilty until proven innocent
 		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
-			if (level.tiles[y*context.width + x] != Level.FLOOR_NONE)
+			if (level.tiles[y*level.LEVEL_WIDTH + x] != Level.FLOOR_NONE)
 				return true;
 			referrer = ref;
 			return false;
@@ -86,9 +86,9 @@ public class Enemy extends Entity {
 		};
 
 		if (referrer == this) {
-			Trace.line(x(), y(), level.player.x(), level.player.y(), op);
+			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), op);
 		} else if (referrer != null) {
-			Trace.line(x(), y(), referrer.x(), referrer.y(), op);
+			Trace.line(screenX(), screenY(), referrer.screenX(), referrer.screenY(), op);
 			//Util.traceCircle(x(), y(), (int)PApplet.dist(x(), y(), referrer.x(), referrer.y()), op);
 		}
 

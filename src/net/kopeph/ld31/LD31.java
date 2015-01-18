@@ -102,7 +102,7 @@ public class LD31 extends PApplet {
 		size(800, 600);
 		frameRate(60);
 		noStroke();
-		frame.setResizable(true);
+		frame.setResizable(false);
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
 
@@ -227,12 +227,6 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void draw() {
-		//detect and react to window resizing
-		//TODO: fix so that resizing while paused doesn't kick you out of the pause menu
-		if (gameState == ST_RUNNING || gameState == ST_PAUSE)
-			if (level.LEVEL_WIDTH != width || level.LEVEL_HEIGHT != height)
-				gameState = ST_RESET_HARD;
-
 		switch (gameState) {
 			case ST_RESET_HARD: resetHard();    break;
 			case ST_RESET:      reset();        break;
@@ -252,12 +246,15 @@ public class LD31 extends PApplet {
 	private void resetHard() {
 		reset();
 		loadPixels(); //must be done whenever the size of pixels changes
+		Arrays.fill(pixels, 0);
 		renderer.cropTextures(width, height);
 	}
 
 	private void reset() {
 		Util.forceClose(level); //prevent resource leak from earlier ThreadPool (if any)
-		level = new Level(width, height); //level verifies itself so we don't do that here anymore
+		println("making level"); //debug
+		level = new Level(1920, 1080); //level verifies itself so we don't do that here anymore
+		println("level made"); //debug
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}
@@ -276,13 +273,15 @@ public class LD31 extends PApplet {
 		}
 
 		//calculate lighting
+		println("doing lighting"); //debug
 		profiler.swap(Profiler.PLAYER_MOVE, Profiler.LIGHTING);
 		renderer.calculateLighting(pixels, level);
+		println("lighting done"); //debug
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
 		//check which enemies should be following the player
-		if (pixels[level.player.y()*level.LEVEL_WIDTH + level.player.x()] == Level.FLOOR_WHITE)
+		if (pixels[level.player.screenY()*width + level.player.screenX()] == Level.FLOOR_WHITE)
 			for (Enemy e : level.enemies)
 				e.checkPursuing(null); //pass in null to indicate the call isn't a referral from another enemy
 
@@ -306,8 +305,8 @@ public class LD31 extends PApplet {
 		renderer.renderEntities(level);
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
-		Trace.circle(level.objective.x(), level.objective.y(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
-			if (level.inBounds(x, y))
+		Trace.circle(level.objective.screenX(), level.objective.screenY(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
+			if (contains(x, y) && level.inBounds(x, y))
 				pixels[y*width + x] = Entity.COLOR_OBJECTIVE;
 			return true;
 		});
@@ -322,13 +321,14 @@ public class LD31 extends PApplet {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
 			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
-			Trace.rectangle(level.player.x() - Entity.SIZE, level.player.y() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
+			Trace.rectangle(level.player.screenX() - Entity.SIZE, level.player.screenY() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
 				set(x, y, Entity.COLOR_PLAYER);
 				return true;
 			});
 			//draw a circle closing in on the player
-			Trace.circle(level.player.x(), level.player.y(), max(0, -fadePhase - 255), (x, y) -> {
-				set(x, y, Entity.COLOR_PLAYER);
+			Trace.circle(level.player.screenX(), level.player.screenY(), max(0, -fadePhase - 255), (x, y) -> {
+				if (level.inBounds(x, y))
+					set(x, y, Entity.COLOR_PLAYER);
 				return true;
 			});
 		}
