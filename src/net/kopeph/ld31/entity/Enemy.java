@@ -1,6 +1,7 @@
 package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.Level;
+import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Vector2;
@@ -74,7 +75,7 @@ public class Enemy extends Entity {
 	}
 
 	public void draw() {
-		draw(color);
+		super.draw(color);
 
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
@@ -90,5 +91,10 @@ public class Enemy extends Entity {
 		}
 
 		referrer = null; //reset required for next call to checkPursuing() to work
+	}
+	
+	@Override
+	public void render() {
+		draw(); //XXX: placeholder
 	}
 }

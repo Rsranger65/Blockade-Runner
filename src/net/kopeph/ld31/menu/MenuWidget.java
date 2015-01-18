@@ -1,12 +1,13 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
+import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 /** implemented by all visual elements */
-public abstract class MenuWidget {
+public abstract class MenuWidget implements Renderable {
 	public static final int
 		ANCHOR_CENTER = 0,                    //Move origin by delta/2
 		ANCHOR_LEFT   = 1, ANCHOR_TOP    = 1, //Move nothing

@@ -2,12 +2,13 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.graphics.Renderable;
 import processing.core.PApplet;
 
 /**
  * @author alexg
  */
-public class EndScreen {
+public class EndScreen implements Renderable {
 	private static final int SWEEP_SPEED = 8;
 	private static final int DARKEN_SPEED = 255;
 

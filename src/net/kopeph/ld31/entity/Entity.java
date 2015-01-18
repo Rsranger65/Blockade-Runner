@@ -3,15 +3,15 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
+import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
-public class Entity {
+public class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
-	//if you modify a constant at runtime again I'll fucking kill you
 	private static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
 
 	public static final int
@@ -43,6 +43,7 @@ public class Entity {
 	protected double speedMultiplier = 1.0;
 
 	private Vector2 pos = new Vector2();
+	private int color = COLOR_PLAYER;
 
 	public Entity(Level level) {
 		this.context = LD31.getContext();
@@ -188,5 +189,10 @@ public class Entity {
 			context.pixels[y*level.LEVEL_WIDTH + x] = color;
 			return true;
 		});
+	}
+	
+	@Override
+	public void render() {
+		draw(this.color); //XXX: placeholder
 	}
 }

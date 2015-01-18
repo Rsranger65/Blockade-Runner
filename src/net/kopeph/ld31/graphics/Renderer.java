@@ -1,11 +1,14 @@
 package net.kopeph.ld31.graphics;
 
-import processing.core.PApplet;
-import processing.core.PImage;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.util.ThreadPool;
 import net.kopeph.ld31.util.Util;
+import processing.core.PApplet;
+import processing.core.PImage;
 
 public class Renderer {
 	public PImage textureRed    , rawTextureRed;
