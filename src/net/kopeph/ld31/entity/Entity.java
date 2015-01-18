@@ -38,7 +38,7 @@ public class Entity implements Renderable {
 	};
 
 
-	protected final PApplet context;
+	protected final LD31 context;
 	protected final Level level;
 	protected double speedMultiplier = 1.0;
 
@@ -146,16 +146,17 @@ public class Entity implements Renderable {
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		final int xInitial = x(); //pre-calculating these gives us at least a 30% performance improvement
-		final int yInitial = y(); //holy shit
+		final int xInitial = x() - context.renderer.viewX; //pre-calculating these gives us at least a 30% performance improvement
+		final int yInitial = y() - context.renderer.viewY; //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 
 		PointPredicate op = (x, y) -> {
-			int i = y*level.LEVEL_WIDTH + x; //we use this value twice now, so it makes sense to calculate and store
+			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
+			if (!context.contains(x, y)) return true;
 			if (array[i] == Level.FLOOR_NONE) return false;
 			//restrict it to a circle
-			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid float/int conversion with PApplet.sq()
-			if (dx*dx + dy*dy > vdsq) return false; //distance formula
+			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
+			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
 			array[i] |= color;
 			return true;
 		};
@@ -186,7 +187,10 @@ public class Entity implements Renderable {
 
 	@Override
 	public void render() {
-		Trace.rectangle(x() - SIZE, y() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
+		int screenX = x() - context.renderer.viewX;
+		int screenY = y() - context.renderer.viewY;
+		
+		Trace.rectangle(screenX - SIZE, screenY - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
 			if (!level.inBounds(x, y)) return false;
 			context.pixels[y*level.LEVEL_WIDTH + x] = color;
 			return true;

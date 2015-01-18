@@ -21,7 +21,9 @@ public class Renderer {
 	public PImage textureGrey   , rawTextureGrey;
 	public PImage textureWhite  , rawTextureWhite;
 	public Font font;
-
+	
+	public int viewX = 0, viewY = 0;
+	
 	private final PApplet context;
 	private final ThreadPool renderingPool = new ThreadPool();
 	
@@ -55,6 +57,9 @@ public class Renderer {
 	}
 	
 	public void calculateLighting(int[] lighting, Level level) {
+		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.width, level.player.x() - context.width/2));
+		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.height, level.player.y() - context.height/2));
+		
 		System.arraycopy(level.tiles, 0, lighting, 0, level.tiles.length);
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
@@ -107,5 +112,9 @@ public class Renderer {
 		level.player.render();
 		for (Enemy e : level.enemies)
 			e.render();
+	}
+	
+	public boolean inWindow(int x, int y) {
+		return (x >= 0 && y >= 0 && x < context.width && y < context.height);
 	}
 }

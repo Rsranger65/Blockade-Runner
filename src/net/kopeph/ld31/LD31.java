@@ -92,7 +92,7 @@ public class LD31 extends PApplet {
 
 	public boolean interacting = false; //mouse interaction (used by MenuButton)
 	
-	private Renderer renderer;
+	public Renderer renderer;
 
 	@Override
 	public void setup() {
