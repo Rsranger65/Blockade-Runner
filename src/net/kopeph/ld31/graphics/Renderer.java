@@ -1,10 +1,8 @@
 package net.kopeph.ld31.graphics;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
+import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.util.ThreadPool;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
@@ -23,7 +21,7 @@ public class Renderer {
 
 	private final PApplet context;
 	
-	private final ThreadPool texturingPool = new ThreadPool();
+	private final ThreadPool renderingPool = new ThreadPool();
 	
 	public Renderer() {
 		context = LD31.getContext();
@@ -52,14 +50,27 @@ public class Renderer {
 		textureWhite   = Util.crop(rawTextureWhite  , 0, 0, width, height);
 	}
 	
-	public void applyTexture(int[] pixels) {
-		float taskSize = pixels.length/texturingPool.poolSize;
-		for (int i = 0; i < texturingPool.poolSize; ++i) {
-			final int j = i;
-			texturingPool.post(() -> { applyTextureImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+	public void calculateLighting(int[] lighting, Level level) {
+		System.arraycopy(level.tiles, 0, lighting, 0, level.tiles.length);
+		for (final Enemy e : level.enemies) {
+			//create a new thread to run the lighting process of each enemy
+			//this is extremely simple because the lighting is an embarrassingly parallel operation
+			//Pray to the java gods that this doesn't have actual data races
+			//lol it really might tho
+			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
 
-		texturingPool.forceSync();
+		renderingPool.forceSync();
+	}
+	
+	public void applyTexture(int[] pixels) {
+		float taskSize = pixels.length/renderingPool.poolSize;
+		for (int i = 0; i < renderingPool.poolSize; ++i) {
+			final int j = i;
+			renderingPool.post(() -> { applyTextureImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+		}
+
+		renderingPool.forceSync();
 	}
 	
 	private void applyTextureImpl(final int[] pixels, int iBegin, int iEnd) {

@@ -277,7 +277,7 @@ public class LD31 extends PApplet {
 
 		//calculate lighting
 		profiler.swap(Profiler.PLAYER_MOVE, Profiler.LIGHTING);
-		level.calculateLighting(pixels);
+		renderer.calculateLighting(pixels, level);
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);

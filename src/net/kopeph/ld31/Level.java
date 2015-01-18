@@ -1,8 +1,6 @@
 package net.kopeph.ld31;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
@@ -246,56 +244,6 @@ public class Level implements AutoCloseable {
 	//helper function for constructor/objective placement
 	private boolean goodObjectivePlacement() {
 		return (PApplet.dist(player.x(), player.y(), objective.x(), objective.y()) > 200); //the magic numbers are real
-	}
-
-	public void calculateLighting(final int[] lighting) {
-		System.arraycopy(tiles, 0, lighting, 0, tiles.length);
-		
-		/*
-		List<Enemy> ordered = new ArrayList<>();
-		ordered.add(enemies[0]);
-		
-		//for as many enemies as we need to order
-		while (ordered.size() != enemies.length) {
-			//find the farthest enemy from the ones currently running
-			float farthestDistance = -1; //arbitrarily small number
-			Enemy farthestEnemy = null;
-			//check each enemy to find the farthest
-			for (Enemy e : enemies) {
-				//skip over ones we've already added
-				if (!ordered.contains(e)) {
-					//find how far away we are from running enemies
-					float minDistance = Float.MAX_VALUE; //arbitrarily large number
-					for (int i = PApplet.max(0, ordered.size() - lightingThreadPool.poolSize); i < ordered.size(); ++i) {
-						//look at each running enemy and find the distance of the closest one
-						float currentDistance = PApplet.dist(e.x(), e.y(), ordered.get(i).x(), ordered.get(i).y());
-						if (currentDistance < minDistance) {
-							minDistance = currentDistance;
-						}
-					}
-					
-					//replace farthestEnemy if we've found one that's farther
-					if (minDistance > farthestDistance) {
-						farthestDistance = minDistance;
-						farthestEnemy = e;
-					}
-				}
-			}
-			
-			//finally, add the farthest enemy now that we've found it
-			ordered.add(farthestEnemy);
-		}
-		*/
-
-		for (final Enemy e : enemies) {
-			//create a new thread to run the lighting process of each enemy
-			//this is extremely simple because the lighting is an embarrassingly parallel operation
-			//Pray to the java gods that this doesn't have actual data races
-			//lol it really might tho
-			lightingThreadPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
-		}
-
-		lightingThreadPool.forceSync();
 	}
 
 	//returns true if an only if the coordinates are inside the level and not inside a wall
