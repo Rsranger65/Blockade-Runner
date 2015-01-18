@@ -11,18 +11,21 @@ public class Enemy extends Entity {
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	public final int comDistance = 100; //distance that enemy coms can reach in pixels (doesn't need line of sight)
-	public final int color;
 	private float direction; //radians
 
 	//for communication
 	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
 	public Enemy(Level level) {
-		super(level);
-
+		super(level, Entity.COLOR_ENEMY_COM);
+		
 		//give the enemy a random color
 		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
 		color = possibleColors[(int)(context.random(possibleColors.length))];
+	}
+	
+	public Enemy(Level level, int color) {
+		super(level, color);
 	}
 
 	/**
@@ -73,8 +76,8 @@ public class Enemy extends Entity {
 			direction = context.random(8);
 	}
 
-	public void draw() {
-		super.draw(color);
+	public void render() {
+		super.render();
 
 		PointPredicate op = (x, y) -> {
 			if (level.inBounds(x, y))
@@ -90,10 +93,5 @@ public class Enemy extends Entity {
 		}
 
 		referrer = null; //reset required for next call to checkPursuing() to work
-	}
-	
-	@Override
-	public void render() {
-		draw(); //XXX: placeholder
 	}
 }

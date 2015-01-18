@@ -1,5 +1,8 @@
 package net.kopeph.ld31.graphics;
 
+import java.util.List;
+import java.util.Map;
+
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.entity.Enemy;
@@ -20,8 +23,9 @@ public class Renderer {
 	public Font font;
 
 	private final PApplet context;
-	
 	private final ThreadPool renderingPool = new ThreadPool();
+	
+	private Map<Integer, List<Renderable>> states;
 	
 	public Renderer() {
 		context = LD31.getContext();
@@ -87,5 +91,21 @@ public class Renderer {
 				case Level.FLOOR_WHITE:   pixels[i] = textureWhite.pixels[i];   break;
 			}
 		}
+	}
+	
+	public void addContext(Integer state, List<Renderable> targets) {
+		states.put(state, targets);
+	}
+	
+	public void renderContext(Integer state) {
+		for (Renderable r : states.get(state))
+			r.render();
+	}
+	
+	public void renderEntities(Level level) {
+		level.objective.render();
+		level.player.render();
+		for (Enemy e : level.enemies)
+			e.render();
 	}
 }

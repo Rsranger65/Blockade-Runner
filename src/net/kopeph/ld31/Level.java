@@ -173,14 +173,14 @@ public class Level implements AutoCloseable {
 
 		//add player
 		do {
-			player = new Entity(this);
+			player = new Entity(this, Entity.COLOR_PLAYER);
 			++placementFailCount;
 		} while (!goodPlayerPlacement() && placementFailCount < 100);
 
 		//add objective
 		placementFailCount = 0;
 		do {
-			objective = new Entity(this);
+			objective = new Entity(this, Entity.COLOR_OBJECTIVE);
 			++placementFailCount;
 		} while (!goodObjectivePlacement() && placementFailCount < 100);
 	}
@@ -211,7 +211,7 @@ public class Level implements AutoCloseable {
 		}
 
 		//iterate backwards looking for unfilled tiles because it's slightly faster
-		for (int i = tiles.length - 1; i-- != 0;)
+		for (int i = tiles.length - 1; i --> 0;)
 			if (tiles[i] == FLOOR_BLACK)
 				return false;
 

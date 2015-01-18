@@ -281,7 +281,6 @@ public class LD31 extends PApplet {
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
-
 		//check which enemies should be following the player
 		if (pixels[level.player.y()*level.LEVEL_WIDTH + level.player.x()] == Level.FLOOR_WHITE)
 			for (Enemy e : level.enemies)
@@ -304,10 +303,7 @@ public class LD31 extends PApplet {
 
 		//draw all entities
 		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
-		level.objective.draw(Entity.COLOR_OBJECTIVE);
-		level.player.draw(Entity.COLOR_PLAYER);
-		for (Enemy e : level.enemies)
-			e.draw();
+		renderer.renderEntities(level);
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
 		Trace.circle(level.objective.x(), level.objective.y(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {

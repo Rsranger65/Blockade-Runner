@@ -43,13 +43,14 @@ public class Entity implements Renderable {
 	protected double speedMultiplier = 1.0;
 
 	private Vector2 pos = new Vector2();
-	private int color = COLOR_PLAYER;
+	public int color;
 
-	public Entity(Level level) {
+	public Entity(Level level, int color) {
 		this.context = LD31.getContext();
 		this.level = level;
+		this.color = color;
 
-		//place the player in a valid spot
+		//place the entity in a valid spot
 		do {
 			pos = new Vector2(context.random(SIZE, level.LEVEL_WIDTH - SIZE),
 			                  context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
@@ -183,16 +184,12 @@ public class Entity implements Renderable {
 		}
 	}
 
-	public void draw(int color) {
+	@Override
+	public void render() {
 		Trace.rectangle(x() - SIZE, y() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
 			if (!level.inBounds(x, y)) return false;
 			context.pixels[y*level.LEVEL_WIDTH + x] = color;
 			return true;
 		});
-	}
-	
-	@Override
-	public void render() {
-		draw(this.color); //XXX: placeholder
 	}
 }
