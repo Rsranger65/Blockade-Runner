@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
 
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
-import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
@@ -20,10 +20,8 @@ import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.menu.MenuWidget;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
-import net.kopeph.ld31.util.ThreadPool;
 import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
-import processing.core.PImage;
 
 /** Everything inside here works like it does in processing */
 public class LD31 extends PApplet {
@@ -84,7 +82,6 @@ public class LD31 extends PApplet {
 	private static TextBox buildVersion, footer;
 
 	private final Profiler profiler = new Profiler();
-	private final ThreadPool texturingPool = new ThreadPool();
 
 	private Input input = new Input();
 	private Level level;
@@ -94,20 +91,13 @@ public class LD31 extends PApplet {
 	private int fadePhase;
 
 	public boolean interacting = false; //mouse interaction (used by MenuButton)
-
-	private PImage textureRed    , rawTextureRed;
-	private PImage textureGreen  , rawTextureGreen;
-	private PImage textureBlue   , rawTextureBlue;
-	private PImage textureCyan   , rawTextureCyan;
-	private PImage textureMagenta, rawTextureMagenta;
-	private PImage textureYellow , rawTextureYellow;
-	private PImage textureGrey   , rawTextureGrey;
-	private PImage textureWhite  , rawTextureWhite;
-	private Font fontWhite;
+	
+	private Renderer renderer;
 
 	@Override
 	public void setup() {
 		context = this;
+		renderer = new Renderer();
 
 		size(800, 600);
 		frameRate(60);
@@ -116,51 +106,39 @@ public class LD31 extends PApplet {
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
 
-		//load raw textures
-		rawTextureRed     = loadImage("res/red-background.jpg"    ); //$NON-NLS-1$
-		rawTextureGreen   = loadImage("res/green-background.jpg"  ); //$NON-NLS-1$
-		rawTextureBlue    = loadImage("res/blue-background.jpg"   ); //$NON-NLS-1$
-		rawTextureCyan    = loadImage("res/cyan-background.jpg"   ); //$NON-NLS-1$
-		rawTextureMagenta = loadImage("res/magenta-background.jpg"); //$NON-NLS-1$
-		rawTextureYellow  = loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
-		rawTextureGrey    = loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
-		rawTextureWhite   = loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
-
-		fontWhite = new Font("res/font-16-white.png"); //$NON-NLS-1$
-
-		buildVersion = new TextBox(fontWhite, 0, 4, width, 8, buildVersion());
+		buildVersion = new TextBox(renderer.font, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
-		footer = new TextBox(fontWhite, 4, height - 12, width, 8, MSG_FOOTER);
+		footer = new TextBox(renderer.font, 4, height - 12, width, 8, MSG_FOOTER);
 		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 
 		//setup end screens
-		win = new EndScreen(fontWhite, MSG_WIN, MSG_FOOTER_END, color(0, 120, 0));
-		die = new EndScreen(fontWhite, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
+		win = new EndScreen(renderer.font, MSG_WIN, MSG_FOOTER_END, color(0, 120, 0));
+		die = new EndScreen(renderer.font, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
 
 		//setup main menu
 		mainMenu = new Menu();
-		mainMenu.add(new TextBox(fontWhite,  "Blockade Runner", 0, -175));
-		mainMenu.add(new MenuButton(fontWhite, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
-		mainMenu.add(new MenuButton(fontWhite, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
-		mainMenu.add(new MenuButton(fontWhite, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
-		mainMenu.add(new MenuButton(fontWhite, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
+		mainMenu.add(new TextBox(renderer.font,  "Blockade Runner", 0, -175));
+		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
+		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
+		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
+		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
 
 		//setup settings menu
 		settingsMenu = new Menu();
-		settingsMenu.add(new TextBox(fontWhite, "Settings Menu"               , 0, -175));
+		settingsMenu.add(new TextBox(renderer.font, "Settings Menu"               , 0, -175));
 
 		TextBox[][] widgets = new TextBox[CTL_NAMES.size() + 1][CTL_SLOTS + 1]; //[y][x]
 		//seed the (unused) top left corner of the table
-		widgets[0][0] = new TextBox(fontWhite, "",
+		widgets[0][0] = new TextBox(renderer.font, "",
 									-30*widgets[0].length,
 									-20*widgets.length + 10);
 
 		//TODO: move relative calculation based layout to TextBox ctor
 		//fill in the first row with slot numbers
 		for (int col = 1; col < widgets[0].length; ++col) {
-			widgets[0][col] = new TextBox(fontWhite, String.valueOf(col),
+			widgets[0][col] = new TextBox(renderer.font, String.valueOf(col),
 										  widgets[0][col - 1].xPos + 60,
 										  widgets[0][0].yPos);
 			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
@@ -169,7 +147,7 @@ public class LD31 extends PApplet {
 		//Fill each row with key title, then a set of buttons for each slot
 		int row = 1;
 		for (final String id : CTL_IDS) {
-			widgets[row][0] = new TextBox(fontWhite, CTL_NAMES.get(id),
+			widgets[row][0] = new TextBox(renderer.font, CTL_NAMES.get(id),
 										  widgets[0][0].xPos,
 										  widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
@@ -177,7 +155,7 @@ public class LD31 extends PApplet {
 			for (int col = 1; col < widgets[row].length; ++col) {
 				final int r = row, c = col; //needed for the behavior to work
 				//Don't bother with the displayed until draw time
-				widgets[r][c] = new MenuButton(fontWhite, "",
+				widgets[r][c] = new MenuButton(renderer.font, "",
 											   widgets[0][c].xPos,
 											   widgets[r][0].yPos,
 											   50, 20,
@@ -190,21 +168,21 @@ public class LD31 extends PApplet {
 			row++;
 		}
 
-		settingsMenu.add(new MenuButton(fontWhite, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
-		dummyCampaignMenu.add(new TextBox(fontWhite, "Campaign Mode", 0, -175));
-		dummyCampaignMenu.add(new MenuButton(fontWhite, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
-		dummyCampaignMenu.add(new TextBox(fontWhite, "This game mode hasn't been implemented yet :(", 0,  150));
+		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode hasn't been implemented yet :(", 0,  150));
 
 		//setup pause menu
 		pauseMenu = new Menu(); //Dynamic size. see drawPause();
-		pauseMenu.add(new TextBox(fontWhite, "Game Paused", 0, -200));
-		pauseMenu.add(new MenuButton(fontWhite, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(fontWhite, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
-		pauseMenu.add(new MenuButton(fontWhite, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(fontWhite, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
+		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
+		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
+		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
 
 		//setup input interaction
 		input.addAction(CTL_RESTART, () -> {
@@ -274,16 +252,7 @@ public class LD31 extends PApplet {
 	private void resetHard() {
 		reset();
 		loadPixels(); //must be done whenever the size of pixels changes
-
-		//crop textures
-		textureRed     = Util.crop(rawTextureRed    , 0, 0, width, height);
-		textureGreen   = Util.crop(rawTextureGreen  , 0, 0, width, height);
-		textureBlue    = Util.crop(rawTextureBlue   , 0, 0, width, height);
-		textureCyan    = Util.crop(rawTextureCyan   , 0, 0, width, height);
-		textureMagenta = Util.crop(rawTextureMagenta, 0, 0, width, height);
-		textureYellow  = Util.crop(rawTextureYellow , 0, 0, width, height);
-		textureGrey    = Util.crop(rawTextureGrey   , 0, 0, width, height);
-		textureWhite   = Util.crop(rawTextureWhite  , 0, 0, width, height);
+		renderer.cropTextures(width, height);
 	}
 
 	private void reset() {
@@ -331,14 +300,7 @@ public class LD31 extends PApplet {
 
 		//paint the image with the proper textures
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
-
-		float taskSize = pixels.length/texturingPool.poolSize;
-		for (int i = 0; i < texturingPool.poolSize; ++i) {
-			final int j = i;
-			texturingPool.post(() -> { applyTexture(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
-		}
-
-		texturingPool.forceSync();
+		renderer.applyTexture(pixels);
 
 		//draw all entities
 		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
@@ -381,22 +343,6 @@ public class LD31 extends PApplet {
 		profiler.report(this);
 	}
 
-	private void applyTexture(final int[] image, int iBegin, int iEnd) {
-		for (int i = iBegin; i < iEnd; ++i) {
-			switch (pixels[i]) {
-				case Level.FLOOR_NONE: break; //I don't know if this helps speed or not
-				case Level.FLOOR_RED:     image[i] = textureRed.pixels[i];     break;
-				case Level.FLOOR_GREEN:   image[i] = textureGreen.pixels[i];   break;
-				case Level.FLOOR_BLUE:    image[i] = textureBlue.pixels[i];    break;
-				case Level.FLOOR_CYAN:    image[i] = textureCyan.pixels[i];    break;
-				case Level.FLOOR_MAGENTA: image[i] = textureMagenta.pixels[i]; break;
-				case Level.FLOOR_YELLOW:  image[i] = textureYellow.pixels[i];  break;
-				case Level.FLOOR_BLACK:   image[i] = textureGrey.pixels[i];    break;
-				case Level.FLOOR_WHITE:   image[i] = textureWhite.pixels[i];   break;
-			}
-		}
-	}
-
 	private void drawWin() {
 		win.render();
 	}
@@ -427,12 +373,12 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		image(rawTextureRed, 0, 0); //TODO: placeholder background
+		image(renderer.rawTextureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		image(rawTextureBlue, 0, 0); //TODO: placeholder background
+		image(renderer.rawTextureBlue, 0, 0); //TODO: placeholder background
 		syncKeyMaps();
 		settingsMenu.render();
 	}
@@ -461,7 +407,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawCampaign() {
-		image(rawTextureGreen, 0, 0); //TODO: placeholder background
+		image(renderer.rawTextureGreen, 0, 0); //TODO: placeholder background
 		dummyCampaignMenu.render();
 	}
 
