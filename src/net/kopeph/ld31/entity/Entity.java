@@ -154,14 +154,28 @@ public class Entity implements Renderable {
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		final int xInitial = screenX(); //pre-calculating these gives us at least a 30% performance improvement
+		final int xInitial = screenX(); //pre-calculating these gives us at least a huge performance improvement
 		final int yInitial = screenY(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
-
-		PointPredicate op = (x, y) -> {
+		
+		PointPredicate fast = (x, y) -> {
 			//restrict it to a circle
 			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
 			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+			
+			//restrict to the window (avoid out-of-bounds exceptions)
+			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
+			if (array[i] == Level.FLOOR_NONE) return false;
+			
+			array[i] |= color;
+			return true;
+		};
+
+		PointPredicate safe = (x, y) -> {
+			//restrict it to a circle
+			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
+			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+			
 			//restrict to the window (avoid out-of-bounds exceptions)
 			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
 			if (!context.contains(x, y)) return true;
@@ -179,16 +193,20 @@ public class Entity implements Renderable {
 		int maxy = PApplet.min(yInitial + viewDistance - 1, context.height - 1);
 		
 		for (int dx = minx; dx <= maxx; ++dx) {
-			Trace.ray(xInitial, yInitial, dx, miny, op);
-			Trace.ray(xInitial, yInitial, dx, maxy, op);
+			if (miny <= yInitial)
+				Trace.ray(xInitial, yInitial, dx, miny, safe);
+			if (maxy >= yInitial)
+				Trace.ray(xInitial, yInitial, dx, maxy, safe);
 			//DEBUG
 			//array[miny*context.width + dx] = Entity.COLOR_OBJECTIVE;
 			//array[maxy*context.width + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
 		for (int dy = miny + 1; dy < maxy; ++dy) {
-			Trace.ray(xInitial, yInitial, minx, dy, op);
-			Trace.ray(xInitial, yInitial, maxx, dy, op);
+			if (minx <= xInitial)
+				Trace.ray(xInitial, yInitial, minx, dy, safe);
+			if (maxx >= xInitial)
+				Trace.ray(xInitial, yInitial, maxx, dy, safe);
 			//DEBUG
 			//array[dy*context.width + minx] = Entity.COLOR_ENEMY_COM;
 			//array[dy*context.width + maxx] = Entity.COLOR_ENEMY_COM;

@@ -68,7 +68,10 @@ public class Renderer {
 		
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
-			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.width + e.viewDistance - 2 &&
+				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.height + e.viewDistance - 2) {
+				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+			}
 		}
 		
 		renderingPool.forceSync();

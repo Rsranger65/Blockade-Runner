@@ -99,7 +99,7 @@ public class LD31 extends PApplet {
 		context = this;
 		renderer = new Renderer();
 
-		size(800, 600);
+		size(1280, 720);
 		frameRate(60);
 		noStroke();
 		frame.setResizable(false);
@@ -252,9 +252,7 @@ public class LD31 extends PApplet {
 
 	private void reset() {
 		Util.forceClose(level); //prevent resource leak from earlier ThreadPool (if any)
-		println("making level"); //debug
 		level = new Level(1920, 1080); //level verifies itself so we don't do that here anymore
-		println("level made"); //debug
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}
