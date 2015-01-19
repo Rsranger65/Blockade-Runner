@@ -164,7 +164,7 @@ public class Entity implements Renderable {
 			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
 			
 			//restrict to the window (avoid out-of-bounds exceptions)
-			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
+			int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
 			if (array[i] == Level.FLOOR_NONE) return false;
 			
 			array[i] |= color;
@@ -177,7 +177,7 @@ public class Entity implements Renderable {
 			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
 			
 			//restrict to the window (avoid out-of-bounds exceptions)
-			int i = y*context.width + x; //we use this value twice now, so it makes sense to calculate and store
+			int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
 			if (!context.contains(x, y)) return true;
 			if (array[i] == Level.FLOOR_NONE) return false;
 			
@@ -189,8 +189,8 @@ public class Entity implements Renderable {
 		//this way we don't have to do bounds checking per pixel inside of op.on()
 		int minx = PApplet.max(xInitial - viewDistance + 1, 0);
 		int miny = PApplet.max(yInitial - viewDistance + 1, 0);
-		int maxx = PApplet.min(xInitial + viewDistance - 1, context.width - 1);
-		int maxy = PApplet.min(yInitial + viewDistance - 1, context.height - 1);
+		int maxx = PApplet.min(xInitial + viewDistance - 1, context.lastWidth - 1);
+		int maxy = PApplet.min(yInitial + viewDistance - 1, context.lastHeight - 1);
 		
 		for (int dx = minx; dx <= maxx; ++dx) {
 			if (miny <= yInitial)
@@ -217,7 +217,7 @@ public class Entity implements Renderable {
 	public void render() {
 		Trace.rectangle(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
 			if (!context.contains(x, y)) return false;
-			context.pixels[y*context.width + x] = color;
+			context.pixels[y*context.lastWidth + x] = color;
 			return true;
 		});
 	}

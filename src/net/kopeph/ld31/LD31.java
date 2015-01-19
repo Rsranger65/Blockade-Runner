@@ -99,10 +99,10 @@ public class LD31 extends PApplet {
 		context = this;
 		renderer = new Renderer();
 
-		size(1280, 720);
+		size(800, 600);
 		frameRate(60);
 		noStroke();
-		frame.setResizable(false);
+		frame.setResizable(true);
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
 
@@ -224,30 +224,42 @@ public class LD31 extends PApplet {
 	public static LD31 getContext() {
 		return context;
 	}
+	
+	@Override
+	public boolean contains(int x, int y) {
+		return (x >= 0 && y >= 0 && x < lastWidth && y < lastHeight);
+	}
 
+	public int lastWidth, lastHeight;
+	
 	@Override
 	public void draw() {
+		if (gameState == ST_RUNNING || gameState == ST_PAUSE)
+			if (width != lastWidth || height != lastHeight)
+				resize();
+		
 		switch (gameState) {
-			case ST_RESET_HARD: resetHard();    break;
-			case ST_RESET:      reset();        break;
-			case ST_RUNNING:    drawRunning();  break;
-			case ST_WIN:        drawWin();      break;
-			case ST_DIE:        drawDie();      break;
-			case ST_PAUSE:      drawPause();    break;
-			case ST_MENU:       drawMenu();     break;
-			case ST_SETTINGS:   drawSettings(); break;
-			case ST_CAMPAIGN:   drawCampaign(); break;
+			case ST_RESET_HARD: reset(); resize(); break;
+			case ST_RESET:      reset();           break;
+			case ST_RUNNING:    drawRunning();     break;
+			case ST_WIN:        drawWin();         break;
+			case ST_DIE:        drawDie();         break;
+			case ST_PAUSE:      drawPause();       break;
+			case ST_MENU:       drawMenu();        break;
+			case ST_SETTINGS:   drawSettings();    break;
+			case ST_CAMPAIGN:   drawCampaign();    break;
 		}
 		buildVersion.render();
 
 		interacting = false; //mouse interactions should only last one frame
 	}
 
-	private void resetHard() {
-		reset();
+	private void resize() {
 		loadPixels(); //must be done whenever the size of pixels changes
 		Arrays.fill(pixels, 0);
 		renderer.cropTextures(width, height);
+		lastWidth = width;
+		lastHeight = height;
 	}
 
 	private void reset() {

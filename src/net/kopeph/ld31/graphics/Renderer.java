@@ -24,7 +24,7 @@ public class Renderer {
 	
 	public int viewX = 0, viewY = 0;
 	
-	private final PApplet context;
+	private final LD31 context;
 	private final ThreadPool renderingPool = new ThreadPool();
 	
 	private Map<Integer, List<Renderable>> states;
@@ -57,19 +57,19 @@ public class Renderer {
 	}
 	
 	public void calculateLighting(int[] lighting, Level level) {
-		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.width, level.player.x() - context.width/2));
-		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.height, level.player.y() - context.height/2));
+		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.lastWidth, level.player.x() - context.lastWidth/2));
+		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.lastHeight, level.player.y() - context.lastHeight/2));
 		
 		//crop the tiles array into the pixels array
 		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
-		for (int y = 0; y < PApplet.min(context.height, level.LEVEL_HEIGHT); ++y) {
-			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.width, PApplet.min(context.width, level.LEVEL_WIDTH));
+		for (int y = 0; y < PApplet.min(context.lastHeight, level.LEVEL_HEIGHT); ++y) {
+			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
 		}
 		
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
-			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.width + e.viewDistance - 2 &&
-				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.height + e.viewDistance - 2) {
+			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
+				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.lastHeight + e.viewDistance - 2) {
 				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 			}
 		}
