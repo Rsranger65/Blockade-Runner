@@ -60,22 +60,18 @@ public class Renderer {
 		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.width, level.player.x() - context.width/2));
 		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.height, level.player.y() - context.height/2));
 		
-		PApplet.println("copying array"); //debug
 		//crop the tiles array into the pixels array
 		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
 		for (int y = 0; y < PApplet.min(context.height, level.LEVEL_HEIGHT); ++y) {
 			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.width, PApplet.min(context.width, level.LEVEL_WIDTH));
 		}
 		
-		PApplet.println("running lighting threads"); //debu
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
-			//renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
-			e.rayTrace(lighting, e.viewDistance, e.color);
+			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
 		
-		//PApplet.println("waiting for thread sync");
-		//renderingPool.forceSync();
+		renderingPool.forceSync();
 	}
 	
 	public void applyTexture(int[] pixels) {

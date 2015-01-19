@@ -178,9 +178,6 @@ public class Entity implements Renderable {
 		int maxx = PApplet.min(xInitial + viewDistance - 1, context.width - 1);
 		int maxy = PApplet.min(yInitial + viewDistance - 1, context.height - 1);
 		
-		PApplet.println(minx + ", " + miny + ", " + maxx + ", " + maxy); //debug
-
-		PApplet.println("tracing rays"); //debug
 		for (int dx = minx; dx <= maxx; ++dx) {
 			Trace.ray(xInitial, yInitial, dx, miny, op);
 			Trace.ray(xInitial, yInitial, dx, maxy, op);
@@ -196,7 +193,6 @@ public class Entity implements Renderable {
 			//array[dy*context.width + minx] = Entity.COLOR_ENEMY_COM;
 			//array[dy*context.width + maxx] = Entity.COLOR_ENEMY_COM;
 		}
-		PApplet.println("rays traced"); //debug
 	}
 
 	@Override

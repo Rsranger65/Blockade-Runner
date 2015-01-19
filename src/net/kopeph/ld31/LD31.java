@@ -273,10 +273,8 @@ public class LD31 extends PApplet {
 		}
 
 		//calculate lighting
-		println("doing lighting"); //debug
 		profiler.swap(Profiler.PLAYER_MOVE, Profiler.LIGHTING);
 		renderer.calculateLighting(pixels, level);
-		println("lighting done"); //debug
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
