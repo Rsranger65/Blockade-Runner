@@ -30,3 +30,4 @@ src-7/
 *.launch
 src/version.properties
 export-*.xml
+git-*.sh

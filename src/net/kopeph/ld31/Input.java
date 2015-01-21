@@ -40,7 +40,7 @@ public class Input {
 	private Map<Integer, Boolean> keyStates = new HashMap<>();
 
 	private Map<String, Interaction> actions = new HashMap<>();
-	private OneToManyBiMap<String, Integer> keyMap = new OneToManyBiMap<>();
+	private OneToManyBiMap<String, Integer> keyMap = new OneToManyBiMap<>(K_UNBOUND);
 	private Preferences keyMapStorage = Preferences.userNodeForPackage(getClass());
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
@@ -100,13 +100,16 @@ public class Input {
 
 	private boolean loadKeys(String id) {
 		String property = keyMapStorage.get(id, null);
-		if (property != null) {
-			String[] properties = property.split(","); //TODO: extract to constant
-			for (int i = 0; i < properties.length; i++)
-				keyMap.putIndex(id, i, Integer.parseInt(properties[i]));
+		if (property == null)
+			return false;
+
+		String[] properties = property.split(","); //TODO: extract to constant
+		if (properties[0].isEmpty())
 			return true;
-		}
-		return false;
+
+		for (int i = 0; i < properties.length; i++)
+			keyMap.putIndex(id, i, Integer.parseInt(properties[i]));
+		return true;
 	}
 
 	private void saveKeys(String id) {
@@ -181,7 +184,7 @@ public class Input {
 
 	public void handleBind(String id, final int index, final String escapeId) {
 		//Set key to ???
-		keyMap.putIndex(id, index, K_BINDING, K_UNBOUND);
+		keyMap.putIndex(id, index, K_BINDING);
 
 		//Wait until a key is pressed, and lock onto it
 		postTrigger((keyId) -> {

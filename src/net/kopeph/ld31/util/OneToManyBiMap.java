@@ -7,14 +7,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/* OPERATION INVARIANT:
+ * At the end of every function call, the following must be true for proper operation:
+ * (This class is responsible for not falling into a invalid state)
+ *
+ * - For every R element in fwdMap:
+ *   - (element == nullValue) || (element != <any R element excepting itself>)
+ *   - backMap.containsKey(element)
+ * - For every L element in backMap:
+ *   - (element != nullValue)
+ *   - fwdMap.containsKey(element)
+ */
 
 /**
- *
  * @author alexg
  */
 public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 	private Map<L, List<R>> fwdMap = new HashMap<>();
 	private Map<R, L> backMap = new HashMap<>();
+	private final R nullValue;
+
+	public OneToManyBiMap(R nullValue) {
+		this.nullValue = nullValue;
+	}
 
 	@Override
 	public int size() {
@@ -53,31 +68,38 @@ public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 	public List<R> put(L key, List<R> values) {
 		//Copy list to guard against read-only lists
 		List<R> prevList = fwdMap.put(key, new ArrayList<>(values));
+		for (R value : prevList)
+			backMap.remove(value);
 
 		for (R value : values) {
-			L prevKey = backMap.put(value, key);
-			if (prevKey != null)
-				fwdMap.get(prevKey).remove(value);
+			if (!value.equals(nullValue)) {
+				L prevKey = backMap.put(value, key);
+				if (prevKey != null)
+					fwdMap.get(prevKey).remove(value);
+			}
 		}
 
 		return prevList;
 	}
 
 	public R putIndex(L key, int index, R value) {
-		return putIndex(key, index, value, null);
-	}
-
-	public R putIndex(L key, int index, R value, R fillValue) {
 		//ensure sized properly
 		if (!fwdMap.containsKey(key))
 			fwdMap.put(key, new ArrayList<>());
 		while (index >= fwdMap.get(key).size())
-			fwdMap.get(key).add(fillValue);
+			fwdMap.get(key).add(nullValue);
 
+		//Add in value to fwdMap, and remove old value from backMap.
 		R oldValue = fwdMap.get(key).set(index, value);
-		L prevKey = backMap.put(value, key);
-		if (prevKey != null)
-			fwdMap.get(prevKey).remove(value);
+		backMap.remove(oldValue);
+
+		//if we aren't adding a placeholder, add new value to backMap
+		//and correct for uniqueness.
+		if (!value.equals(nullValue)) {
+			L prevKey = backMap.put(value, key);
+			if (prevKey != null)
+				fwdMap.get(prevKey).remove(value);
+		}
 
 		return oldValue;
 	}
