@@ -99,7 +99,7 @@ public class LD31 extends PApplet {
 		context = this;
 		renderer = new Renderer();
 
-		size(800, 600);
+		size(1280, 720);
 		frameRate(60);
 		noStroke();
 		frame.setResizable(true);
