@@ -68,8 +68,10 @@ public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 	public List<R> put(L key, List<R> values) {
 		//Copy list to guard against read-only lists
 		List<R> prevList = fwdMap.put(key, new ArrayList<>(values));
-		for (R value : prevList)
-			backMap.remove(value);
+		if (prevList != null) {
+			for (R value : prevList)
+				backMap.remove(value);
+		}
 
 		for (R value : values) {
 			if (!value.equals(nullValue)) {
