@@ -377,12 +377,12 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		image(renderer.rawTextureRed, 0, 0); //TODO: placeholder background
+		renderer.background(renderer.rawTextureRed); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		image(renderer.rawTextureBlue, 0, 0); //TODO: placeholder background
+		renderer.background(renderer.rawTextureBlue); //TODO: placeholder background
 		syncKeyMaps();
 		settingsMenu.render();
 	}
@@ -411,7 +411,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawCampaign() {
-		image(renderer.rawTextureGreen, 0, 0); //TODO: placeholder background
+		renderer.background(renderer.rawTextureGreen); //TODO: placeholder background
 		dummyCampaignMenu.render();
 	}
 
