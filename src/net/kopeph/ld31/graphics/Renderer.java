@@ -1,5 +1,6 @@
 package net.kopeph.ld31.graphics;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,15 @@ public class Renderer {
 			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
 		}
 		
+		List<Enemy> order = new ArrayList<Enemy>(); //really just a stack, to be honest
+		order.add(level.enemies[0]);
+		
+		
+		
+		//TODO: lighting scheduler
+		
+		
+		
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
 			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
@@ -81,6 +91,22 @@ public class Renderer {
 		}
 		
 		renderingPool.forceSync();
+	}
+	
+	private Enemy firstOutOfRange(List<Enemy> order, Level level) {
+		//find the first enemy that is unlit and out of lighting range of all current lighting threads
+		for (Enemy e : level.enemies)
+			if (!order.contains(e) && safeToLight(order, e, renderingPool.poolSize - 1))
+				return e;
+		return null;
+	}
+	
+	private boolean safeToLight(List<Enemy> order, Enemy e, int size) {
+		//if the lighting range overlaps with any currently running lighting threads, cancel
+		for (int i = PApplet.max(0, order.size() - size); i < order.size(); ++i)
+			if (PApplet.dist(order.get(i).screenX(), order.get(i).screenY(), e.screenX(), e.screenY()) < e.viewDistance*2)
+				return false; //TODO: optimize this if needed
+		return true;
 	}
 	
 	public void applyTexture(int[] pixels) {
