@@ -47,14 +47,14 @@ public class Renderer {
 	}
 	
 	public void cropTextures(int width, int height) {
-		textureRed     = Util.crop(rawTextureRed    , 0, 0, width, height);
-		textureGreen   = Util.crop(rawTextureGreen  , 0, 0, width, height);
-		textureBlue    = Util.crop(rawTextureBlue   , 0, 0, width, height);
-		textureCyan    = Util.crop(rawTextureCyan   , 0, 0, width, height);
-		textureMagenta = Util.crop(rawTextureMagenta, 0, 0, width, height);
-		textureYellow  = Util.crop(rawTextureYellow , 0, 0, width, height);
-		textureGrey    = Util.crop(rawTextureGrey   , 0, 0, width, height);
-		textureWhite   = Util.crop(rawTextureWhite  , 0, 0, width, height);
+		textureRed     = Util.crop(rawTextureRed    , width, height);
+		textureGreen   = Util.crop(rawTextureGreen  , width, height);
+		textureBlue    = Util.crop(rawTextureBlue   , width, height);
+		textureCyan    = Util.crop(rawTextureCyan   , width, height);
+		textureMagenta = Util.crop(rawTextureMagenta, width, height);
+		textureYellow  = Util.crop(rawTextureYellow , width, height);
+		textureGrey    = Util.crop(rawTextureGrey   , width, height);
+		textureWhite   = Util.crop(rawTextureWhite  , width, height);
 	}
 	
 	public void calculateLighting(int[] lighting, Level level) {
