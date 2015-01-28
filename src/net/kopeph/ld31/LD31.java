@@ -234,8 +234,7 @@ public class LD31 extends PApplet {
 	
 	@Override
 	public void draw() {
-		if (gameState == ST_RUNNING || gameState == ST_PAUSE)
-			if (width != lastWidth || height != lastHeight)
+		if (width != lastWidth || height != lastHeight)
 				resize();
 		
 		switch (gameState) {
@@ -377,12 +376,12 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		renderer.background(renderer.rawTextureRed); //TODO: placeholder background
+		image(renderer.textureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		renderer.background(renderer.rawTextureBlue); //TODO: placeholder background
+		image(renderer.textureBlue, 0, 0); //TODO: placeholder background
 		syncKeyMaps();
 		settingsMenu.render();
 	}
@@ -411,7 +410,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawCampaign() {
-		renderer.background(renderer.rawTextureGreen); //TODO: placeholder background
+		image(renderer.textureGreen, 0, 0); //TODO: placeholder background
 		dummyCampaignMenu.render();
 	}
 

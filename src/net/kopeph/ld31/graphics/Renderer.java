@@ -57,12 +57,6 @@ public class Renderer {
 		textureWhite   = Util.crop(rawTextureWhite  , 0, 0, width, height);
 	}
 	
-	public void background(PImage img) {
-		for (int x = 0; x < context.width; x += img.width)
-			for (int y = 0; y < context.height; y += img.height)
-				context.image(img, x, y);
-	}
-	
 	public void calculateLighting(int[] lighting, Level level) {
 		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.lastWidth, level.player.x() - context.lastWidth/2));
 		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.lastHeight, level.player.y() - context.lastHeight/2));
