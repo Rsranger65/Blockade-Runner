@@ -19,7 +19,6 @@ import processing.core.PConstants;
  * Do NOT send PConstants values to keyId parameters. use Input.K_* values instead.
  * @author alexg
  */
-//TODO: make addAction() and handleBind() read and write to a config.
 public class Input {
 	public static final int
 		K_UNBOUND = -1, //These fill both halves of the word, so they can't collide
