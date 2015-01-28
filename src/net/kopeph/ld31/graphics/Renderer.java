@@ -73,14 +73,62 @@ public class Renderer {
 			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
 		}
 		
-		List<Enemy> order = new ArrayList<Enemy>(); //really just a stack, to be honest
-		order.add(level.enemies[0]);
+		
+		/*
+		//LIGHTING SCHEDULER:
+		
+		//build list of enemies needing lighting
+		List<Enemy> light = new ArrayList<>();
+		for (Enemy e : level.enemies)
+			if (Util.boxContains(-e.viewDistance + 1,
+								 -e.viewDistance + 1,
+								 context.lastWidth + e.viewDistance - 2,
+								 context.lastHeight + e.viewDistance - 2,
+								 e.screenX(), e.screenY()))
+				light.add(e);
+		
+		//if there are no enemies to light, don't bother with any of this
+		if (light.size() == 0) {
+			System.out.println("NO ENEMIES TO LIGHT"); //debug
+			return;
+		}
+		
+		//create stack representing the order of enemies to light
+		List<Integer> order = new ArrayList<>(); //really just a stack, to be honest, but lists are nice
+		
+		//create "current" index to keep track of where we are in the algorithm
+		int current = -1;
+		
+		//while the ordering is incomplete
+		while (order.size() < light.size()) {
+			//find the next potential
+			current = firstOutOfRange(order, light, current);
+			//if there is none
+			if (current == -1) {
+				//pop from the stack (move backwards)
+				current = order.remove(order.size() - 1);
+			} else {
+				//push onto the stack
+				order.add(current);
+				current = -1;
+			}
+			
+			//if we try all our possibilities and 
+			if (order.size() == 0) {
+				System.out.println("LIGHTING ORDER FAILED");
+				for (int i = 0; i < light.size(); ++i)
+					order.add(i);
+				break;
+			}
+		}
 		
 		
 		
-		//TODO: lighting scheduler
-		
-		
+		for (Integer i : order) {
+			Enemy e = light.get(i);
+			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+		}
+		*/
 		
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
@@ -93,19 +141,21 @@ public class Renderer {
 		renderingPool.forceSync();
 	}
 	
-	private Enemy firstOutOfRange(List<Enemy> order, Level level) {
+	//helper function for lighting scheduler in calculateLighting()
+	private int firstOutOfRange(List<Integer> order, List<Enemy> light, int fromIndex) {
 		//find the first enemy that is unlit and out of lighting range of all current lighting threads
-		for (Enemy e : level.enemies)
-			if (!order.contains(e) && safeToLight(order, e, renderingPool.poolSize - 1))
-				return e;
-		return null;
+		for (int i = fromIndex + 1; i < light.size(); ++i)
+			if (!order.contains(i) && safeToLight(order, light, i, renderingPool.poolSize - 1))
+				return i;
+		return -1;
 	}
 	
-	private boolean safeToLight(List<Enemy> order, Enemy e, int size) {
+	//helper function for firstOutOfRange()
+	private boolean safeToLight(List<Integer> order, List<Enemy> light, int index, int poolSize) {
 		//if the lighting range overlaps with any currently running lighting threads, cancel
-		for (int i = PApplet.max(0, order.size() - size); i < order.size(); ++i)
-			if (PApplet.dist(order.get(i).screenX(), order.get(i).screenY(), e.screenX(), e.screenY()) < e.viewDistance*2)
-				return false; //TODO: optimize this if needed
+		for (int i = PApplet.max(0, order.size() - poolSize); i < order.size(); ++i)
+			if (PApplet.dist(light.get(order.get(i)).screenX(), light.get(order.get(i)).screenY(), light.get(index).screenX(), light.get(index).screenY()) < light.get(index).viewDistance*2)
+				return false; //TODO: make this more DRY and readable
 		return true;
 	}
 	
