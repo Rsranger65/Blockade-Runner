@@ -1,10 +1,13 @@
 package net.kopeph.ld31;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
+import net.kopeph.ld31.spi.KeyPredicate;
 import processing.core.PConstants;
 
 /**
@@ -13,8 +16,8 @@ import processing.core.PConstants;
 public class InputHandler {
 	public static final int
 		UP       = 0,
-		LEFT     = 2,
-		DOWN     = 1,
+		LEFT     = 1,
+		DOWN     = 2,
 		RIGHT    = 3,
 		RESTART  = 4,
 		PAUSE    = 5,
@@ -22,11 +25,11 @@ public class InputHandler {
 		UNCAUGHT = 7;
 	
 	//there may be a better way to do this
-	public static String getControlString(int controlCode) {
-		switch (controlCode) {
+	public static String getControlString(int code) {
+		switch (code) {
 			case UP     : return "UP     ";
-			case LEFT   : return "LEFT   ";
 			case DOWN   : return "DOWN   ";
+			case LEFT   : return "LEFT   ";
 			case RIGHT  : return "RIGHT  ";
 			case RESTART: return "RESTART";
 			case PAUSE  : return "PAUSE  ";
@@ -35,6 +38,84 @@ public class InputHandler {
 		return "UNCAUGHT";
 	}
 	
+	public static final int
+		K_UNBOUND = -1, //These fill both halves of the word, so they can't collide
+		K_BINDING = -2,
+		
+		K_ESC     = PConstants.ESC,
+		K_TAB     = PConstants.TAB,
+		K_ENTER   = PConstants.ENTER,
+		K_BKSP    = PConstants.BACKSPACE,
+		K_SHIFT   = PConstants.SHIFT   << 16,
+		K_CTRL    = PConstants.CONTROL << 16,
+		K_ALT     = PConstants.ALT     << 16,
+		K_UP      = PConstants.UP      << 16,
+		K_DOWN    = PConstants.DOWN    << 16,
+		K_LEFT    = PConstants.LEFT    << 16,
+		K_RIGHT   = PConstants.RIGHT   << 16;
+	
+	public static String getKeyTitle(int code) {
+		if (code >= 0x21 && code <= 0xFFFF) //UTF-16 range minus SPACE and control codes
+			return String.valueOf((char) code);
+		switch (code) {
+			case ' '      : return "SPACE";
+			case K_UNBOUND: return "---";
+			case K_BINDING: return "<???>";
+			case K_ESC    : return "ESC";
+			case K_TAB    : return "TAB";
+			case K_ENTER  : return "ENTER";
+			case K_SHIFT  : return "SHIFT";
+			case K_CTRL   : return "CTRL";
+			case K_ALT    : return "ALT";
+			case K_UP     : return String.valueOf(Font.ARROW_UP);
+			case K_DOWN   : return String.valueOf(Font.ARROW_DOWN);
+			case K_LEFT   : return String.valueOf(Font.ARROW_LEFT);
+			case K_RIGHT  : return String.valueOf(Font.ARROW_RIGHT);
+		}
+
+		//well shit, we got a weird key
+		return "!!!";
+	}
+	
+	private static final Map<Integer, Interaction> bindings = new HashMap<>();
+	private static final List<KeyPredicate> listeners = new ArrayList<>();
+	
+	public static int convert(char key, int keyCode) {
+		return (key == PConstants.CODED? (keyCode << 16) : key);
+	}
+	
+	public static void bindKey(int code, Interaction op) {
+		bindings.put(code, op);
+	}
+	
+	public static void bindKeys(int[] codes, Interaction op) {
+		for (int code : codes)
+			bindings.put(code, op);
+	}
+	
+	public static void unbindKey(int code) {
+		bindings.remove(code);
+	}
+	
+	public static void post(KeyPredicate op) {
+		listeners.add(op);
+	}
+	
+	public static void remove(KeyPredicate op) {
+		listeners.remove(op);
+	}
+	
+	public static void handle(int code, boolean down) {
+		if (!down) return; //XXX: TEMPORARY
+
+		for (KeyPredicate k : listeners)
+			k.press(code);
+		
+		if (bindings.containsKey(code))
+			bindings.get(code).interact();
+	}
+	
+	/*
 	public static int[][] bindings = {
 		{ UP     , 'W', '8' , PConstants.UP    << 16 },
 		{ LEFT   , 'A', '4' , PConstants.LEFT  << 16 },
@@ -123,4 +204,5 @@ public class InputHandler {
 			return String.valueOf((char)keyCode);
 		return ""; //no match
 	}
+	*/
 }
