@@ -109,10 +109,10 @@ public class InputHandler {
 		if (!down) return; //XXX: TEMPORARY
 
 		for (KeyPredicate k : listeners)
-			k.press(code);
+			k.press(code, true);
 		
 		if (bindings.containsKey(code))
-			bindings.get(code).interact();
+			bindings.get(code).interact(down);
 	}
 	
 	/*
