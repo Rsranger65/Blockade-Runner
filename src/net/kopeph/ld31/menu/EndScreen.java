@@ -4,19 +4,21 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.graphics.Renderable;
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 /**
  * @author alexg
  */
 public class EndScreen implements Renderable {
-	private static final int SWEEP_SPEED = 8;
-	private static final int DARKEN_SPEED = 255;
+	private static final int PHASE_ONE = 200;
+	private static final int PHASE_TWO = 160;
 
 	private final PApplet context = LD31.getContext();
 	private final Font font;
 	private final String title, footer;
 	private final int backColor;
 	private int phase;
+	private int lastFrame;
 
 	public EndScreen(Font font, String title, String footer, int backColor) {
 		this.font = font;
@@ -26,27 +28,25 @@ public class EndScreen implements Renderable {
 	}
 
 	public void render() {
-		++phase;
-
-		if (phase > 0) {
-			context.fill(backColor);
-			context.rect(0, context.height/2 - phase*SWEEP_SPEED, context.width, 2*phase*SWEEP_SPEED);
-			font.render(title, context.width/2, context.height/2);
-			font.render(footer, 8, context.height - 16);
-
-			if (phase * SWEEP_SPEED >= context.height / 2)
-				phase = -DARKEN_SPEED;
-		}
-		else if (phase < 0) {
-			context.background(context.red  (backColor)*phase/-DARKEN_SPEED,
-			                   context.green(backColor)*phase/-DARKEN_SPEED,
-			                   context.blue (backColor)*phase/-DARKEN_SPEED);
-			font.render(title, context.width/2, context.height/2);
-			font.render(footer, 8, context.height - 16);
-		}
-		else {
-			context.noLoop();
-		}
+		//keeping track of the phase
+		if (lastFrame < context.frameCount - 1)
+			phase = PHASE_ONE; //reset
+		if (phase > 0)
+			--phase;
+		lastFrame = context.frameCount;
+		
+		context.pushStyle();
+		
+		context.rectMode(PConstants.CENTER);
+		context.fill(phase * context.red  (backColor) / PHASE_TWO,
+					 phase * context.green(backColor) / PHASE_TWO,
+					 phase * context.blue (backColor) / PHASE_TWO);
+		context.rect(context.width/2, context.height/2, context.width,
+					(PHASE_ONE - phase) * context.height / (PHASE_ONE - PHASE_TWO));
+		font.renderCentered(title, context.width/2, context.height/2);
+		font.render(footer, 8, context.height - 16);
+		
+		context.popStyle();
 	}
 }
 
