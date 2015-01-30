@@ -189,7 +189,6 @@ public class LD31 extends PApplet {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
-				loop();
 				gameState = ST_RESET;
 			}
 		}, (int)'R', (int)' ', Input.K_ENTER);
@@ -207,9 +206,9 @@ public class LD31 extends PApplet {
 			} else if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
-			}
-			else {
-				loop();
+			} else if (gameState == ST_PAUSE) {
+				gameState = ST_RUNNING;
+			} else {
 				gameState = ST_MENU;
 			}
 		}, Input.K_ESC);
