@@ -106,10 +106,8 @@ public class InputHandler {
 	}
 	
 	public static void handle(int code, boolean down) {
-		if (!down) return; //XXX: TEMPORARY
-
 		for (KeyPredicate k : listeners)
-			k.press(code, true);
+			k.press(code, down);
 		
 		if (bindings.containsKey(code))
 			bindings.get(code).interact(down);
