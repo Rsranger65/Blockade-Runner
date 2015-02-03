@@ -68,31 +68,39 @@ public class Trace {
 		}
 	}
 
-	/** Source: http://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Example */
+	/** Equivalent to calling circle() with thick set to false */
 	public static void circle(int x0, int y0, int radius, PointPredicate op) {
+		circle(x0, y0, radius, false, op);
+	}
+
+	/** Source: http://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Example */
+	public static void circle(int x0, int y0, int radius, boolean thick, PointPredicate op) {
 		int x = radius;
 		int y = 0;
 		int radiusError = 1-x;
 
 		while(x >= y) {
-			op.on(x + x0, y + y0);
-			op.on(y + x0, x + y0);
-			op.on(-x + x0, y + y0);
-			op.on(-y + x0, x + y0);
-			op.on(-x + x0, -y + y0);
-			op.on(-y + x0, -x + y0);
-			op.on(x + x0, -y + y0);
-			op.on(y + x0, -x + y0);
+			circlePointImpl(x, y, x0, y0, op);
 			y++;
 			if (radiusError<0) {
 				radiusError += 2 * y + 1;
 			}
 			else {
+				if (thick)
+					circlePointImpl(x - 1, y - 1, x0, y0, op);
 				x--;
 				radiusError += 2 * (y - x + 1);
 			}
 		}
 	}
+
+	private static void circlePointImpl(int x, int y, int x0, int y0, PointPredicate op) {
+		op.on( x + x0,  y + y0); op.on( y + x0,  x + y0);
+		op.on(-x + x0,  y + y0); op.on(-y + x0,  x + y0);
+		op.on(-x + x0, -y + y0); op.on(-y + x0, -x + y0);
+		op.on( x + x0, -y + y0); op.on( y + x0, -x + y0);
+	}
+
 
 	public static void fill(int x, int y, PointPredicate op) {
 		//using a Deque (stack) to simulate recursion
