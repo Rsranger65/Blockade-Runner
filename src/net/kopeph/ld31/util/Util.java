@@ -55,6 +55,14 @@ public class Util {
 
 		return cropped;
 	}
+	
+	public static PImage crop(PImage img, int w, int h) {
+		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
+		for (int x = 0; x < w; x += img.width)
+			for (int y = 0; y < h; y += img.height)
+				cropped.copy(img, 0, 0, img.width, img.height, x, y, img.width, img.height);
+		return cropped;
+	}
 
 	public static boolean boxContains(double x, double y, double w, double h,
 	                                  double xTest, double yTest) {

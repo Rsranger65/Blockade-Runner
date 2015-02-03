@@ -33,7 +33,7 @@ public class MenuButton extends TextBox {
 		updateBounds();
 
 		if (!wasPressed && isMouseDownInside()) {
-			interaction.interact();
+			interaction.interact(true);
 			wasPressed = true;
 		}
 		if (!isMouseDown())

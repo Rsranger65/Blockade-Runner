@@ -158,32 +158,35 @@ public class Entity implements Renderable {
 		final int yInitial = screenY(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 		
-		PointPredicate fast = (x, y) -> {
-			//restrict it to a circle
-			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
-			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
-			
-			//restrict to the window (avoid out-of-bounds exceptions)
-			int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
-			if (array[i] == Level.FLOOR_NONE) return false;
-			
-			array[i] |= color;
-			return true;
-		};
-
-		PointPredicate safe = (x, y) -> {
-			//restrict it to a circle
-			int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
-			if (dx*dx + dy*dy >= vdsq) return false; //distance formula
-			
-			//restrict to the window (avoid out-of-bounds exceptions)
-			int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
-			if (!context.contains(x, y)) return true;
-			if (array[i] == Level.FLOOR_NONE) return false;
-			
-			array[i] |= color;
-			return true;
-		};
+		PointPredicate op;
+		if (context.contains(xInitial, yInitial)) {
+			op = (x, y) -> {
+				//restrict it to a circle
+				int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
+				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+				
+				//restrict to the window (avoid out-of-bounds exceptions)
+				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
+				if (array[i] == Level.FLOOR_NONE) return false;
+				
+				array[i] |= color;
+				return true;
+			};
+		} else {
+			op = (x, y) -> {
+				//restrict it to a circle
+				int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
+				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+				
+				//restrict to the window (avoid out-of-bounds exceptions)
+				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
+				if (!context.contains(x, y)) return true;
+				if (array[i] == Level.FLOOR_NONE) return false;
+				
+				array[i] |= color;
+				return true;
+			};
+		}
 
 		//change the bounds of the for loop to stay within the level
 		//this way we don't have to do bounds checking per pixel inside of op.on()
@@ -192,21 +195,64 @@ public class Entity implements Renderable {
 		int maxx = PApplet.min(xInitial + viewDistance - 1, context.lastWidth - 1);
 		int maxy = PApplet.min(yInitial + viewDistance - 1, context.lastHeight - 1);
 		
-		for (int dx = minx; dx <= maxx; ++dx) {
-			if (miny <= yInitial)
-				Trace.ray(xInitial, yInitial, dx, miny, safe);
-			if (maxy >= yInitial)
-				Trace.ray(xInitial, yInitial, dx, maxy, safe);
+		//information (flags) for how to optimize our ray casting
+		boolean traceRight = xInitial < maxx;
+		boolean traceLeft  = xInitial > 0;
+		boolean traceDown  = yInitial < maxy;
+		boolean traceUp    = yInitial > 0;
+		
+		boolean cautionRight = maxx < xInitial + viewDistance - 1;
+		boolean cautionLeft  = minx > xInitial - viewDistance + 1;
+		boolean cautionDown  = maxy < yInitial + viewDistance - 1;
+		boolean cautionUp    = miny > yInitial - viewDistance + 1;
+		
+		//pre-calculate whatever we can
+		int dy1 = yInitial - miny, dy1sq = dy1*dy1;
+		int dy2 = yInitial - maxy, dy2sq = dy2*dy2;
+		
+		for (int x = minx; x <= maxx; ++x) {
+			int dx = xInitial - x, dxsq = dx*dx;
+			
+			if (traceUp) {
+				if (cautionUp && dy1sq + dxsq < vdsq)
+					Trace.line(xInitial, yInitial, x, miny, op);
+				else
+					Trace.ray(xInitial, yInitial, x, miny, op);
+			}
+			
+			if (traceDown) {
+				if (cautionDown && dy2sq + dxsq < vdsq)
+					Trace.line(xInitial, yInitial, x, maxy, op);
+				else
+					Trace.ray(xInitial, yInitial, x, maxy, op);
+			}
+			
 			//DEBUG
 			//array[miny*context.width + dx] = Entity.COLOR_OBJECTIVE;
 			//array[maxy*context.width + dx] = Entity.COLOR_OBJECTIVE;
 		}
 
-		for (int dy = miny + 1; dy < maxy; ++dy) {
-			if (minx <= xInitial)
-				Trace.ray(xInitial, yInitial, minx, dy, safe);
-			if (maxx >= xInitial)
-				Trace.ray(xInitial, yInitial, maxx, dy, safe);
+		//pre-calculate whatever we can
+		int dx1 = xInitial - minx, dx1sq = dx1*dx1;
+		int dx2 = xInitial - maxx, dx2sq = dx2*dx2;
+		
+		for (int y = miny + 1; y < maxy; ++y) {
+			int dy = yInitial - y, dysq = dy*dy;
+			
+			if (traceLeft) {
+				if (cautionLeft && dx1sq + dysq < vdsq)
+					Trace.line(xInitial, yInitial, minx, y, op);
+				else
+					Trace.ray(xInitial, yInitial, minx, y, op);
+			}
+			
+			if (traceRight) {
+				if (cautionRight && dx2sq + dysq < vdsq)
+					Trace.line(xInitial, yInitial, maxx, y, op);
+				else
+					Trace.ray(xInitial, yInitial, maxx, y, op);
+			}
+			
 			//DEBUG
 			//array[dy*context.width + minx] = Entity.COLOR_ENEMY_COM;
 			//array[dy*context.width + maxx] = Entity.COLOR_ENEMY_COM;

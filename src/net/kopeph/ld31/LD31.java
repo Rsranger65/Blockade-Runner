@@ -120,10 +120,10 @@ public class LD31 extends PApplet {
 		//setup main menu
 		mainMenu = new Menu();
 		mainMenu.add(new TextBox(renderer.font,  "Blockade Runner", 0, -175));
-		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, () -> { gameState = ST_RESET_HARD; }));
-		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, () -> { gameState = ST_CAMPAIGN;   }));
-		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, () -> { gameState = ST_SETTINGS;   }));
-		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, () -> { exit();                    }));
+		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; }));
+		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { gameState = ST_CAMPAIGN;   }));
+		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS;   }));
+		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit();                    }));
 
 		//setup settings menu
 		settingsMenu = new Menu();
@@ -159,7 +159,7 @@ public class LD31 extends PApplet {
 											   widgets[0][c].xPos,
 											   widgets[r][0].yPos,
 											   50, 20,
-				() -> {
+				(down) -> {
 					input.handleBind(id, c - 1, CTL_ESCAPE);
 				});
 				widgets[r][c].tag = id;
@@ -168,32 +168,31 @@ public class LD31 extends PApplet {
 			row++;
 		}
 
-		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, () -> { gameState = ST_MENU; }));
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
 		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
-		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, () -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, (down) -> { gameState = ST_MENU; }));
 		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode hasn't been implemented yet :(", 0,  150));
 
 		//setup pause menu
 		pauseMenu = new Menu(); //Dynamic size. see drawPause();
 		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
-		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, () -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, () -> { gameState = ST_RESET;   }));
-		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, () -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, () -> { exit();                 }));
+		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, (down) -> { gameState = ST_RESET;   }));
+		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
 
 		//setup input interaction
-		input.addAction(CTL_RESTART, () -> {
+		input.addAction(CTL_RESTART, (down) -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
-				loop();
 				gameState = ST_RESET;
 			}
 		}, (int)'R', (int)' ', Input.K_ENTER);
-		input.addAction(CTL_PAUSE, () -> {
+		input.addAction(CTL_PAUSE, (down) -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
@@ -201,15 +200,15 @@ public class LD31 extends PApplet {
 				gameState = ST_RUNNING;
 			}
 		}, (int)'P', Input.K_TAB);
-		input.addAction(CTL_ESCAPE, () -> {
+		input.addAction(CTL_ESCAPE, (down) -> {
 			if (gameState == ST_MENU) {
 				exit();
 			} else if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
-			}
-			else {
-				loop();
+			} else if (gameState == ST_PAUSE) {
+				gameState = ST_RUNNING;
+			} else {
 				gameState = ST_MENU;
 			}
 		}, Input.K_ESC);
@@ -234,8 +233,7 @@ public class LD31 extends PApplet {
 	
 	@Override
 	public void draw() {
-		if (gameState == ST_RUNNING || gameState == ST_PAUSE)
-			if (width != lastWidth || height != lastHeight)
+		if (width != lastWidth || height != lastHeight)
 				resize();
 		
 		switch (gameState) {
@@ -377,12 +375,12 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		renderer.background(renderer.rawTextureRed); //TODO: placeholder background
+		image(renderer.textureRed, 0, 0); //TODO: placeholder background
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		renderer.background(renderer.rawTextureBlue); //TODO: placeholder background
+		image(renderer.textureBlue, 0, 0); //TODO: placeholder background
 		syncKeyMaps();
 		settingsMenu.render();
 	}
@@ -411,7 +409,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawCampaign() {
-		renderer.background(renderer.rawTextureGreen); //TODO: placeholder background
+		image(renderer.textureGreen, 0, 0); //TODO: placeholder background
 		dummyCampaignMenu.render();
 	}
 

@@ -46,20 +46,14 @@ public class Renderer {
 	}
 	
 	public void cropTextures(int width, int height) {
-		textureRed     = Util.crop(rawTextureRed    , 0, 0, width, height);
-		textureGreen   = Util.crop(rawTextureGreen  , 0, 0, width, height);
-		textureBlue    = Util.crop(rawTextureBlue   , 0, 0, width, height);
-		textureCyan    = Util.crop(rawTextureCyan   , 0, 0, width, height);
-		textureMagenta = Util.crop(rawTextureMagenta, 0, 0, width, height);
-		textureYellow  = Util.crop(rawTextureYellow , 0, 0, width, height);
-		textureGrey    = Util.crop(rawTextureGrey   , 0, 0, width, height);
-		textureWhite   = Util.crop(rawTextureWhite  , 0, 0, width, height);
-	}
-	
-	public void background(PImage img) {
-		for (int x = 0; x < context.width; x += img.width)
-			for (int y = 0; y < context.height; y += img.height)
-				context.image(img, x, y);
+		textureRed     = Util.crop(rawTextureRed    , width, height);
+		textureGreen   = Util.crop(rawTextureGreen  , width, height);
+		textureBlue    = Util.crop(rawTextureBlue   , width, height);
+		textureCyan    = Util.crop(rawTextureCyan   , width, height);
+		textureMagenta = Util.crop(rawTextureMagenta, width, height);
+		textureYellow  = Util.crop(rawTextureYellow , width, height);
+		textureGrey    = Util.crop(rawTextureGrey   , width, height);
+		textureWhite   = Util.crop(rawTextureWhite  , width, height);
 	}
 	
 	public void calculateLighting(int[] lighting, Level level) {
@@ -72,6 +66,63 @@ public class Renderer {
 			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
 		}
 		
+		
+		/*
+		//LIGHTING SCHEDULER:
+		
+		//build list of enemies needing lighting
+		List<Enemy> light = new ArrayList<>();
+		for (Enemy e : level.enemies)
+			if (Util.boxContains(-e.viewDistance + 1,
+								 -e.viewDistance + 1,
+								 context.lastWidth + e.viewDistance - 2,
+								 context.lastHeight + e.viewDistance - 2,
+								 e.screenX(), e.screenY()))
+				light.add(e);
+		
+		//if there are no enemies to light, don't bother with any of this
+		if (light.size() == 0) {
+			System.out.println("NO ENEMIES TO LIGHT"); //debug
+			return;
+		}
+		
+		//create stack representing the order of enemies to light
+		List<Integer> order = new ArrayList<>(); //really just a stack, to be honest, but lists are nice
+		
+		//create "current" index to keep track of where we are in the algorithm
+		int current = -1;
+		
+		//while the ordering is incomplete
+		while (order.size() < light.size()) {
+			//find the next potential
+			current = firstOutOfRange(order, light, current);
+			//if there is none
+			if (current == -1) {
+				//pop from the stack (move backwards)
+				current = order.remove(order.size() - 1);
+			} else {
+				//push onto the stack
+				order.add(current);
+				current = -1;
+			}
+			
+			//if we try all our possibilities and 
+			if (order.size() == 0) {
+				System.out.println("LIGHTING ORDER FAILED");
+				for (int i = 0; i < light.size(); ++i)
+					order.add(i);
+				break;
+			}
+		}
+		
+		
+		
+		for (Integer i : order) {
+			Enemy e = light.get(i);
+			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+		}
+		*/
+		
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
 			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
@@ -81,6 +132,24 @@ public class Renderer {
 		}
 		
 		renderingPool.forceSync();
+	}
+	
+	//helper function for lighting scheduler in calculateLighting()
+	private int firstOutOfRange(List<Integer> order, List<Enemy> light, int fromIndex) {
+		//find the first enemy that is unlit and out of lighting range of all current lighting threads
+		for (int i = fromIndex + 1; i < light.size(); ++i)
+			if (!order.contains(i) && safeToLight(order, light, i, renderingPool.poolSize - 1))
+				return i;
+		return -1;
+	}
+	
+	//helper function for firstOutOfRange()
+	private boolean safeToLight(List<Integer> order, List<Enemy> light, int index, int poolSize) {
+		//if the lighting range overlaps with any currently running lighting threads, cancel
+		for (int i = PApplet.max(0, order.size() - poolSize); i < order.size(); ++i)
+			if (PApplet.dist(light.get(order.get(i)).screenX(), light.get(order.get(i)).screenY(), light.get(index).screenX(), light.get(index).screenY()) < light.get(index).viewDistance*2)
+				return false; //TODO: make this more DRY and readable
+		return true;
 	}
 	
 	public void applyTexture(int[] pixels) {

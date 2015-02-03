@@ -71,13 +71,13 @@ public class Input {
 		if (isDown) {
 			//Triggers take precedence
 			for (int i = 0; i < triggers.size(); i++) {
-				if (triggers.get(i).press(keyId)) {
+				if (triggers.get(i).press(keyId, true)) {
 					triggers.remove(i);
 					return;
 				}
 			}
 			if (keyMap.containsValue(keyId))
-				actions.get(keyMap.getRev(keyId)).interact();
+				actions.get(keyMap.getRev(keyId)).interact(true);
 		}
 	}
 
@@ -120,7 +120,7 @@ public class Input {
 	}
 
 	public void addMonitor(String id, List<Integer> keyIds) {
-		addAction(id, () -> { /* no action */ }, keyIds);
+		addAction(id, (down) -> { /* no action */ }, keyIds);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class Input {
 		keyMap.putIndex(id, index, K_BINDING);
 
 		//Wait until a key is pressed, and lock onto it
-		postTrigger((keyId) -> {
+		postTrigger((keyId, down) -> {
 			if (getKey(escapeId))
 				keyId = K_UNBOUND;
 
