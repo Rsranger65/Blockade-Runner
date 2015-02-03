@@ -154,7 +154,7 @@ public class Entity implements Renderable {
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		final int xInitial = screenX(); //pre-calculating these gives us at least a huge performance improvement
+		final int xInitial = screenX(); //pre-calculating these gives us a huge performance improvement
 		final int yInitial = screenY(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
 		
@@ -165,7 +165,6 @@ public class Entity implements Renderable {
 				int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
 				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
 				
-				//restrict to the window (avoid out-of-bounds exceptions)
 				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
 				if (array[i] == Level.FLOOR_NONE) return false;
 				
@@ -189,7 +188,7 @@ public class Entity implements Renderable {
 		}
 
 		//change the bounds of the for loop to stay within the level
-		//this way we don't have to do bounds checking per pixel inside of op.on()
+		//this way we don't do more ray casts than we have to
 		int minx = PApplet.max(xInitial - viewDistance + 1, 0);
 		int miny = PApplet.max(yInitial - viewDistance + 1, 0);
 		int maxx = PApplet.min(xInitial + viewDistance - 1, context.lastWidth - 1);
