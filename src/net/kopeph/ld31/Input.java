@@ -136,6 +136,10 @@ public class Input {
 		return retMap;
 	}
 
+	public String keyMap(String id, int index) {
+		return getKeyTitle(keyMap.get(id).get(index));
+	}
+
 	public static String getKeyTitle(int keyId) {
 		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes
 			return String.valueOf((char) keyId);

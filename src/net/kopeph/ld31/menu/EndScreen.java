@@ -15,7 +15,7 @@ public class EndScreen implements Renderable {
 
 	private final PApplet context = LD31.getContext();
 	private final Font font;
-	private final String title, footer;
+	public String title, footer;
 	private final int backColor;
 	private int phase;
 	private int lastFrame;

@@ -29,9 +29,9 @@ public class LD31 extends PApplet {
 
 	//THESE ARE ALL THE USER MESSAGES
 	private static final String MSG_FOOTER =
-	"WASD: Move    Space: Restart    Objective: Capture the Pink Square    Beware Of: White Light";
+	"%s%s%s%s: Move %8s: Restart    Objective: Capture the Pink Square    Beware Of: White Light";
 	private static final String MSG_FOOTER_END =
-	"              Space: Restart";
+	    "           %8s: Restart";
 	private static final String MSG_WIN = "YA DID IT!";
 	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
 
@@ -110,12 +110,12 @@ public class LD31 extends PApplet {
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
-		footer = new TextBox(renderer.font, 4, height - 12, width, 8, MSG_FOOTER);
+		footer = new TextBox(renderer.font, 4, height - 12, width, 8, "");
 		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 
 		//setup end screens
-		win = new EndScreen(renderer.font, MSG_WIN, MSG_FOOTER_END, color(0, 120, 0));
-		die = new EndScreen(renderer.font, MSG_DIE, MSG_FOOTER_END, color(120, 0, 0));
+		win = new EndScreen(renderer.font, MSG_WIN, "", color(0, 120, 0));
+		die = new EndScreen(renderer.font, MSG_DIE, "", color(120, 0, 0));
 
 		//setup main menu
 		mainMenu = new Menu();
@@ -217,6 +217,8 @@ public class LD31 extends PApplet {
 		input.addMonitor(CTL_DOWN,	(int)'S', (int)'2', Input.K_DOWN);
 		input.addMonitor(CTL_RIGHT, (int)'D', (int)'6', Input.K_RIGHT);
 
+		applyFooterText();
+
 		gameState = ST_MENU;
 	}
 
@@ -265,6 +267,21 @@ public class LD31 extends PApplet {
 		level = new Level(1920, 1080); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
+	}
+
+	private void applyFooterText() {
+		String footerText = String.format(MSG_FOOTER,
+				input.keyMap(CTL_UP   , 0),
+				input.keyMap(CTL_LEFT , 0),
+				input.keyMap(CTL_DOWN , 0),
+				input.keyMap(CTL_RIGHT, 0),
+				input.keyMap(CTL_RESTART, 0));
+		String footerEndText = String.format(MSG_FOOTER_END,
+				input.keyMap(CTL_RESTART, 0));
+
+		footer.text = footerText;
+		win.footer  = footerEndText;
+		die.footer  = footerEndText;
 	}
 
 	private void drawRunning() {
@@ -406,6 +423,8 @@ public class LD31 extends PApplet {
 				indices.put(widget.tag, index);
 			}
 		}
+
+		applyFooterText();
 	}
 
 	private void drawCampaign() {
