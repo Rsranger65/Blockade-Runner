@@ -44,7 +44,6 @@ public class Profiler {
 	public void report(PApplet context) {
 		for (int i = 0; i < PROFILE_SIZE; i++)
 			System.out.printf("%s: %.3f\n", description[i], (endTimeMS[i] - startTimeMS[i]) / 1000.0); //$NON-NLS-1$
-		System.out.printf("FRAMERATE_AVG: %.2f\n", 1000.0 * context.frameCount / context.millis()); //$NON-NLS-1$
 		System.out.printf("FRAMERATE_CUR: %.2f\n", context.frameRate); //$NON-NLS-1$
 		System.out.println();
 	}
