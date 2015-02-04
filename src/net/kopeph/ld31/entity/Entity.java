@@ -152,112 +152,21 @@ public class Entity implements Renderable {
 	public Node toNode() {
 		return new Node(x(), y());
 	}
-
+	
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
-		final int xInitial = screenX(); //pre-calculating these gives us a huge performance improvement
-		final int yInitial = screenY(); //holy shit
-		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
-		
-		PointPredicate op;
-		if (context.contains(xInitial, yInitial)) {
-			op = (x, y) -> {
-				//restrict it to a circle
-				int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
-				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
-				
-				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
-				if (array[i] == Level.FLOOR_NONE) return false;
-				
-				array[i] |= color;
-				return true;
-			};
-		} else {
-			op = (x, y) -> {
-				//restrict it to a circle
-				int dx = x - xInitial, dy = y - yInitial; //squaring manually to avoid int/float conversion with PApplet.sq()
-				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
-				
-				//restrict to the window (avoid out-of-bounds exceptions)
-				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
+		int cx = screenX(), cy = screenY();
+		Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+			Trace.line(cx, cy, x0, y0, (x, y) -> {
 				if (!context.contains(x, y)) return true;
+				int i = y*context.lastWidth + x;
 				if (array[i] == Level.FLOOR_NONE) return false;
-				
 				array[i] |= color;
 				return true;
-			};
-		}
-
-		//change the bounds of the for loop to stay within the level
-		//this way we don't do more ray casts than we have to
-		int minx = PApplet.max(xInitial - viewDistance + 1, 0);
-		int miny = PApplet.max(yInitial - viewDistance + 1, 0);
-		int maxx = PApplet.min(xInitial + viewDistance - 1, context.lastWidth - 1);
-		int maxy = PApplet.min(yInitial + viewDistance - 1, context.lastHeight - 1);
-		
-		//information (flags) for how to optimize our ray casting
-		boolean traceRight = xInitial < maxx;
-		boolean traceLeft  = xInitial > 0;
-		boolean traceDown  = yInitial < maxy;
-		boolean traceUp    = yInitial > 0;
-		
-		boolean cautionRight = maxx < xInitial + viewDistance - 1;
-		boolean cautionLeft  = minx > xInitial - viewDistance + 1;
-		boolean cautionDown  = maxy < yInitial + viewDistance - 1;
-		boolean cautionUp    = miny > yInitial - viewDistance + 1;
-		
-		//pre-calculate whatever we can
-		int dy1 = yInitial - miny, dy1sq = dy1*dy1;
-		int dy2 = yInitial - maxy, dy2sq = dy2*dy2;
-		
-		for (int x = minx; x <= maxx; ++x) {
-			int dx = xInitial - x, dxsq = dx*dx;
-			
-			if (traceUp) {
-				if (cautionUp && dy1sq + dxsq < vdsq)
-					Trace.line(xInitial, yInitial, x, miny, op);
-				else
-					Trace.ray(xInitial, yInitial, x, miny, op);
-			}
-			
-			if (traceDown) {
-				if (cautionDown && dy2sq + dxsq < vdsq)
-					Trace.line(xInitial, yInitial, x, maxy, op);
-				else
-					Trace.ray(xInitial, yInitial, x, maxy, op);
-			}
-			
-			//DEBUG
-			//array[miny*context.width + dx] = Entity.COLOR_OBJECTIVE;
-			//array[maxy*context.width + dx] = Entity.COLOR_OBJECTIVE;
-		}
-
-		//pre-calculate whatever we can
-		int dx1 = xInitial - minx, dx1sq = dx1*dx1;
-		int dx2 = xInitial - maxx, dx2sq = dx2*dx2;
-		
-		for (int y = miny + 1; y < maxy; ++y) {
-			int dy = yInitial - y, dysq = dy*dy;
-			
-			if (traceLeft) {
-				if (cautionLeft && dx1sq + dysq < vdsq)
-					Trace.line(xInitial, yInitial, minx, y, op);
-				else
-					Trace.ray(xInitial, yInitial, minx, y, op);
-			}
-			
-			if (traceRight) {
-				if (cautionRight && dx2sq + dysq < vdsq)
-					Trace.line(xInitial, yInitial, maxx, y, op);
-				else
-					Trace.ray(xInitial, yInitial, maxx, y, op);
-			}
-			
-			//DEBUG
-			//array[dy*context.width + minx] = Entity.COLOR_ENEMY_COM;
-			//array[dy*context.width + maxx] = Entity.COLOR_ENEMY_COM;
-		}
+			});
+			return true;
+		});
 	}
-
+	
 	@Override
 	public void render() {
 		Trace.rectangle(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
