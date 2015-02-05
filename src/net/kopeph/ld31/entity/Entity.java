@@ -5,11 +5,8 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Pointer;
-import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
-import processing.core.PApplet;
 
 public class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
