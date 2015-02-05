@@ -7,6 +7,7 @@ import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Pointer;
+import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
@@ -155,16 +156,42 @@ public class Entity implements Renderable {
 	
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
 		int cx = screenX(), cy = screenY();
-		Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
-			Trace.line(cx, cy, x0, y0, (x, y) -> {
-				if (!context.contains(x, y)) return true;
-				int i = y*context.lastWidth + x;
-				if (array[i] == Level.FLOOR_NONE) return false;
-				array[i] |= color;
+		if (cx >= viewDistance &&
+			cy >= viewDistance &&
+			cx < context.width - viewDistance &&
+			cy < context.height - viewDistance) {
+			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+				Trace.line(cx, cy, x0, y0, (x, y) -> {
+					int i = y*context.lastWidth + x;
+					if (array[i] == Level.FLOOR_NONE) return false;
+					array[i] |= color;
+					return true;
+				});
 				return true;
 			});
-			return true;
-		});
+		} else if (context.contains(cx, cy)) {
+			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+				Trace.line(cx, cy, x0, y0, (x, y) -> {
+					if (!context.contains(x, y)) return false;
+					int i = y*context.lastWidth + x;
+					if (array[i] == Level.FLOOR_NONE) return false;
+					array[i] |= color;
+					return true;
+				});
+				return true;
+			});
+		} else {
+			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+				Trace.line(cx, cy, x0, y0, (x, y) -> {
+					if (!context.contains(x, y)) return true;
+					int i = y*context.lastWidth + x;
+					if (array[i] == Level.FLOOR_NONE) return false;
+					array[i] |= color;
+					return true;
+				});
+				return true;
+			});
+		}
 	}
 	
 	@Override
