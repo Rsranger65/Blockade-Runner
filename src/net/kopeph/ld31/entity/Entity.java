@@ -9,6 +9,7 @@ import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
+import processing.core.PApplet;
 
 public class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
@@ -156,36 +157,33 @@ public class Entity implements Renderable {
 	public void rayTrace(final int[] array, final int viewDistance, final int color) {
 		int cx = screenX(), cy = screenY();
 		
-		PointPredicate op;
-		if (Util.boxContains(viewDistance, viewDistance, context.width - viewDistance*2, context.height - viewDistance*2, cx, cy)) {
-			op = (x, y) -> {
-				int i = y*context.lastWidth + x;
-				if (array[i] == Level.FLOOR_NONE) return false;
-				array[i] |= color;
+		if (context.contains(cx, cy)) {
+			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+				Trace.line(cx, cy, PApplet.min(context.width - 1, PApplet.max(0, x0)), PApplet.min(context.height - 1, PApplet.max(0, y0)), (x, y) -> {
+					int i = y*context.lastWidth + x;
+					if (array[i] == Level.FLOOR_NONE) return false;
+					array[i] |= color;
+					return true;
+				});
 				return true;
-			};
-		} else if (context.contains(cx, cy)) {
-			op = (x, y) -> {
-				if (!context.contains(x, y)) return false;
-				int i = y*context.lastWidth + x;
-				if (array[i] == Level.FLOOR_NONE) return false;
-				array[i] |= color;
-				return true;
-			};
+			});
 		} else {
-			op = (x, y) -> {
-				if (!context.contains(x, y)) return true;
-				int i = y*context.lastWidth + x;
-				if (array[i] == Level.FLOOR_NONE) return false;
-				array[i] |= color;
+			//this produces the wrong result on (literal) corner cases where both the source and the destination of the line
+			//are outside of level boundaries, but the line crosses over a corner. But since I can't think of any better way
+			//to do this and it won't affect gameplay, I'm leaving it like this for now. XXX: fix lighting for corner cases.
+			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
+				if (context.contains(x0, y0)) {
+					Trace.line(cx, cy, x0, y0, (x, y) -> {
+						if (!context.contains(x, y)) return true;
+						int i = y*context.lastWidth + x;
+						if (array[i] == Level.FLOOR_NONE) return false;
+						array[i] |= color;
+						return true;
+					});
+				}
 				return true;
-			};
+			});
 		}
-		
-		Trace.circle(cx, cy, viewDistance, true, (x, y) -> {
-			Trace.line(cx, cy, x, y, op);
-			return true;
-		});
 	}
 	
 	@Override
