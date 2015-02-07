@@ -138,6 +138,7 @@ public class Renderer {
 	}
 
 	//helper function for lighting scheduler in calculateLighting()
+	//XXX:currently unreferenced
 	private int firstOutOfRange(List<Integer> order, List<Enemy> light, int fromIndex) {
 		//find the first enemy that is unlit and out of lighting range of all current lighting threads
 		for (int i = fromIndex + 1; i < light.size(); ++i)
@@ -147,7 +148,7 @@ public class Renderer {
 	}
 
 	//helper function for firstOutOfRange()
-	private boolean safeToLight(List<Integer> order, List<Enemy> light, int index, int poolSize) {
+	private static boolean safeToLight(List<Integer> order, List<Enemy> light, int index, int poolSize) {
 		//if the lighting range overlaps with any currently running lighting threads, cancel
 		for (int i = PApplet.max(0, order.size() - poolSize); i < order.size(); ++i)
 			if (PApplet.dist(light.get(order.get(i)).screenX(), light.get(order.get(i)).screenY(), light.get(index).screenX(), light.get(index).screenY()) < light.get(index).viewDistance*2)

@@ -153,7 +153,7 @@ public class Entity implements Renderable {
 		return new Node(x(), y());
 	}
 
-	public void rayTrace(final int[] array, final int viewDistance, final int color) {
+	public void rayTrace(final int[] array, final int viewDistance, final int toColor) {
 		final int xInitial = screenX(); //pre-calculating these gives us a huge performance improvement
 		final int yInitial = screenY(); //holy shit
 		final int vdsq = viewDistance*viewDistance; //don't judge, every CPU cycle counts
@@ -168,7 +168,7 @@ public class Entity implements Renderable {
 				int i = y*context.lastWidth + x; //we use this value twice now, so it makes sense to calculate and store
 				if (array[i] == Level.FLOOR_NONE) return false;
 
-				array[i] |= color;
+				array[i] |= toColor;
 				return true;
 			};
 		} else {
@@ -182,7 +182,7 @@ public class Entity implements Renderable {
 				if (!context.contains(x, y)) return true;
 				if (array[i] == Level.FLOOR_NONE) return false;
 
-				array[i] |= color;
+				array[i] |= toColor;
 				return true;
 			};
 		}

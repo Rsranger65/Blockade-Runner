@@ -110,12 +110,12 @@ public class LD31 extends PApplet {
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
-		footer = new TextBox(renderer.font, 4, height - 12, width, 8, "");
+		footer = new TextBox(renderer.font, 4, height - 12, width, 8, ""); //$NON-NLS-1$
 		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM;
 
 		//setup end screens
-		win = new EndScreen(renderer.font, MSG_WIN, "", color(0, 120, 0));
-		die = new EndScreen(renderer.font, MSG_DIE, "", color(120, 0, 0));
+		win = new EndScreen(renderer.font, MSG_WIN, "", color(0, 120, 0)); //$NON-NLS-1$
+		die = new EndScreen(renderer.font, MSG_DIE, "", color(120, 0, 0)); //$NON-NLS-1$
 
 		//setup main menu
 		mainMenu = new Menu();
@@ -131,7 +131,7 @@ public class LD31 extends PApplet {
 
 		TextBox[][] widgets = new TextBox[CTL_NAMES.size() + 1][CTL_SLOTS + 1]; //[y][x]
 		//seed the (unused) top left corner of the table
-		widgets[0][0] = new TextBox(renderer.font, "",
+		widgets[0][0] = new TextBox(renderer.font, "", //$NON-NLS-1$
 		                            -30*widgets[0].length,
 		                            -20*widgets.length + 10);
 
@@ -155,7 +155,7 @@ public class LD31 extends PApplet {
 			for (int col = 1; col < widgets[row].length; ++col) {
 				final int r = row, c = col; //needed for the behavior to work
 				//Don't bother with the displayed until draw time
-				widgets[r][c] = new MenuButton(renderer.font, "",
+				widgets[r][c] = new MenuButton(renderer.font, "", //$NON-NLS-1$
 				                               widgets[0][c].xPos,
 				                               widgets[r][0].yPos,
 				                               50, 20,
@@ -455,7 +455,7 @@ public class LD31 extends PApplet {
 
 	private static String buildVersion() {
 		try {
-			return ResourceBundle.getBundle("version").getString("build.versionString");
+			return ResourceBundle.getBundle("version").getString("build.versionString"); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (MissingResourceException e) {
 			//If the version file doesn't exist, make a version string based on
 			//branch name and short hash
