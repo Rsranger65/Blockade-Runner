@@ -111,7 +111,7 @@ public class LD31 extends PApplet {
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
 
 		footer = new TextBox(renderer.font, 4, height - 12, width, 8, ""); //$NON-NLS-1$
-		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM;
+		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM; //XXX: Positioning must match in EndScreen.java
 
 		//setup end screens
 		win = new EndScreen(renderer.font, MSG_WIN, "", color(0, 120, 0)); //$NON-NLS-1$
