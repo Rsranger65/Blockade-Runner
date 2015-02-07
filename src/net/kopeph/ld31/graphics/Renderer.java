@@ -20,6 +20,7 @@ public class Renderer {
 	public PImage textureYellow , rawTextureYellow;
 	public PImage textureGrey   , rawTextureGrey;
 	public PImage textureWhite  , rawTextureWhite;
+	public PImage textureBlack  , rawTextureBlack;
 	public Font font;
 	
 	public int viewX = 0, viewY = 0;
@@ -41,6 +42,7 @@ public class Renderer {
 		rawTextureYellow  = context.loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
 		rawTextureGrey    = context.loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
 		rawTextureWhite   = context.loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
+		rawTextureBlack   = context.loadImage("res/black-background.jpg"  ); //$NON-NLS-1$
 
 		font = new Font("res/font-16-white.png"); //$NON-NLS-1$
 	}
@@ -54,6 +56,7 @@ public class Renderer {
 		textureYellow  = Util.crop(rawTextureYellow , width, height);
 		textureGrey    = Util.crop(rawTextureGrey   , width, height);
 		textureWhite   = Util.crop(rawTextureWhite  , width, height);
+		textureBlack   = Util.crop(rawTextureBlack  , width, height);
 	}
 	
 	public void calculateLighting(int[] lighting, Level level) {
@@ -165,7 +168,7 @@ public class Renderer {
 	private void applyTextureImpl(final int[] pixels, int iBegin, int iEnd) {
 		for (int i = iBegin; i < iEnd; ++i) {
 			switch (pixels[i]) {
-				case Level.FLOOR_NONE: break; //I don't know if this helps speed or not
+				case Level.FLOOR_NONE:    pixels[i] = textureBlack.pixels[i];   break;
 				case Level.FLOOR_RED:     pixels[i] = textureRed.pixels[i];     break;
 				case Level.FLOOR_GREEN:   pixels[i] = textureGreen.pixels[i];   break;
 				case Level.FLOOR_BLUE:    pixels[i] = textureBlue.pixels[i];    break;
