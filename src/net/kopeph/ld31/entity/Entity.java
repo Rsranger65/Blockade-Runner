@@ -152,7 +152,7 @@ public class Entity implements Renderable {
 		return new Node(x(), y());
 	}
 
-	public void rayTrace(final int[] array, final int viewDistance, final int toColor) {
+	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {
 		int cx = screenX(), cy = screenY();
 
 		if (context.contains(cx, cy)) {
@@ -160,7 +160,7 @@ public class Entity implements Renderable {
 				Trace.line(cx, cy, PApplet.min(context.width - 1, PApplet.max(0, x0)), PApplet.min(context.height - 1, PApplet.max(0, y0)), (x, y) -> {
 					int i = y*context.lastWidth + x;
 					if (array[i] == Level.FLOOR_NONE) return false;
-					array[i] |= toColor;
+					array[i] |= lightColor;
 					return true;
 				});
 				return true;
@@ -175,7 +175,7 @@ public class Entity implements Renderable {
 						if (!context.contains(x, y)) return true;
 						int i = y*context.lastWidth + x;
 						if (array[i] == Level.FLOOR_NONE) return false;
-						array[i] |= toColor;
+						array[i] |= lightColor;
 						return true;
 					});
 				}
