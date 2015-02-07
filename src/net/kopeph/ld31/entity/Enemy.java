@@ -18,12 +18,12 @@ public class Enemy extends Entity {
 
 	public Enemy(Level level) {
 		super(level, Entity.COLOR_ENEMY_COM);
-		
+
 		//give the enemy a random color
 		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
 		color = possibleColors[(int)(context.random(possibleColors.length))];
 	}
-	
+
 	public Enemy(Level level, int color) {
 		super(level, color);
 	}
@@ -56,9 +56,9 @@ public class Enemy extends Entity {
 			speedMultiplier = 1.25; //set speed slightly faster than player
 
 			move(y() > level.player.y(), //Pursue TODO: make this pursue in line of sight direction
-				 y() < level.player.y(),
-				 x() > level.player.x(),
-				 x() < level.player.x());
+			     y() < level.player.y(),
+			     x() > level.player.x(),
+			     x() < level.player.x());
 		} else {
 			speedMultiplier = 0.75; //set speed slightly slower than player
 
@@ -76,6 +76,7 @@ public class Enemy extends Entity {
 			direction = context.random(8);
 	}
 
+	@Override
 	public void render() {
 		super.render();
 

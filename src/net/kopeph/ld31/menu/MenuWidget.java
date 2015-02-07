@@ -59,7 +59,6 @@ public abstract class MenuWidget implements Renderable {
 		case ANCHOR_FILL:  width += dCtxWidth; 	   break;
 		}
 
-
 		switch(yAnchor) {
 		case ANCHOR_CENTER: yPos += dCtxHeight/2.0; break;
 		case ANCHOR_TOP: 						    break;
@@ -68,5 +67,6 @@ public abstract class MenuWidget implements Renderable {
 		}
 	}
 
+	@Override
 	public abstract void render();
 }

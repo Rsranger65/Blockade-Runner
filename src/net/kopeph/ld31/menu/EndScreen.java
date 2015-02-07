@@ -27,6 +27,7 @@ public class EndScreen implements Renderable {
 		this.backColor = backColor;
 	}
 
+	@Override
 	public void render() {
 		//keeping track of the phase
 		if (lastFrame < context.frameCount - 1)
@@ -34,18 +35,18 @@ public class EndScreen implements Renderable {
 		if (phase > 0)
 			--phase;
 		lastFrame = context.frameCount;
-		
+
 		context.pushStyle();
-		
+
 		context.rectMode(PConstants.CENTER);
 		context.fill(phase * context.red  (backColor) / PHASE_TWO,
-					 phase * context.green(backColor) / PHASE_TWO,
-					 phase * context.blue (backColor) / PHASE_TWO);
+		             phase * context.green(backColor) / PHASE_TWO,
+		             phase * context.blue (backColor) / PHASE_TWO);
 		context.rect(context.width/2, context.height/2, context.width,
-					(PHASE_ONE - phase) * context.height / (PHASE_ONE - PHASE_TWO));
+			(PHASE_ONE - phase) * context.height / (PHASE_ONE - PHASE_TWO));
 		font.renderCentered(title, context.width/2, context.height/2);
 		font.render(footer, 8, context.height - 16);
-		
+
 		context.popStyle();
 	}
 }

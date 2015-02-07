@@ -55,7 +55,7 @@ public class LD31 extends PApplet {
 		CTL_RIGHT    = "game.right", //$NON-NLS-1$
 		CTL_RESTART  = "game.reset", //$NON-NLS-1$
 		CTL_PAUSE    = "game.pause", //$NON-NLS-1$
-		CTL_ESCAPE   = "sys.esc"; 	 //$NON-NLS-1$
+		CTL_ESCAPE   = "sys.esc";    //$NON-NLS-1$
 
 	private static final int CTL_SLOTS = 3; //how many columns to show the user
 	private static final List<String> CTL_IDS = Arrays.asList(
@@ -91,7 +91,7 @@ public class LD31 extends PApplet {
 	private int fadePhase;
 
 	public boolean interacting = false; //mouse interaction (used by MenuButton)
-	
+
 	public Renderer renderer;
 
 	@Override
@@ -132,15 +132,15 @@ public class LD31 extends PApplet {
 		TextBox[][] widgets = new TextBox[CTL_NAMES.size() + 1][CTL_SLOTS + 1]; //[y][x]
 		//seed the (unused) top left corner of the table
 		widgets[0][0] = new TextBox(renderer.font, "",
-									-30*widgets[0].length,
-									-20*widgets.length + 10);
+		                            -30*widgets[0].length,
+		                            -20*widgets.length + 10);
 
 		//TODO: move relative calculation based layout to TextBox ctor
 		//fill in the first row with slot numbers
 		for (int col = 1; col < widgets[0].length; ++col) {
 			widgets[0][col] = new TextBox(renderer.font, String.valueOf(col),
-										  widgets[0][col - 1].xPos + 60,
-										  widgets[0][0].yPos);
+			                              widgets[0][col - 1].xPos + 60,
+			                              widgets[0][0].yPos);
 			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
 		}
 
@@ -148,17 +148,17 @@ public class LD31 extends PApplet {
 		int row = 1;
 		for (final String id : CTL_IDS) {
 			widgets[row][0] = new TextBox(renderer.font, CTL_NAMES.get(id),
-										  widgets[0][0].xPos,
-										  widgets[row - 1][0].yPos + 30);
+			                              widgets[0][0].xPos,
+			                              widgets[row - 1][0].yPos + 30);
 			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
 
 			for (int col = 1; col < widgets[row].length; ++col) {
 				final int r = row, c = col; //needed for the behavior to work
 				//Don't bother with the displayed until draw time
 				widgets[r][c] = new MenuButton(renderer.font, "",
-											   widgets[0][c].xPos,
-											   widgets[r][0].yPos,
-											   50, 20,
+				                               widgets[0][c].xPos,
+				                               widgets[r][0].yPos,
+				                               50, 20,
 				(down) -> {
 					input.handleBind(id, c - 1, CTL_ESCAPE);
 				});
@@ -212,9 +212,9 @@ public class LD31 extends PApplet {
 				gameState = ST_MENU;
 			}
 		}, Input.K_ESC);
-		input.addMonitor(CTL_UP,	(int)'W', (int)'8', Input.K_UP);
-		input.addMonitor(CTL_LEFT,	(int)'A', (int)'4', Input.K_LEFT);
-		input.addMonitor(CTL_DOWN,	(int)'S', (int)'2', Input.K_DOWN);
+		input.addMonitor(CTL_UP,    (int)'W', (int)'8', Input.K_UP);
+		input.addMonitor(CTL_LEFT,  (int)'A', (int)'4', Input.K_LEFT);
+		input.addMonitor(CTL_DOWN,  (int)'S', (int)'2', Input.K_DOWN);
 		input.addMonitor(CTL_RIGHT, (int)'D', (int)'6', Input.K_RIGHT);
 
 		applyFooterText();
@@ -225,19 +225,19 @@ public class LD31 extends PApplet {
 	public static LD31 getContext() {
 		return context;
 	}
-	
+
 	@Override
 	public boolean contains(int x, int y) {
 		return (x >= 0 && y >= 0 && x < lastWidth && y < lastHeight);
 	}
 
 	public int lastWidth, lastHeight;
-	
+
 	@Override
 	public void draw() {
 		if (width != lastWidth || height != lastHeight)
 				resize();
-		
+
 		switch (gameState) {
 			case ST_RESET_HARD: reset(); resize(); break;
 			case ST_RESET:      reset();           break;
@@ -271,13 +271,13 @@ public class LD31 extends PApplet {
 
 	private void applyFooterText() {
 		String footerText = String.format(MSG_FOOTER,
-				input.keyMap(CTL_UP   , 0),
-				input.keyMap(CTL_LEFT , 0),
-				input.keyMap(CTL_DOWN , 0),
-				input.keyMap(CTL_RIGHT, 0),
-				input.keyMap(CTL_RESTART, 0));
+			input.keyMap(CTL_UP   , 0),
+			input.keyMap(CTL_LEFT , 0),
+			input.keyMap(CTL_DOWN , 0),
+			input.keyMap(CTL_RIGHT, 0),
+			input.keyMap(CTL_RESTART, 0));
 		String footerEndText = String.format(MSG_FOOTER_END,
-				input.keyMap(CTL_RESTART, 0));
+			input.keyMap(CTL_RESTART, 0));
 
 		footer.text = footerText;
 		win.footer  = footerEndText;

@@ -22,17 +22,17 @@ public class Renderer {
 	public PImage textureWhite  , rawTextureWhite;
 	public PImage textureBlack  , rawTextureBlack;
 	public Font font;
-	
+
 	public int viewX = 0, viewY = 0;
-	
+
 	private final LD31 context;
 	private final ThreadPool renderingPool = new ThreadPool();
-	
+
 	private Map<Integer, List<Renderable>> states;
-	
+
 	public Renderer() {
 		context = LD31.getContext();
-		
+
 		//load raw textures
 		rawTextureRed     = context.loadImage("res/red-background.jpg"    ); //$NON-NLS-1$
 		rawTextureGreen   = context.loadImage("res/green-background.jpg"  ); //$NON-NLS-1$
@@ -46,7 +46,7 @@ public class Renderer {
 
 		font = new Font("res/font-16-white.png"); //$NON-NLS-1$
 	}
-	
+
 	public void cropTextures(int width, int height) {
 		textureRed     = Util.crop(rawTextureRed    , width, height);
 		textureGreen   = Util.crop(rawTextureGreen  , width, height);
@@ -58,21 +58,21 @@ public class Renderer {
 		textureWhite   = Util.crop(rawTextureWhite  , width, height);
 		textureBlack   = Util.crop(rawTextureBlack  , width, height);
 	}
-	
+
 	public void calculateLighting(int[] lighting, Level level) {
 		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.lastWidth, level.player.x() - context.lastWidth/2));
 		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.lastHeight, level.player.y() - context.lastHeight/2));
-		
+
 		//crop the tiles array into the pixels array
 		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
 		for (int y = 0; y < PApplet.min(context.lastHeight, level.LEVEL_HEIGHT); ++y) {
 			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
 		}
-		
-		
+
+
 		/*
 		//LIGHTING SCHEDULER:
-		
+
 		//build list of enemies needing lighting
 		List<Enemy> light = new ArrayList<>();
 		for (Enemy e : level.enemies)
@@ -82,19 +82,19 @@ public class Renderer {
 								 context.lastHeight + e.viewDistance - 2,
 								 e.screenX(), e.screenY()))
 				light.add(e);
-		
+
 		//if there are no enemies to light, don't bother with any of this
 		if (light.size() == 0) {
 			System.out.println("NO ENEMIES TO LIGHT"); //debug
 			return;
 		}
-		
+
 		//create stack representing the order of enemies to light
 		List<Integer> order = new ArrayList<>(); //really just a stack, to be honest, but lists are nice
-		
+
 		//create "current" index to keep track of where we are in the algorithm
 		int current = -1;
-		
+
 		//while the ordering is incomplete
 		while (order.size() < light.size()) {
 			//find the next potential
@@ -108,8 +108,8 @@ public class Renderer {
 				order.add(current);
 				current = -1;
 			}
-			
-			//if we try all our possibilities and 
+
+			//if we try all our possibilities and
 			if (order.size() == 0) {
 				System.out.println("LIGHTING ORDER FAILED");
 				for (int i = 0; i < light.size(); ++i)
@@ -117,15 +117,15 @@ public class Renderer {
 				break;
 			}
 		}
-		
-		
-		
+
+
+
 		for (Integer i : order) {
 			Enemy e = light.get(i);
 			renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 		}
 		*/
-		
+
 		for (final Enemy e : level.enemies) {
 			//create a new thread to run the lighting process of each enemy
 			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
@@ -133,10 +133,10 @@ public class Renderer {
 				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 			}
 		}
-		
+
 		renderingPool.forceSync();
 	}
-	
+
 	//helper function for lighting scheduler in calculateLighting()
 	private int firstOutOfRange(List<Integer> order, List<Enemy> light, int fromIndex) {
 		//find the first enemy that is unlit and out of lighting range of all current lighting threads
@@ -145,7 +145,7 @@ public class Renderer {
 				return i;
 		return -1;
 	}
-	
+
 	//helper function for firstOutOfRange()
 	private boolean safeToLight(List<Integer> order, List<Enemy> light, int index, int poolSize) {
 		//if the lighting range overlaps with any currently running lighting threads, cancel
@@ -154,7 +154,7 @@ public class Renderer {
 				return false; //TODO: make this more DRY and readable
 		return true;
 	}
-	
+
 	public void applyTexture(int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
@@ -164,7 +164,7 @@ public class Renderer {
 
 		renderingPool.forceSync();
 	}
-	
+
 	private void applyTextureImpl(final int[] pixels, int iBegin, int iEnd) {
 		for (int i = iBegin; i < iEnd; ++i) {
 			switch (pixels[i]) {
@@ -180,16 +180,16 @@ public class Renderer {
 			}
 		}
 	}
-	
+
 	public void addContext(Integer state, List<Renderable> targets) {
 		states.put(state, targets);
 	}
-	
+
 	public void renderContext(Integer state) {
 		for (Renderable r : states.get(state))
 			r.render();
 	}
-	
+
 	public void renderEntities(Level level) {
 		level.objective.render();
 		level.player.render();

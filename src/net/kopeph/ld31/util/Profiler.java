@@ -15,11 +15,11 @@ public class Profiler {
 		PIXEL_UPDATE = 5,
 		PROFILE_SIZE = 6;
 	private static final String[] description = {
-		"PLAYER_MOVE", 	//$NON-NLS-1$
-		"LIGHTING", 	//$NON-NLS-1$
-		"ENEMY_PATH", 	//$NON-NLS-1$
-		"TEXTURE", 		//$NON-NLS-1$
-		"ENTITY_DRAW", 	//$NON-NLS-1$
+		"PLAYER_MOVE",  //$NON-NLS-1$
+		"LIGHTING",     //$NON-NLS-1$
+		"ENEMY_PATH",   //$NON-NLS-1$
+		"TEXTURE",      //$NON-NLS-1$
+		"ENTITY_DRAW",  //$NON-NLS-1$
 		"PIXEL_UPDATE", //$NON-NLS-1$
 		"PROFILE_SIZE", //$NON-NLS-1$
 	};

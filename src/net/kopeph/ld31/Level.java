@@ -100,8 +100,8 @@ public class Level implements AutoCloseable {
 					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
 					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
 				} while (Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) < MIN_HALLWAY_LENGTH ||
-						 Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
-						 !validTile(rx1, ry1) || !validTile(rx2, ry2));
+				         Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
+				         !validTile(rx1, ry1) || !validTile(rx2, ry2));
 
 				//clear out the tiles
 				for (int x = rx1; x != rx2; x += (rx1 < rx2? 1 : -1))
