@@ -137,6 +137,8 @@ public class Input {
 	}
 
 	public String keyMap(String id, int index) {
+		if (keyMap.get(id).size() == 0)
+			return getKeyTitle(K_UNBOUND);
 		return getKeyTitle(keyMap.get(id).get(index));
 	}
 
