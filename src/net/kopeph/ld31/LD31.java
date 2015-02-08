@@ -20,7 +20,6 @@ import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.menu.MenuWidget;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
-import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 
 /** Everything inside here works like it does in processing */
@@ -262,8 +261,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void reset() {
-		Util.forceClose(level); //prevent resource leak from earlier ThreadPool (if any)
-		level = new Level(1920, 1080); //level verifies itself so we don't do that here anymore
+		level = new Level("res/test-level.png"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}

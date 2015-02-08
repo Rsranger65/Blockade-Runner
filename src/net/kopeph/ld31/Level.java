@@ -6,13 +6,13 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
-import net.kopeph.ld31.util.ThreadPool;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 /**
  * @author stuntddude
  */
-public class Level implements AutoCloseable {
+public class Level {
 	//C-style enumeration of color values
 	public static final int
 		FLOOR_NONE    = 0x00000000,
@@ -25,35 +25,16 @@ public class Level implements AutoCloseable {
 		FLOOR_YELLOW  = 0xFFFFFF00,
 		FLOOR_MAGENTA = 0xFFFF00FF;
 
-	//constants (these may not be constant later)
-	private final int ROOM_COUNT, //25
-	                  MIN_ROOM_WIDTH = 50,
-	                  MIN_ROOM_HEIGHT = 50,
-	                  MAX_ROOM_WIDTH = 150,
-	                  MAX_ROOM_HEIGHT = 150,
-
-	                  HALLWAY_COUNT, //60
-	                  MIN_HALLWAY_LENGTH, //50
-	                  MAX_HALLWAY_LENGTH, //300
-	                  HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
-
-	                  VORONOI_POINTS = 100;
-
 	public final int LEVEL_WIDTH,
-	                 LEVEL_HEIGHT,
-	                 ENEMY_COUNT; //20
+	                 LEVEL_HEIGHT;
 
 	//enemies and player
 	public Enemy[] enemies;
 	public Entity  player;
 	public Entity  objective;
 
-	private final ThreadPool lightingThreadPool = new ThreadPool();
 	public final int[] tiles;
-
-	//used to constrain Entity.rayTrace() for performance purposes
-	public int minx, miny, maxx, maxy;
-
+	
 	public Level(int width, int height) {
 		PApplet context = LD31.getContext();
 
@@ -62,22 +43,22 @@ public class Level implements AutoCloseable {
 
 		//a few adjustments to make the level properties scale somewhat with the game size
 		//these are more or less just arbitrary magic numbers that are "close enough" to the desired result
-		ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 36000;
-		HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 18000 + 10;
-		MIN_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 18000;
-		MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200;
+		final int ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 36000,
+		          MIN_ROOM_WIDTH = 50,
+		          MIN_ROOM_HEIGHT = 50,
+		          MAX_ROOM_WIDTH = 150,
+		          MAX_ROOM_HEIGHT = 150,
 
-		ENEMY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
+		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 18000 + 10,
+		          MIN_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 18000,
+		          MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200,
+		          HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
+
+		          VORONOI_POINTS = 100;
 
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 
 		do {
-			//these will be overwritten later in clearRect()
-			minx = LEVEL_WIDTH;
-			miny = LEVEL_HEIGHT;
-			maxx = 0;
-			maxy = 0;
-
 			Arrays.fill(tiles, FLOOR_NONE);
 
 			//clear out the rooms
@@ -127,7 +108,7 @@ public class Level implements AutoCloseable {
 		}
 
 		//for each pixel of floor
-		for (int i = tiles.length - 1; i-- != 0;) {
+		for (int i = tiles.length - 1; i-- > 0;) {
 			if (tiles[i] != FLOOR_NONE) {
 				//assign the color of the closest voronoi point (by manhattan distance)
 				int minDistance = 1000000; //arbitrarily large number
@@ -146,22 +127,25 @@ public class Level implements AutoCloseable {
 				tiles[i] = color;
 			}
 		}
-
-		//clean up 1-wide walls (this may not even be worth the extra work)
-		for (int y = 1; y < LEVEL_HEIGHT - 1; ++y) {
-			for (int x = 1; x < LEVEL_WIDTH - 1; ++x) {
-				if (tiles[y*LEVEL_WIDTH + x] == FLOOR_NONE) {
-					if (tiles[y*LEVEL_WIDTH + x - 1] != FLOOR_NONE &&
-						tiles[y*LEVEL_WIDTH + x + 1] != FLOOR_NONE) {
-						tiles[y*LEVEL_WIDTH + x] = tiles[y*LEVEL_WIDTH + x - 1];
-					} else if (tiles[(y - 1)*LEVEL_WIDTH + x] != FLOOR_NONE &&
-					           tiles[(y + 1)*LEVEL_WIDTH + x] != FLOOR_NONE) {
-						tiles[y*LEVEL_WIDTH + x] = tiles[(y + 1)*LEVEL_WIDTH + x];
-					}
-				}
-			}
-		}
-
+		
+		placeEntities();
+	}
+	
+	public Level(String filePath) {
+		PApplet context = LD31.getContext();
+		
+		PImage img = context.loadImage(filePath);
+		LEVEL_WIDTH = img.width;
+		LEVEL_HEIGHT = img.height;
+		tiles = img.pixels;
+		
+		placeEntities();
+	}
+	
+	//helper function for constructors
+	private void placeEntities() {
+		final int ENEMY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
+		
 		//add enemies
 		enemies = new Enemy[ENEMY_COUNT];
 		for (int i = 0; i < ENEMY_COUNT; ++i)
@@ -171,13 +155,11 @@ public class Level implements AutoCloseable {
 		//this is so we don't lock up on edge cases where one of the placements can't possibly succeed
 		int placementFailCount = 0;
 
-		//add player
 		do {
 			player = new Entity(this, Entity.COLOR_PLAYER);
 			++placementFailCount;
 		} while (!goodPlayerPlacement() && placementFailCount < 100);
 
-		//add objective
 		placementFailCount = 0;
 		do {
 			objective = new Entity(this, Entity.COLOR_OBJECTIVE);
@@ -185,26 +167,18 @@ public class Level implements AutoCloseable {
 		} while (!goodObjectivePlacement() && placementFailCount < 100);
 	}
 
-	//Effectively a destructor, since ThreadPool explicitly needs one
-	@Override
-	public void close() throws Exception {
-		lightingThreadPool.close();
-	}
-
 	//checks to make sure the level is continuous by doing a flood fill and then checking for any pixels not reached
 	private boolean validateLevel() {
-		PointPredicate op = (x, y) -> {
-			if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
-				return false;
-			tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
-			return true;
-		};
-
 		for (int i = 0; i < tiles.length; ++i) {
 			if (tiles[i] == FLOOR_BLACK) {
 				//find the first pixel of floor and flood fill from there
-				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x, y) -> {
-					return validTile(x, y, op);
+				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x0, y0) -> {
+					return validTile(x0, y0, (x, y) -> {
+						if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
+							return false;
+						tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
+						return true;
+					});
 				});
 				break;
 			}
@@ -220,13 +194,6 @@ public class Level implements AutoCloseable {
 
 	//helper function for constructor/room + hallway generation
 	private void clearRect(int x0, int y0, int w, int h, int color) {
-		//update minx, maxx, miny, maxy if they need to be updated
-		minx = PApplet.min(minx, x0);
-		miny = PApplet.min(miny, y0);
-		maxx = PApplet.max(maxx, x0 + w - 1);
-		maxy = PApplet.max(maxy, y0 + h - 1);
-
-		//this does the clearing
 		Trace.rectangle(x0, y0, w, h, (x, y) -> {
 			tiles[y*LEVEL_WIDTH + x] = color;
 			return true;
