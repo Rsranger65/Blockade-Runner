@@ -30,8 +30,8 @@ public class Menu extends MenuWidget {
 
 	public void setBounds(int width, int height) {
 		setBounds((LD31.getContext().getWidth() - width) / 2,
-			(LD31.getContext().getHeight() - height) / 2,
-			width, height);
+				  (LD31.getContext().getHeight() - height) / 2,
+				  width, height);
 		xAnchor = ANCHOR_FILL;
 		yAnchor = ANCHOR_FILL;
 	}

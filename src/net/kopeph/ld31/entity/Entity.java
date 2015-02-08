@@ -168,7 +168,7 @@ public class Entity implements Renderable {
 		} else {
 			//this produces the wrong result on (literal) corner cases where both the source and the destination of the line
 			//are outside of level boundaries, but the line crosses over a corner. But since I can't think of any better way
-			//to do this and it won't affect gameplay, I'm leaving it like this for now. XXX: fix lighting for corner cases.
+			//to do this and it won't affect gameplay, I'm leaving it like this for now. TODO: fix lighting for corner cases
 			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
 				if (context.contains(x0, y0)) {
 					Trace.line(cx, cy, x0, y0, (x, y) -> {
