@@ -15,10 +15,12 @@ import ddf.minim.Minim;
  * @author alexg
  */
 public class Audio {
-	public static final int //Volume Categories
-		VOL_MUSIC  = 0,
-		VOL_GAME   = 1,
-		VOL_LENGTH = 2; //here for setting the proper length only
+	//Volume Categories
+	public static final int  VOL_MUSIC  = 0,
+	                         VOL_GAME   = 1;
+	private static final int VOL_LENGTH = 2; //here for setting the proper length only
+
+	private static final float MIN_DB = -60;
 
 	private final Minim minim = new Minim(LD31.getContext());
 	private Map<String, AudioPlayer> files = new HashMap<>();
@@ -55,6 +57,11 @@ public class Audio {
 	 */
 	public void setVolume(int volumeClass, float volume) {
 		for (String filename : volumeClasses.get(volumeClass))
-			files.get(filename).setVolume(volume);
+			files.get(filename).setGain((volume - 1) * -MIN_DB);
+	}
+
+	public void shiftVolume(int volumeClass, float fromVolume, float toVolume, int time) {
+		for (String filename : volumeClasses.get(volumeClass))
+			files.get(filename).shiftGain((fromVolume - 1) * -MIN_DB, (toVolume - 1) * -MIN_DB, time);
 	}
 }

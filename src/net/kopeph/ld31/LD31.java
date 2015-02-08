@@ -35,6 +35,7 @@ public class LD31 extends PApplet {
 	private static final String MSG_WIN = "YA DID IT!";
 	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
 
+	private static final String BG_MUSIC = "res/music.mp3";
 
 	private static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
@@ -84,6 +85,7 @@ public class LD31 extends PApplet {
 	private final Profiler profiler = new Profiler();
 
 	private Input input = new Input();
+	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
 	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
@@ -98,6 +100,7 @@ public class LD31 extends PApplet {
 	public void setup() {
 		context = this;
 		renderer = new Renderer();
+		audio = new Audio();
 
 		size(800, 600);
 		frameRate(60);
@@ -105,6 +108,11 @@ public class LD31 extends PApplet {
 		frame.setResizable(true);
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
+
+		//Setup Audio
+		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
+		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000);
+		audio.play(BG_MUSIC, true);
 
 		buildVersion = new TextBox(renderer.font, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
