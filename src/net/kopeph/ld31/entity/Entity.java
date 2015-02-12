@@ -151,34 +151,18 @@ public class Entity implements Renderable {
 	public Node toNode() {
 		return new Node(x(), y());
 	}
-	
-
-	private int lastX, lastY;
 
 	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {
-		final int cx = screenX(), cy = screenY();
-		final int width = context.lastWidth;
+		int cx = screenX(), cy = screenY();
 
 		if (context.contains(cx, cy)) {
-			lastX = -1;
-			lastY = -1;
-			
 			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
-				int ex = x0, ey = y0;
-				if (ex < 0) ex = 0;
-				else if (ex >= context.lastWidth) ex = context.lastWidth - 1;
-				if (ey < 0) ey = 0;
-				else if (ey >= context.lastHeight) ey = context.lastHeight - 1;
-				
-				if (ex == lastX && ey == lastY) return false;
-				
-				Trace.line(cx, cy, ex, ey, (x, y) -> {
-					int i = y*width + x;
+				Trace.line(cx, cy, PApplet.min(context.width - 1, PApplet.max(0, x0)), PApplet.min(context.height - 1, PApplet.max(0, y0)), (x, y) -> {
+					int i = y*context.lastWidth + x;
 					if (array[i] == Level.FLOOR_NONE) return false;
 					array[i] |= lightColor;
 					return true;
 				});
-				
 				return true;
 			});
 		} else {
@@ -189,7 +173,7 @@ public class Entity implements Renderable {
 				if (context.contains(x0, y0)) {
 					Trace.line(cx, cy, x0, y0, (x, y) -> {
 						if (!context.contains(x, y)) return true;
-						int i = y*width + x;
+						int i = y*context.lastWidth + x;
 						if (array[i] == Level.FLOOR_NONE) return false;
 						array[i] |= lightColor;
 						return true;
