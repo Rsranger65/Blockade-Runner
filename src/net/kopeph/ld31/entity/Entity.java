@@ -157,7 +157,7 @@ public class Entity implements Renderable {
 
 		if (context.contains(cx, cy)) {
 			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
-				Trace.line(cx, cy, PApplet.min(context.width - 1, PApplet.max(0, x0)), PApplet.min(context.height - 1, PApplet.max(0, y0)), (x, y) -> {
+				Trace.line(cx, cy, PApplet.min(context.lastWidth - 1, PApplet.max(0, x0)), PApplet.min(context.lastHeight - 1, PApplet.max(0, y0)), (x, y) -> {
 					int i = y*context.lastWidth + x;
 					if (array[i] == Level.FLOOR_NONE) return false;
 					array[i] |= lightColor;
