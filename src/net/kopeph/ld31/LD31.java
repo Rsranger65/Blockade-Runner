@@ -35,7 +35,7 @@ public class LD31 extends PApplet {
 	private static final String MSG_WIN = "YA DID IT!";
 	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
 
-	private static final String BG_MUSIC = "res/music.ogg";
+	private static final String BG_MUSIC = "res/music.mp3";
 
 	private static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
