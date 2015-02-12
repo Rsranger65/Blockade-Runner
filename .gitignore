@@ -31,3 +31,7 @@ src-7/
 src/version.properties
 export-*.xml
 git-*.sh
+build.xml
+export.pro
+package.sh
+proguard-mapping.txt
