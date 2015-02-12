@@ -35,3 +35,5 @@ build.xml
 export.pro
 package.sh
 proguard-mapping.txt
+redist/
+
