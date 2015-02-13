@@ -55,7 +55,7 @@ public class Util {
 
 		return cropped;
 	}
-	
+
 	public static PImage crop(PImage img, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		for (int x = 0; x < w; x += img.width)
