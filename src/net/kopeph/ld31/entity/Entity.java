@@ -6,6 +6,7 @@ import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Pointer;
+import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
@@ -77,49 +78,51 @@ public class Entity implements Renderable {
 	}
 
 	public boolean move(double angle) {
-		return move0(Vector2.polar(speedMultiplier * SP, angle), true);
+		return move(Vector2.polar(speedMultiplier * SP, angle));
 	}
 
-	/** This only checks and executes the specified move operation or one of its components */
-	private boolean move0(Vector2 offset, boolean tryBop) {
-		if (checkOffset(offset)) {
-			pos = pos.add(offset); //not having operator overloads is such a drag.
-			return true;
+	private boolean move(Vector2 offset) {
+		Vector2 xOffset, yOffset;
+
+		//Check direct move
+		if (move0(offset)) return true;
+
+		//Check component moves
+		if (!Util.epsilonZero(offset.x) && move0(new Vector2(offset.x, 0))) return true;
+		if (!Util.epsilonZero(offset.y) && move0(new Vector2(0, offset.y))) return true;
+
+		//Check component moves, with slight bias (using manhattan movement)
+		for (int i = 0; i <= SIZE; i++) {
+			if (!Util.epsilonZero(offset.x) && move0(new Vector2( 0,  i), new Vector2(offset.x, 0))) return true;
+			if (!Util.epsilonZero(offset.y) && move0(new Vector2( i,  0), new Vector2(0, offset.y))) return true;
+			if (!Util.epsilonZero(offset.x) && move0(new Vector2( 0, -i), new Vector2(offset.x, 0))) return true;
+			if (!Util.epsilonZero(offset.y) && move0(new Vector2(-i,  0), new Vector2(0, offset.y))) return true;
 		}
 
-		//TODO:extract to constant
-		if (tryBop) {
-			if (Math.abs(offset.x) > 0.0001 && Math.abs(offset.y) > 0.0001) {
-				if (move0(new Vector2(0, offset.y), true)) return true;
-				if (move0(new Vector2(offset.x, 0), true)) return true;
-			}
-			else {
-				//if this is in a cardinal direction, try "bopping" around the corner
-				if (Math.abs(offset.x) < 0.0001) { // ~== 0
-					for (int i = 1; i < SIZE * 4; i++) {
-						if (move0(new Vector2( i, offset.y), false)) return true;
-						if (move0(new Vector2(-i, offset.y), false)) return true;
-					}
-				}
-				else { //offset.y ~== 0
-					for (int i = 1; i < SIZE * 4; i++) {
-						if (move0(new Vector2(offset.x,  i), false)) return true;
-						if (move0(new Vector2(offset.x, -i), false)) return true;
-					}
-				}
-			}
-		}
 		return false;
 	}
 
+	private boolean move0(Vector2...offsets) {
+		Vector2 futurePos = new Vector2(pos);
+
+		for (Vector2 offset : offsets) {
+			if (!checkOffset(futurePos, futurePos = futurePos.add(offset)))
+				return false;
+		}
+
+		pos = futurePos;
+		return true;
+	}
+
 	/** This checks the whole move operation */
-	private boolean checkOffset(Vector2 offset) {
-		Vector2 newPos = pos.add(offset);
+	private boolean checkOffset(Vector2 oldPos, Vector2 newPos) {
+		int oldXi = (int)Math.round(oldPos.x);
+		int oldYi = (int)Math.round(oldPos.y);
 		int newXi = (int)Math.round(newPos.x);
 		int newYi = (int)Math.round(newPos.y);
 		final Pointer<Boolean> passable = new Pointer<>(true);
 
-		Trace.line(x(), y(), newXi, newYi, (x, y) -> { return passable.value = validPosition(x, y);});
+		Trace.line(oldXi, oldYi, newXi, newYi, (x, y) -> { return passable.value = validPosition(x, y);});
 
 		return passable.value;
 	}
