@@ -160,7 +160,7 @@ public class Entity implements Renderable {
 
 		if (context.contains(cx, cy)) {
 			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
-				Trace.line(cx, cy, PApplet.min(context.width - 1, PApplet.max(0, x0)), PApplet.min(context.height - 1, PApplet.max(0, y0)), (x, y) -> {
+				Trace.line(cx, cy, PApplet.min(context.lastWidth - 1, PApplet.max(0, x0)), PApplet.min(context.lastHeight - 1, PApplet.max(0, y0)), (x, y) -> {
 					int i = y*context.lastWidth + x;
 					if (array[i] == Level.FLOOR_NONE) return false;
 					array[i] |= lightColor;
@@ -171,7 +171,7 @@ public class Entity implements Renderable {
 		} else {
 			//this produces the wrong result on (literal) corner cases where both the source and the destination of the line
 			//are outside of level boundaries, but the line crosses over a corner. But since I can't think of any better way
-			//to do this and it won't affect gameplay, I'm leaving it like this for now. XXX: fix lighting for corner cases.
+			//to do this and it won't affect gameplay, I'm leaving it like this for now. TODO: fix lighting for corner cases
 			Trace.circle(cx, cy, viewDistance, true, (x0, y0) -> {
 				if (context.contains(x0, y0)) {
 					Trace.line(cx, cy, x0, y0, (x, y) -> {

@@ -20,7 +20,6 @@ import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.menu.MenuWidget;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
-import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 
 /** Everything inside here works like it does in processing */
@@ -143,7 +142,6 @@ public class LD31 extends PApplet {
 		                            -30*widgets[0].length,
 		                            -20*widgets.length + 10);
 
-		//TODO: move relative calculation based layout to TextBox ctor
 		//fill in the first row with slot numbers
 		for (int col = 1; col < widgets[0].length; ++col) {
 			widgets[0][col] = new TextBox(renderer.font, String.valueOf(col),
@@ -271,8 +269,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void reset() {
-		Util.forceClose(level); //prevent resource leak from earlier ThreadPool (if any)
-		level = new Level(1920, 1080); //level verifies itself so we don't do that here anymore
+		level = new Level("res/test-level.png"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}
@@ -380,6 +377,7 @@ public class LD31 extends PApplet {
 
 	private int menuHeight;
 	private static final int MAX_MENUHEIGHT = 320;
+	private static final int PAUSE_MENU_WIDTH = 240;
 
 	private void drawPause() {
 		updatePixels();
@@ -387,14 +385,14 @@ public class LD31 extends PApplet {
 		menuHeight += 20;
 		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
 
-		pauseMenu.setBounds(240, menuHeight);
-		if (menuHeight > 300) { //XXX: MAGIC NUMBERS EVERYWHERE!!!
+		pauseMenu.setBounds(PAUSE_MENU_WIDTH, menuHeight);
+		if (menuHeight > MAX_MENUHEIGHT - 20) {
 			pauseMenu.render();
 		} else {
 			pushStyle();
-			fill(100, 200); //THERE'S MAGIC IN THE AIR CAN YOU FEEL IT???
+			fill(100, 200); //default menu background color (translucent grey)
 			rectMode(CENTER);
-			rect(width/2, height/2, 240, menuHeight, 10);
+			rect(width/2, height/2, PAUSE_MENU_WIDTH, menuHeight, 10);
 			popStyle();
 		}
 	}

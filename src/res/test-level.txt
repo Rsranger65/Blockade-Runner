@@ -1,0 +1,11 @@
+image	test-level.png
+player		x:100	y:500
+objective	x:700	y:75
+enemy		x:700	y:75
+enemy		x:600	y:300
+enemy		x:560	y:500
+enemy		x:300	y:400
+enemy		x:10
+enemy			y:10
+enemy		x:750
+enemy
