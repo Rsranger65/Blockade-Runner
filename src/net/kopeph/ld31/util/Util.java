@@ -92,4 +92,9 @@ public class Util {
 
 		return b.toString();
 	}
+
+	/** @return true if input is ~== 0*/
+	public static boolean epsilonZero(double input) {
+		return Math.abs(input) < 0.000001;
+	}
 }

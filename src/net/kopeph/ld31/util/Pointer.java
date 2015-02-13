@@ -10,4 +10,9 @@ public class Pointer<T> {
 	public Pointer(T value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return value.toString();
+	}
 }
