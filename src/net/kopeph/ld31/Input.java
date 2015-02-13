@@ -43,6 +43,8 @@ public class Input {
 	private Preferences keyMapStorage = Preferences.userNodeForPackage(getClass());
 	private List<KeyPredicate> triggers = new ArrayList<>();
 
+	private String bindId;
+	private int bindIndex;
 
 	public void eventKey(char pKey, int pKeyCode, boolean isDown) {
 		//Need to blacklist/transform a key from processing? do it here.
@@ -187,19 +189,28 @@ public class Input {
 		return false;
 	}
 
-	public void handleBind(String id, final int index, final String escapeId) {
+	public void handleBind(String id, int index) {
+		cancelBind();
+
 		//Set key to ???
 		keyMap.putIndex(id, index, K_BINDING);
 
 		//Wait until a key is pressed, and lock onto it
+		bindId = id;
+		bindIndex = index;
 		postTrigger((keyId, down) -> {
-			if (getKey(escapeId))
-				keyId = K_UNBOUND;
-
-			setKey(id, index, keyId);
+			if (bindId != null)
+				setKey(bindId, bindIndex, keyId);
 			//Capture and remove
+			bindId = null;
 			return true;
 		});
+	}
+
+	public void cancelBind() {
+		if (bindId != null)
+			setKey(bindId, bindIndex, K_UNBOUND);
+		bindId = null;
 	}
 
 	/**

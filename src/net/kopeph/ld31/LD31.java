@@ -168,7 +168,7 @@ public class LD31 extends PApplet {
 				                               widgets[r][0].yPos,
 				                               50, 20,
 				(down) -> {
-					input.handleBind(id, c - 1, CTL_ESCAPE);
+					input.handleBind(id, c - 1);
 				});
 				widgets[r][c].tag = id;
 				settingsMenu.add(widgets[r][c]); //adding widgets to the menu as we go
@@ -442,6 +442,7 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void mousePressed() {
+		input.cancelBind();
 		interacting = true; //using context.mousePressed would cause continuous interaction, but we only want once-per-click interaction
 	}
 
