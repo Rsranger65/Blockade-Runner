@@ -56,6 +56,14 @@ public class Entity implements Renderable {
 			                  context.random(SIZE, level.LEVEL_HEIGHT - SIZE));
 		} while (!validPosition(x(), y()));
 	}
+	
+	public Entity(Level level, int x, int y, int color) {
+		this.context = LD31.getContext();
+		this.level = level;
+		this.color = color;
+		
+		pos = new Vector2(x, y);
+	}
 
 	private boolean validPosition(int x, int y) {
 		for(int i = 0 - SIZE; i < SIZE + 1; i++)

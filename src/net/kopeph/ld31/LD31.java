@@ -269,7 +269,7 @@ public class LD31 extends PApplet {
 	}
 
 	private void reset() {
-		level = new Level("res/test-level.png"); //level verifies itself so we don't do that here anymore
+		level = new Level("res/test-level.txt"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}

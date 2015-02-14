@@ -1,6 +1,8 @@
 package net.kopeph.ld31;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
@@ -29,7 +31,7 @@ public class Level {
 	                 LEVEL_HEIGHT;
 
 	//enemies and player
-	public Enemy[] enemies;
+	public List<Enemy> enemies = new ArrayList<>();
 	public Entity  player;
 	public Entity  objective;
 
@@ -127,44 +129,93 @@ public class Level {
 				tiles[i] = color;
 			}
 		}
+
+		//add enemies
+		int enemyCount = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
+		for (int i = 0; i < enemyCount; ++i)
+			enemies.add(new Enemy(this));
 		
 		placeEntities();
 	}
 	
+	//filePath should be a plain text file containing level information
+	//see level file spec for more information
 	public Level(String filePath) {
 		PApplet context = LD31.getContext();
 		
-		PImage img = context.loadImage(filePath);
+		String[] lines = context.loadStrings(filePath);
+		PImage img = context.loadImage(lines[0]);
 		LEVEL_WIDTH = img.width;
 		LEVEL_HEIGHT = img.height;
 		tiles = img.pixels;
 		
+		for (String line : lines)
+			parseLine(line);
+		
 		placeEntities();
+	}
+	
+	//helper function for constructor
+	private void parseLine(String line) {
+		if (line.isEmpty()) return;
+		String[] parts = line.split("\t");
+		
+		//retrieve all possible properties before determining the specifier
+		//because it's simple and avoids code repetition
+		int x = -1, y = -1; //dummy values
+		for (int i = 1; i < parts.length; ++i) {
+			if (parts[i].isEmpty()) continue;
+			String[] pair = parts[i].split(":");
+			
+			switch (pair[0].trim().toLowerCase()) {
+				case "x":
+					x = Integer.parseInt(pair[1]);
+					break;
+				case "y":
+					y = Integer.parseInt(pair[1]);
+					break;
+			}
+		}
+		
+		//determine how to use information based on the specifier
+		switch (parts[0].trim().toLowerCase()) {
+			case "player":
+				player = new Entity(this, x, y, Entity.COLOR_PLAYER);
+				break;
+			case "objective":
+				objective = new Entity(this, x, y, Entity.COLOR_OBJECTIVE);
+				break;
+			case "enemy":
+				//if incomplete coordinates are given, place enemy in a random location
+				//this behavior is subject to change
+				if (validTile(x, y))
+					enemies.add(new Enemy(this, x, y));
+				else
+					enemies.add(new Enemy(this));
+				break;
+		}
 	}
 	
 	//helper function for constructors
 	private void placeEntities() {
-		final int ENEMY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
-		
-		//add enemies
-		enemies = new Enemy[ENEMY_COUNT];
-		for (int i = 0; i < ENEMY_COUNT; ++i)
-			enemies[i] = new Enemy(this);
-
 		//allow the player + objective placement to give up after so many attempts
 		//this is so we don't lock up on edge cases where one of the placements can't possibly succeed
 		int placementFailCount = 0;
+		
+		if (player == null) { //if we haven't already placed a player
+			do {
+				player = new Entity(this, Entity.COLOR_PLAYER);
+				++placementFailCount;
+			} while (!goodPlayerPlacement() && placementFailCount < 100);
+		}
 
-		do {
-			player = new Entity(this, Entity.COLOR_PLAYER);
-			++placementFailCount;
-		} while (!goodPlayerPlacement() && placementFailCount < 100);
-
-		placementFailCount = 0;
-		do {
-			objective = new Entity(this, Entity.COLOR_OBJECTIVE);
-			++placementFailCount;
-		} while (!goodObjectivePlacement() && placementFailCount < 100);
+		if (objective == null) { //if we haven't already placed an objective
+			placementFailCount = 0;
+			do {
+				objective = new Entity(this, Entity.COLOR_OBJECTIVE);
+				++placementFailCount;
+			} while (!goodObjectivePlacement() && placementFailCount < 100);
+		}
 	}
 
 	//checks to make sure the level is continuous by doing a flood fill and then checking for any pixels not reached

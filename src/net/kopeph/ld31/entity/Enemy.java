@@ -1,5 +1,6 @@
 package net.kopeph.ld31.entity;
 
+import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
@@ -17,15 +18,17 @@ public class Enemy extends Entity {
 	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
 	public Enemy(Level level) {
-		super(level, Entity.COLOR_ENEMY_COM);
-
-		//give the enemy a random color
-		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
-		color = possibleColors[(int)(context.random(possibleColors.length))];
+		super(level, randomColor());
 	}
-
-	public Enemy(Level level, int color) {
-		super(level, color);
+	
+	public Enemy(Level level, int x, int y) {
+		super(level, x, y, randomColor());
+	}
+	
+	//helper function for constructor
+	private static int randomColor() {
+		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
+		return possibleColors[(int)(LD31.getContext().random(possibleColors.length))];
 	}
 
 	/**
