@@ -311,7 +311,7 @@ public class LD31 extends PApplet {
 		//check which enemies should be following the player
 		if (pixels[level.player.screenY()*width + level.player.screenX()] == Level.FLOOR_WHITE)
 			for (Enemy e : level.enemies)
-				e.checkPursuing(null); //pass in null to indicate the call isn't a referral from another enemy
+				e.checkPursuing(); //pass in null to indicate the call isn't a referral from another enemy
 
 		//allow enemies to move
 		for (Enemy e : level.enemies) {

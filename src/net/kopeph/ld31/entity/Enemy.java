@@ -5,7 +5,6 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Vector2;
-import processing.core.PApplet;
 
 public class Enemy extends Entity {
 	private static final float TWO_PI = (float) (Math.PI * 2);
@@ -15,7 +14,7 @@ public class Enemy extends Entity {
 	private float direction; //radians
 
 	//for communication
-	Enemy referrer; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
+	boolean pursuing; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
 	public Enemy(Level level) {
 		super(level, randomColor());
@@ -31,31 +30,20 @@ public class Enemy extends Entity {
 		return possibleColors[(int)(LD31.getContext().random(possibleColors.length))];
 	}
 
-	/**
-	 * Checks if the enemy should pursue the player by line of sight and then notifies any enemies with com distance
-	 * @param ref Which Enemy is notifying this Enemy, or null if this is the first contact.
-	 */
-	public void checkPursuing(Enemy ref) {
-		if (referrer != null) return; //if we've already been notified, no need to check all this again
-
-		//establish whether or not we have line of sight
-		referrer = this; //guilty until proven innocent
+	/** Checks if the enemy should pursue the player by line of sight */
+	public void checkPursuing() {
+		pursuing = true; //guilty until proven innocent
 		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
 			if (level.tiles[y*level.LEVEL_WIDTH + x] != Level.FLOOR_NONE)
 				return true;
-			referrer = ref;
+			pursuing = false;
 			return false;
 		});
-
-		//notify other enemies within communication range
-		if (referrer != null)
-			for (Enemy e : level.enemies)
-				if (e != this && PApplet.dist(x(), y(), e.x(), e.y()) < comDistance)
-					e.checkPursuing(this);
+		//XXX: consider making enemy communication omnidistant (would remove this logic entirely)
 	}
 
 	public void moveAuto() {
-		if (referrer != null) {
+		if (pursuing) {
 			speedMultiplier = 1.25; //set speed slightly faster than player
 			move(new Vector2(level.player.x() - x(), level.player.y() - y()).theta());
 		} else {
@@ -84,13 +72,8 @@ public class Enemy extends Entity {
 			return true;
 		};
 
-		if (referrer == this) {
+		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), op);
-		} else if (referrer != null) {
-			Trace.line(screenX(), screenY(), referrer.screenX(), referrer.screenY(), op);
-			//Util.traceCircle(x(), y(), (int)PApplet.dist(x(), y(), referrer.x(), referrer.y()), op);
 		}
-
-		referrer = null; //reset required for next call to checkPursuing() to work
 	}
 }
