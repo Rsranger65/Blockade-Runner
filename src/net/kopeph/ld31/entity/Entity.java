@@ -82,8 +82,6 @@ public class Entity implements Renderable {
 	}
 
 	private boolean move(Vector2 offset) {
-		Vector2 xOffset, yOffset;
-
 		//Check direct move
 		if (move0(offset)) return true;
 

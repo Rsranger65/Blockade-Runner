@@ -54,14 +54,9 @@ public class Enemy extends Entity {
 	public void moveAuto() {
 		if (referrer != null) {
 			speedMultiplier = 1.25; //set speed slightly faster than player
-
-			move(y() > level.player.y(), //Pursue TODO: make this pursue in line of sight direction
-			     y() < level.player.y(),
-			     x() > level.player.x(),
-			     x() < level.player.x());
+			move(new Vector2(level.player.x() - x(), level.player.y() - y()).theta());
 		} else {
 			speedMultiplier = 0.75; //set speed slightly slower than player
-
 			moveIdle(); //Wiggle
 		}
 	}

@@ -1,4 +1,4 @@
-image	test-level.png
+test-level.png
 player		x:100	y:500
 objective	x:700	y:75
 enemy		x:700	y:75
