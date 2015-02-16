@@ -36,6 +36,20 @@ public class Entity implements Renderable {
 		N   , NE, NW, N   ,
 		NONE,  E,  W, NONE
 	};
+	
+	public static int getColorByString(String value) {
+		switch (value.trim().toLowerCase()) {
+			case "red":   return Level.FLOOR_RED;
+			case "green": return Level.FLOOR_GREEN;
+			case "blue":  return Level.FLOOR_BLUE;
+			case "yellow": return Level.FLOOR_YELLOW;
+			case "cyan": return Level.FLOOR_CYAN;
+			case "magenta": return Level.FLOOR_MAGENTA;
+			case "black": return Level.FLOOR_BLACK;
+			case "white": return Level.FLOOR_WHITE;
+		}
+		return Level.FLOOR_NONE;
+	}
 
 
 	protected final LD31 context;

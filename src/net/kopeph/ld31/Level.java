@@ -162,7 +162,7 @@ public class Level {
 		
 		//retrieve all possible properties before determining the specifier
 		//because it's simple and avoids code repetition
-		int x = -1, y = -1; //dummy values
+		int x = -1, y = -1, color = Enemy.randomColor(); //dummy values
 		for (int i = 1; i < parts.length; ++i) {
 			if (parts[i].isEmpty()) continue;
 			String[] pair = parts[i].split(":");
@@ -173,6 +173,9 @@ public class Level {
 					break;
 				case "y":
 					y = Integer.parseInt(pair[1]);
+					break;
+				case "color":
+					color = Entity.getColorByString(pair[1]);
 					break;
 			}
 		}
@@ -189,9 +192,9 @@ public class Level {
 				//if incomplete coordinates are given, place enemy in a random location
 				//this behavior is subject to change
 				if (validTile(x, y))
-					enemies.add(new Enemy(this, x, y));
+					enemies.add(new Enemy(this, x, y, color));
 				else
-					enemies.add(new Enemy(this));
+					enemies.add(new Enemy(this, color));
 				break;
 		}
 	}

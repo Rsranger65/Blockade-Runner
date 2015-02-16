@@ -20,12 +20,20 @@ public class Enemy extends Entity {
 		super(level, randomColor());
 	}
 	
+	public Enemy(Level level, int color) {
+		super(level, color);
+	}
+	
 	public Enemy(Level level, int x, int y) {
 		super(level, x, y, randomColor());
 	}
 	
+	public Enemy(Level level, int x, int y, int color) {
+		super(level, x, y, color);
+	}
+	
 	//helper function for constructor
-	private static int randomColor() {
+	public static int randomColor() {
 		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
 		return possibleColors[(int)(LD31.getContext().random(possibleColors.length))];
 	}
@@ -45,7 +53,7 @@ public class Enemy extends Entity {
 	public void moveAuto() {
 		if (pursuing) {
 			speedMultiplier = 1.25; //set speed slightly faster than player
-			move(new Vector2(level.player.x() - x(), level.player.y() - y()).theta());
+			move(level.player.pos().sub(pos()).theta());
 		} else {
 			speedMultiplier = 0.75; //set speed slightly slower than player
 			moveIdle(); //Wiggle
