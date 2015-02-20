@@ -176,6 +176,8 @@ public class Level {
 					break;
 				case "color":
 					color = Entity.getColorByString(pair[1]);
+					if (color == Level.FLOOR_NONE) //if the string given is invalid
+						color = Enemy.randomColor();
 					break;
 			}
 		}
