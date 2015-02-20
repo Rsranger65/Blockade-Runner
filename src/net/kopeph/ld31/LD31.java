@@ -308,10 +308,6 @@ public class LD31 extends PApplet {
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
-		//check which enemies should be following the player
-		if (pixels[level.player.screenY()*width + level.player.screenX()] == Level.FLOOR_WHITE)
-			for (Enemy e : level.enemies)
-				e.checkPursuing(); //pass in null to indicate the call isn't a referral from another enemy
 
 		//allow enemies to move
 		for (Enemy e : level.enemies) {

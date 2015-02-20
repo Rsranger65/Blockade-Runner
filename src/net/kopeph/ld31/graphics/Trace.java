@@ -11,8 +11,11 @@ public class Trace {
 		throw new AssertionError("No Instantiation of: " + getClass().getName()); //$NON-NLS-1$
 	}
 
-	/** Source: http://en.wikipedia.org/wiki/Bresenham's_line_algorithm#Simplification */
-	public static void line(int x1, int y1, int x2, int y2, PointPredicate op) {
+	/**
+	 * Source: http://en.wikipedia.org/wiki/Bresenham's_line_algorithm#Simplification
+	 * @return true if the end of the line is reached, false if it is stopped partway
+	 */
+	public static boolean line(int x1, int y1, int x2, int y2, PointPredicate op) {
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
 		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
@@ -23,8 +26,8 @@ public class Trace {
 		int err = dx + dy;
 
 		while (true) {
-			if (!op.on(x1,y1)) return;
-			if (x1 == x2 && y1 == y2) return;
+			if (!op.on(x1,y1)) return false;
+			if (x1 == x2 && y1 == y2) return true;
 			e2 = 2*err;
 			if (e2 > dy) { //down here is where I mean
 				err += dy;
@@ -32,7 +35,7 @@ public class Trace {
 			}
 			if (x1 == x2 && y1 == y2) {
 				op.on(x1,y1);
-				return;
+				return true;
 			}
 			if (e2 < dx) {
 				err += dx;

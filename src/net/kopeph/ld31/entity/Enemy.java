@@ -14,7 +14,7 @@ public class Enemy extends Entity {
 	private float direction; //radians
 
 	//for communication
-	boolean pursuing; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
+	private boolean pursuing; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
 
 	public Enemy(Level level) {
 		super(level, randomColor());
@@ -39,18 +39,20 @@ public class Enemy extends Entity {
 	}
 
 	/** Checks if the enemy should pursue the player by line of sight */
-	public void checkPursuing() {
-		pursuing = true; //guilty until proven innocent
-		Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
+	private boolean checkPursuing() {
+		//should only pursue if the player is in white light
+		if (context.pixels[level.player.screenY()*context.lastWidth + level.player.screenX()] != Level.FLOOR_WHITE) return false;
+		//should only pursue if the player is in line of sight
+		return Trace.line(x(), y(), level.player.x(), level.player.y(), (x, y) -> {
 			if (level.tiles[y*level.LEVEL_WIDTH + x] != Level.FLOOR_NONE)
 				return true;
-			pursuing = false;
 			return false;
 		});
 		//XXX: consider making enemy communication omnidistant (would remove this logic entirely)
 	}
 
 	public void moveAuto() {
+		pursuing = checkPursuing();
 		if (pursuing) {
 			speedMultiplier = 1.25; //set speed slightly faster than player
 			move(level.player.pos().sub(pos()).theta());
@@ -74,14 +76,12 @@ public class Enemy extends Entity {
 	public void render() {
 		super.render();
 
-		PointPredicate op = (x, y) -> {
-			if (level.inBounds(x, y))
-				context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;
-			return true;
-		};
-
 		if (pursuing) {
-			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), op);
+			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
+				if (level.inBounds(x, y))
+					context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;
+				return true;
+			});
 		}
 	}
 }
