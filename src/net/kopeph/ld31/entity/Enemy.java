@@ -3,18 +3,14 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Vector2;
 
 public class Enemy extends Entity {
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
-	public final int comDistance = 100; //distance that enemy coms can reach in pixels (doesn't need line of sight)
 	private float direction; //radians
-
-	//for communication
-	private boolean pursuing; //null if not pursuing, this if has line of sight, otherwise the referring Enemy
+	private boolean pursuing; //used in render() so that we can know
 
 	public Enemy(Level level) {
 		super(level, randomColor());
