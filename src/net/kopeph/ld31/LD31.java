@@ -47,43 +47,12 @@ public class LD31 extends PApplet {
 		ST_SETTINGS   =  5,  // Displaying Settings Menu
 		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
-	//XXX: this is a lot of repeated values
-	private static final String //control ID enum
-		CTL_UP       = "game.up",    //$NON-NLS-1$
-		CTL_LEFT     = "game.left",  //$NON-NLS-1$
-		CTL_DOWN     = "game.down",  //$NON-NLS-1$
-		CTL_RIGHT    = "game.right", //$NON-NLS-1$
-		CTL_RESTART  = "game.reset", //$NON-NLS-1$
-		CTL_PAUSE    = "game.pause", //$NON-NLS-1$
-		CTL_ESCAPE   = "sys.esc";    //$NON-NLS-1$
-
-	private static final int CTL_SLOTS = 3; //how many columns to show the user
-	private static final List<String> CTL_IDS = Arrays.asList(
-			CTL_UP,
-			CTL_LEFT,
-			CTL_DOWN,
-			CTL_RIGHT,
-			CTL_RESTART,
-			CTL_PAUSE,
-			CTL_ESCAPE
-			);
-	private static final Map<String, String> CTL_NAMES = new HashMap<>();
-	static {
-		CTL_NAMES.put(CTL_UP     , "Up"   );
-		CTL_NAMES.put(CTL_LEFT   , "Left" );
-		CTL_NAMES.put(CTL_DOWN   , "Down" );
-		CTL_NAMES.put(CTL_RIGHT  , "Right");
-		CTL_NAMES.put(CTL_RESTART, "Reset");
-		CTL_NAMES.put(CTL_PAUSE  , "Pause");
-		CTL_NAMES.put(CTL_ESCAPE , "Menu");
-	}
-
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 	private static TextBox buildVersion, footer;
 
 	private final Profiler profiler = new Profiler();
 
-	private Input input = new Input();
+	private InputHandler input = new InputHandler();
 	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
@@ -135,45 +104,9 @@ public class LD31 extends PApplet {
 		//setup settings menu
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(renderer.font, "Settings Menu"               , 0, -175));
-
-		TextBox[][] widgets = new TextBox[CTL_NAMES.size() + 1][CTL_SLOTS + 1]; //[y][x]
-		//seed the (unused) top left corner of the table
-		widgets[0][0] = new TextBox(renderer.font, "", //$NON-NLS-1$
-		                            -30*widgets[0].length,
-		                            -20*widgets.length + 10);
-
-		//fill in the first row with slot numbers
-		for (int col = 1; col < widgets[0].length; ++col) {
-			widgets[0][col] = new TextBox(renderer.font, String.valueOf(col),
-			                              widgets[0][col - 1].xPos + 60,
-			                              widgets[0][0].yPos);
-			settingsMenu.add(widgets[0][col]); //adding widgets to the menu as we go
-		}
-
-		//Fill each row with key title, then a set of buttons for each slot
-		int row = 1;
-		for (final String id : CTL_IDS) {
-			widgets[row][0] = new TextBox(renderer.font, CTL_NAMES.get(id),
-			                              widgets[0][0].xPos,
-			                              widgets[row - 1][0].yPos + 30);
-			settingsMenu.add(widgets[row][0]); //adding widgets to the menu as we go
-
-			for (int col = 1; col < widgets[row].length; ++col) {
-				final int r = row, c = col; //needed for the behavior to work
-				//Don't bother with the displayed until draw time
-				widgets[r][c] = new MenuButton(renderer.font, "", //$NON-NLS-1$
-				                               widgets[0][c].xPos,
-				                               widgets[r][0].yPos,
-				                               50, 20,
-				(down) -> {
-					input.handleBind(id, c - 1);
-				});
-				widgets[r][c].tag = id;
-				settingsMenu.add(widgets[r][c]); //adding widgets to the menu as we go
-			}
-			row++;
-		}
-
+		
+		//TODO: setup the key bindings menu
+		
 		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
@@ -190,6 +123,7 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
 		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
 
+/*
 		//setup input interaction
 		input.addAction(CTL_RESTART, (down) -> {
 			if (gameState == ST_RUNNING ||
@@ -222,6 +156,9 @@ public class LD31 extends PApplet {
 		input.addMonitor(CTL_LEFT,  (int)'A', (int)'4', Input.K_LEFT);
 		input.addMonitor(CTL_DOWN,  (int)'S', (int)'2', Input.K_DOWN);
 		input.addMonitor(CTL_RIGHT, (int)'D', (int)'6', Input.K_RIGHT);
+*/
+		
+		input.loadKeys();
 
 		applyFooterText();
 
@@ -275,27 +212,27 @@ public class LD31 extends PApplet {
 	}
 
 	private void applyFooterText() {
-		String footerText = String.format(MSG_FOOTER,
-			input.keyMap(CTL_UP   , 0),
-			input.keyMap(CTL_LEFT , 0),
-			input.keyMap(CTL_DOWN , 0),
-			input.keyMap(CTL_RIGHT, 0),
-			input.keyMap(CTL_RESTART, 0));
-		String footerEndText = String.format(MSG_FOOTER_END,
-			input.keyMap(CTL_RESTART, 0));
+//		String footerText = String.format(MSG_FOOTER,
+//			input.keyMap(CTL_UP   , 0),
+//			input.keyMap(CTL_LEFT , 0),
+//			input.keyMap(CTL_DOWN , 0),
+//			input.keyMap(CTL_RIGHT, 0),
+//			input.keyMap(CTL_RESTART, 0));
+//		String footerEndText = String.format(MSG_FOOTER_END,
+//			input.keyMap(CTL_RESTART, 0));
 
-		footer.text = footerText;
-		win.footer  = footerEndText;
-		die.footer  = footerEndText;
+//		footer.text = footerText;
+//		win.footer  = footerEndText;
+//		die.footer  = footerEndText;
 	}
 
 	private void drawRunning() {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
-		level.player.move(input.getKey(CTL_UP   ),
-		                  input.getKey(CTL_DOWN ),
-		                  input.getKey(CTL_LEFT ),
-		                  input.getKey(CTL_RIGHT));
+		level.player.move(input.isPressed(InputHandler.CTL_UP   ),
+		                  input.isPressed(InputHandler.CTL_DOWN ),
+		                  input.isPressed(InputHandler.CTL_LEFT ),
+		                  input.isPressed(InputHandler.CTL_RIGHT));
 		//check win condition
 		if (dist(level.player.x(), level.player.y(), level.objective.x(), level.objective.y()) < 5) {
 			gameState = ST_WIN;
@@ -400,33 +337,8 @@ public class LD31 extends PApplet {
 
 	private void drawSettings() {
 		image(renderer.textureBlue, 0, 0); //TODO: placeholder background
-		syncKeyMaps();
+//		syncKeyMaps();
 		settingsMenu.render();
-	}
-
-	private void syncKeyMaps() {
-		Map<String, List<String>> keyMap = input.keyMap();
-		Map<String, Integer> indices = new HashMap<>();
-
-		for (int i = 0; i < settingsMenu.getChildCount(); i++) {
-			MenuWidget widget = settingsMenu.getChild(i);
-
-			if (widget instanceof MenuButton && widget.tag != null) {
-				TextBox textBoxWidget = (TextBox) widget;
-				List<String> keyRow = keyMap.get(widget.tag);
-				Integer index = indices.get(widget.tag);
-				if (index == null)
-					index = 0;
-
-				if (keyRow != null && index < keyRow.size())
-					textBoxWidget.text = keyRow.get(index++);
-				else
-					textBoxWidget.text = Input.getKeyTitle(Input.K_UNBOUND);
-				indices.put(widget.tag, index);
-			}
-		}
-
-		applyFooterText();
 	}
 
 	private void drawCampaign() {
@@ -436,19 +348,19 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void mousePressed() {
-		input.cancelBind();
+//		input.cancelBind();
 		interacting = true; //using context.mousePressed would cause continuous interaction, but we only want once-per-click interaction
 	}
 
 	@Override
 	public void keyPressed() {
-		input.eventKey(key, keyCode, true);
+		input.handleKeyEvent(InputHandler.convertToKeyId(key, keyCode), true);
 		key = 0; //Stop ESC from closing the program
 	}
 
 	@Override
 	public void keyReleased() {
-		input.eventKey(key, keyCode, false);
+		input.handleKeyEvent(InputHandler.convertToKeyId(key, keyCode), false);
 	}
 
 	/** Global Entry Point */
