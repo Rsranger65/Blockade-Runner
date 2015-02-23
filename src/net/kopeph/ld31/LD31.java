@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -123,24 +120,23 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
 		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
 
-/*
 		//setup input interaction
-		input.addAction(CTL_RESTART, (down) -> {
+		input.bindControlCode(InputHandler.CTL_RESTART, (down) -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
 				gameState = ST_RESET;
 			}
-		}, (int)'R', (int)' ', Input.K_ENTER);
-		input.addAction(CTL_PAUSE, (down) -> {
+		});
+		input.bindControlCode(InputHandler.CTL_PAUSE, (down) -> {
 			if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 1;
 			} else if (gameState == ST_PAUSE) {
 				gameState = ST_RUNNING;
 			}
-		}, (int)'P', Input.K_TAB);
-		input.addAction(CTL_ESCAPE, (down) -> {
+		});
+		input.bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
 			if (gameState == ST_MENU) {
 				exit();
 			} else if (gameState == ST_RUNNING) {
@@ -151,13 +147,8 @@ public class LD31 extends PApplet {
 			} else {
 				gameState = ST_MENU;
 			}
-		}, Input.K_ESC);
-		input.addMonitor(CTL_UP,    (int)'W', (int)'8', Input.K_UP);
-		input.addMonitor(CTL_LEFT,  (int)'A', (int)'4', Input.K_LEFT);
-		input.addMonitor(CTL_DOWN,  (int)'S', (int)'2', Input.K_DOWN);
-		input.addMonitor(CTL_RIGHT, (int)'D', (int)'6', Input.K_RIGHT);
-*/
-		
+		});
+
 		input.loadKeys();
 
 		applyFooterText();

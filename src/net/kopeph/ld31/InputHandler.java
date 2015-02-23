@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
 /** @author stuntdddue */
 public final class InputHandler {
-	//enumeration of control codes
+	//enumeration of controlCodes
 	public static final int
 		CTL_UP       = 0,
 		CTL_LEFT     = 1,
@@ -74,7 +75,8 @@ public final class InputHandler {
 	
 	/** Converts the key and keyCode values given by Processing into a unique keyId for internal use */
 	public static int convertToKeyId(char key, int keyCode) {
-		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key)); //uses bit shifting to avoid collisions
+		//TODO: add documentation explaining keyId values here if we think we need it
+		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key));
 	}
 	
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
@@ -84,12 +86,14 @@ public final class InputHandler {
 		bindKeyId((int)'D', CTL_RIGHT);
 		bindKeyId((int)'W', CTL_UP);
 		bindKeyId((int)'S', CTL_DOWN);
+		bindKeyId((int)'R', CTL_RESTART);
+		bindKeyId((int)'P', CTL_PAUSE);
+		bindKeyId(K_ESC, CTL_ESCAPE);
 	}
 	
 	
 	
 	Map<Integer, Integer> keyIdBindings = new HashMap<>();
-	boolean[] controlCodeStates = new boolean[CTL_UNCAUGHT];
 	
 	/** Binds a given keyId to a given controlCode, removing any existing bindings of the keyId */
 	public void bindKeyId(int keyId, int controlCode) {
@@ -101,8 +105,16 @@ public final class InputHandler {
 		keyIdBindings.remove(keyId);
 	}
 	
+	Map<Integer, Interaction> controlCodeActions = new HashMap<>();
 	
+	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
+	public void bindControlCode(int controlCode, Interaction action) {
+		controlCodeActions.put(controlCode, action);
+	}
 	
+	boolean[] controlCodeStates = new boolean[CTL_UNCAUGHT];
+	
+	/** @return whether the given controlCode is active (whether its associated keys are pressed down) */
 	public boolean isPressed(int controlCode) {
 		return controlCodeStates[controlCode];
 	}
@@ -111,7 +123,14 @@ public final class InputHandler {
 	public void handleKeyEvent(int keyId, boolean down) {
 		if (keyIdBindings.containsKey(keyId)) {
 			int controlCode = keyIdBindings.get(keyId);
+			
+			//keep track of key state
 			controlCodeStates[controlCode] = down;
+			
+			//activate any associated Interactions
+			if (down && controlCodeActions.containsKey(controlCode)) {
+				controlCodeActions.get(controlCode).interact(down);
+			}
 		}
 		//XXX: stub
 	}
