@@ -80,14 +80,19 @@ public final class InputHandler {
 	}
 	
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
-	public void loadKeys() {
-		//XXX: functionality in here is a temporary crutch, will be changed later
-		bindKeyId((int)'A', CTL_LEFT);
-		bindKeyId((int)'D', CTL_RIGHT);
-		bindKeyId((int)'W', CTL_UP);
-		bindKeyId((int)'S', CTL_DOWN);
-		bindKeyId((int)'R', CTL_RESTART);
-		bindKeyId((int)'P', CTL_PAUSE);
+	public void loadKeyIdBindings() {
+		resetKeyIdBindings();
+		//XXX: stub
+	}
+	
+	public void resetKeyIdBindings() {
+		keyIdBindings.clear();
+		bindKeyIds(new int[] { (int)'W', (int)'8', InputHandler.K_UP    }, CTL_UP     );
+		bindKeyIds(new int[] { (int)'A', (int)'4', InputHandler.K_LEFT  }, CTL_LEFT   );
+		bindKeyIds(new int[] { (int)'S', (int)'6', InputHandler.K_RIGHT }, CTL_RIGHT  );
+		bindKeyIds(new int[] { (int)'D', (int)'2', InputHandler.K_DOWN  }, CTL_DOWN   );
+		bindKeyIds(new int[] { (int)'R', (int)' ', InputHandler.K_ENTER }, CTL_RESTART);
+		bindKeyIds(new int[] { (int)'P',           InputHandler.K_TAB   }, CTL_PAUSE  );
 		bindKeyId(K_ESC, CTL_ESCAPE);
 	}
 	
@@ -95,9 +100,15 @@ public final class InputHandler {
 	
 	Map<Integer, Integer> keyIdBindings = new HashMap<>();
 	
-	/** Binds a given keyId to a given controlCode, removing any existing bindings of the keyId */
+	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
 	public void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
+	}
+	
+	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
+	public void bindKeyIds(int[] keyIds, int controlCode) {
+		for (int keyId : keyIds)
+			bindKeyId(keyId, controlCode);
 	}
 	
 	/** Removes the binding for the given keyId, if one exists */
@@ -132,6 +143,5 @@ public final class InputHandler {
 				controlCodeActions.get(controlCode).interact(down);
 			}
 		}
-		//XXX: stub
 	}
 }

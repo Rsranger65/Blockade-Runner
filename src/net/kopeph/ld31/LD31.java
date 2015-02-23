@@ -149,7 +149,7 @@ public class LD31 extends PApplet {
 			}
 		});
 
-		input.loadKeys();
+		input.loadKeyIdBindings();
 
 		applyFooterText();
 
