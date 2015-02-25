@@ -1,7 +1,11 @@
 package net.kopeph.ld31;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
@@ -15,20 +19,20 @@ public final class InputHandler {
 		CTL_LEFT     = 1,
 		CTL_DOWN     = 2,
 		CTL_RIGHT    = 3,
-		CTL_RESTART  = 4,
+		CTL_RESET    = 4,
 		CTL_PAUSE    = 5,
 		CTL_ESCAPE   = 6,
 		CTL_UNCAUGHT = 7;
 	
 	public static String getControlString(int controlCode) {
 		switch (controlCode) {
-			case CTL_UP     : return "UP     ";
-			case CTL_DOWN   : return "DOWN   ";
-			case CTL_LEFT   : return "LEFT   ";
-			case CTL_RIGHT  : return "RIGHT  ";
-			case CTL_RESTART: return "RESTART";
-			case CTL_PAUSE  : return "PAUSE  ";
-			case CTL_ESCAPE : return "ESCAPE ";
+			case CTL_UP    : return "    UP";
+			case CTL_LEFT  : return "  LEFT";
+			case CTL_DOWN  : return "  DOWN";
+			case CTL_RIGHT : return " RIGHT";
+			case CTL_RESET : return " RESET";
+			case CTL_PAUSE : return " PAUSE";
+			case CTL_ESCAPE: return "ESCAPE";
 		}
 		return "UNCAUGHT";
 	}
@@ -89,20 +93,21 @@ public final class InputHandler {
 		keyIdBindings.clear();
 		bindKeyIds(new int[] { (int)'W', (int)'8', InputHandler.K_UP    }, CTL_UP     );
 		bindKeyIds(new int[] { (int)'A', (int)'4', InputHandler.K_LEFT  }, CTL_LEFT   );
-		bindKeyIds(new int[] { (int)'S', (int)'6', InputHandler.K_RIGHT }, CTL_RIGHT  );
-		bindKeyIds(new int[] { (int)'D', (int)'2', InputHandler.K_DOWN  }, CTL_DOWN   );
-		bindKeyIds(new int[] { (int)'R', (int)' ', InputHandler.K_ENTER }, CTL_RESTART);
+		bindKeyIds(new int[] { (int)'S', (int)'2', InputHandler.K_DOWN  }, CTL_DOWN   );
+		bindKeyIds(new int[] { (int)'D', (int)'6', InputHandler.K_RIGHT }, CTL_RIGHT  );
+		bindKeyIds(new int[] { (int)'R', (int)' ', InputHandler.K_ENTER }, CTL_RESET  );
 		bindKeyIds(new int[] { (int)'P',           InputHandler.K_TAB   }, CTL_PAUSE  );
 		bindKeyId(K_ESC, CTL_ESCAPE);
 	}
 	
 	
 	
-	Map<Integer, Integer> keyIdBindings = new HashMap<>();
+	private Map<Integer, Integer> keyIdBindings = new HashMap<>();
 	
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
 	public void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
+		//TODO: save bindings to system preferences as we supply them
 	}
 	
 	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
@@ -116,14 +121,26 @@ public final class InputHandler {
 		keyIdBindings.remove(keyId);
 	}
 	
-	Map<Integer, Interaction> controlCodeActions = new HashMap<>();
+	/** @return a List of all keyIds bound to the given controlCode */
+	public List<Integer> getBoundKeyIdsFor(int controlCode) {
+		Set<Integer> fullKeyIdSet = keyIdBindings.keySet();
+		List<Integer> boundKeyIds = new ArrayList<>();
+		for (int i : fullKeyIdSet) {
+			if (keyIdBindings.get(i) == controlCode)
+				boundKeyIds.add(i);
+		}
+		Collections.sort(boundKeyIds);
+		return boundKeyIds;
+	}
+	
+	private Map<Integer, Interaction> controlCodeActions = new HashMap<>();
 	
 	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
 	public void bindControlCode(int controlCode, Interaction action) {
 		controlCodeActions.put(controlCode, action);
 	}
 	
-	boolean[] controlCodeStates = new boolean[CTL_UNCAUGHT];
+	private boolean[] controlCodeStates = new boolean[CTL_UNCAUGHT];
 	
 	/** @return whether the given controlCode is active (whether its associated keys are pressed down) */
 	public boolean isPressed(int controlCode) {

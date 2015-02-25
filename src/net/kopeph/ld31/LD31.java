@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -73,11 +74,11 @@ public class LD31 extends PApplet {
 		frame.setResizable(true);
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
-
+		
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
 		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000);
-		audio.play(BG_MUSIC, true);
+		//audio.play(BG_MUSIC, true);
 
 		buildVersion = new TextBox(renderer.font, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
@@ -98,30 +99,9 @@ public class LD31 extends PApplet {
 		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS;   }));
 		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit();                    }));
 
-		//setup settings menu
-		settingsMenu = new Menu();
-		settingsMenu.add(new TextBox(renderer.font, "Settings Menu"               , 0, -175));
-		
-		//TODO: setup the key bindings menu
-		
-		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
-
-		//setup dummy campaign menu
-		dummyCampaignMenu = new Menu();
-		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
-		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, (down) -> { gameState = ST_MENU; }));
-		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode hasn't been implemented yet :(", 0,  150));
-
-		//setup pause menu
-		pauseMenu = new Menu(); //Dynamic size. see drawPause();
-		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
-		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, (down) -> { gameState = ST_RESET;   }));
-		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
-
 		//setup input interaction
-		input.bindControlCode(InputHandler.CTL_RESTART, (down) -> {
+		input.loadKeyIdBindings();
+		input.bindControlCode(InputHandler.CTL_RESET, (down) -> {
 			if (gameState == ST_RUNNING ||
 				gameState == ST_WIN ||
 				gameState == ST_DIE) {
@@ -149,7 +129,44 @@ public class LD31 extends PApplet {
 			}
 		});
 
-		input.loadKeyIdBindings();
+		//setup settings menu
+		settingsMenu = new Menu();
+		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
+		
+		final int MENU_COLS = 4;
+		
+		for (int col = 1; col < MENU_COLS; ++col) {
+			settingsMenu.add(new TextBox(renderer.font, String.valueOf(col), -30*MENU_COLS + 60*col, -150));
+		}
+		
+		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
+			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, -125 + 30*row));
+			
+			List<Integer> bindings = input.getBoundKeyIdsFor(row);
+			for (int col = 1; col < MENU_COLS; ++col) {
+				settingsMenu.add(new MenuButton(renderer.font,
+												InputHandler.getKeyIdString(col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND),
+												-30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> {
+					//XXX: stub
+				}));
+			}
+		}
+		
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
+
+		//setup dummy campaign menu
+		dummyCampaignMenu = new Menu();
+		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, (down) -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode hasn't been implemented yet :(", 0,  150));
+
+		//setup pause menu
+		pauseMenu = new Menu(); //Dynamic size. see drawPause();
+		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
+		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, (down) -> { gameState = ST_RESET;   }));
+		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
 
 		applyFooterText();
 
