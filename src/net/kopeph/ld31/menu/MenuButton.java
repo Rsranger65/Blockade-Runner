@@ -27,12 +27,17 @@ public class MenuButton extends TextBox {
 		this.height = height;
 		this.interaction = interaction;
 	}
+	
+	/** Replaces the previous functionality with the supplied functionality */
+	public void replaceInteraction(Interaction replacement) {
+		interaction = replacement;
+	}
 
 	@Override
 	public void render() {
 		updateBounds();
 
-		if (!wasPressed && isMouseDownInside()) {
+		if (!wasPressed && isHovered() && isMouseDown()) {
 			interaction.interact(true);
 			wasPressed = true;
 		}

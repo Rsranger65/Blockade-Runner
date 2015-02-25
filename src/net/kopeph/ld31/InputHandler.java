@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
@@ -147,9 +148,37 @@ public final class InputHandler {
 		return controlCodeStates[controlCode];
 	}
 	
+	private MenuButton bindingButton;
+	private int bindingControlCode;
+	
+	public void handleBind(MenuButton button, int controlCode) {
+		bindingButton = button;
+		bindingControlCode = controlCode;
+		bindingButton.text = getKeyIdString(K_BINDING);
+	}
+	
+	public void cancelBind() {
+		if (bindingButton != null) {
+			bindingButton.text = getKeyIdString(bindingButton.tag);
+			bindingButton = null;
+		}
+	}
+	
 	/** Handles key presses and releases based on current key bindings */
 	public void handleKeyEvent(int keyId, boolean down) {
-		if (keyIdBindings.containsKey(keyId)) {
+		if (bindingButton != null && down) {
+			if (keyId == K_ESC) {
+				//allow users to unbind keys with esc
+				unbindKeyId(bindingButton.tag);
+				bindingButton.tag = K_UNBOUND;
+			} else if (!keyIdBindings.containsKey(keyId)) {
+				//if there are no conflicts, rebind the key to match
+				unbindKeyId(bindingButton.tag);
+				bindKeyId(keyId, bindingControlCode);
+				bindingButton.tag = keyId;
+			} //if there is a conflict with an existing binding, do nothing - the button be reset to its previous state by cancelBind()
+			cancelBind();
+		} else if (keyIdBindings.containsKey(keyId)) {
 			int controlCode = keyIdBindings.get(keyId);
 			
 			//keep track of key state

@@ -142,13 +142,15 @@ public class LD31 extends PApplet {
 		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
 			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, -125 + 30*row));
 			
+			final int r = row;
 			List<Integer> bindings = input.getBoundKeyIdsFor(row);
 			for (int col = 1; col < MENU_COLS; ++col) {
-				settingsMenu.add(new MenuButton(renderer.font,
-												InputHandler.getKeyIdString(col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND),
-												-30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> {
-					//XXX: stub
-				}));
+				final int keyId = (col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND);
+				final MenuButton b = new MenuButton(renderer.font, InputHandler.getKeyIdString(keyId),
+													-30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
+				b.replaceInteraction((down) -> { input.handleBind(b, r); }); //working around the strict lambda capture requirements
+				b.tag = keyId;
+				settingsMenu.add(b);
 			}
 		}
 		
@@ -345,7 +347,6 @@ public class LD31 extends PApplet {
 
 	private void drawSettings() {
 		image(renderer.textureBlue, 0, 0); //TODO: placeholder background
-//		syncKeyMaps();
 		settingsMenu.render();
 	}
 
@@ -356,7 +357,7 @@ public class LD31 extends PApplet {
 
 	@Override
 	public void mousePressed() {
-//		input.cancelBind();
+		input.cancelBind();
 		interacting = true; //using context.mousePressed would cause continuous interaction, but we only want once-per-click interaction
 	}
 

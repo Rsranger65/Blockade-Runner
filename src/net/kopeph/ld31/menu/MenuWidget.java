@@ -18,7 +18,7 @@ public abstract class MenuWidget implements Renderable {
 
 	public float xPos, yPos, width, height;
 	public int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
-	public int tag; //General purpose
+	public int tag; //Used for key binding
 
 	private int curCtxWidth, curCtxHeight;
 
@@ -40,10 +40,6 @@ public abstract class MenuWidget implements Renderable {
 
 	public boolean isMouseDown() {
 		return context.mousePressed && (context.mouseButton == PConstants.LEFT);
-	}
-
-	public boolean isMouseDownInside() {
-		return isMouseDown() && isHovered();
 	}
 
 	protected void updateBounds() {
