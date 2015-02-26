@@ -58,8 +58,6 @@ public class LD31 extends PApplet {
 	private volatile int gameState;
 	private int fadePhase;
 
-	public boolean interacting = false; //mouse interaction (used by MenuButton)
-
 	public Renderer renderer;
 
 	@Override
@@ -203,16 +201,14 @@ public class LD31 extends PApplet {
 			case ST_CAMPAIGN:   drawCampaign();    break;
 		}
 		buildVersion.render();
-
-		interacting = false; //mouse interactions should only last one frame
 	}
 
 	private void resize() {
 		loadPixels(); //must be done whenever the size of pixels changes
 		Arrays.fill(pixels, 0);
-		renderer.cropTextures(width, height);
 		lastWidth = width;
 		lastHeight = height;
+		renderer.cropTextures(lastWidth, lastHeight);
 	}
 
 	private void reset() {
@@ -255,8 +251,6 @@ public class LD31 extends PApplet {
 
 		//enemy pathing (this must be done before we apply textures over the lighting)
 		profiler.swap(Profiler.LIGHTING, Profiler.ENEMY_PATH);
-
-		//allow enemies to move
 		for (Enemy e : level.enemies) {
 			e.moveAuto();
 
@@ -358,7 +352,6 @@ public class LD31 extends PApplet {
 	@Override
 	public void mousePressed() {
 		input.cancelBind();
-		interacting = true; //using context.mousePressed would cause continuous interaction, but we only want once-per-click interaction
 	}
 
 	@Override

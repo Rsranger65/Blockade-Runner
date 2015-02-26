@@ -75,7 +75,7 @@ public class Enemy extends Entity {
 		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
 				if (level.inBounds(x, y))
-					context.pixels[y*context.width + x] = Entity.COLOR_ENEMY_COM;
+					context.pixels[y*context.lastWidth + x] = Entity.COLOR_ENEMY_COM;
 				return true;
 			});
 		}
