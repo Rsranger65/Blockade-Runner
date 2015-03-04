@@ -19,6 +19,7 @@ import processing.core.PConstants;
  * Do NOT send PConstants values to keyId parameters. use Input.K_* values instead.
  * @author alexg
  */
+@Deprecated
 public class Input {
 	public static final int
 		K_UNBOUND = -1, //These fill both halves of the word, so they can't collide

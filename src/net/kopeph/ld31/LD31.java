@@ -32,7 +32,7 @@ public class LD31 extends PApplet {
 	private static final String MSG_WIN = "YA DID IT!";
 	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
 
-	private static final String BG_MUSIC = "res/music.mp3";
+	private static final String BG_MUSIC = "res/music.mp3"; //file path
 
 	private static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
@@ -46,7 +46,7 @@ public class LD31 extends PApplet {
 		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
-	private static TextBox buildVersion, footer;
+	private static TextBox buildVersion, footer; //HUD text
 
 	private final Profiler profiler = new Profiler();
 
@@ -75,9 +75,10 @@ public class LD31 extends PApplet {
 		
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
-		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000);
-		//audio.play(BG_MUSIC, true);
+		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000); //fade in for 10 seconds
+		audio.play(BG_MUSIC, true);
 
+		//setup HUD
 		buildVersion = new TextBox(renderer.font, 0, 4, width, 8, buildVersion());
 		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
 		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
@@ -97,7 +98,7 @@ public class LD31 extends PApplet {
 		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS;   }));
 		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit();                    }));
 
-		//setup input interaction
+		//setup behaviors for keyboard controls
 		input.loadKeyIdBindings();
 		input.bindControlCode(InputHandler.CTL_RESET, (down) -> {
 			if (gameState == ST_RUNNING ||
@@ -131,15 +132,17 @@ public class LD31 extends PApplet {
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
 		
-		final int MENU_COLS = 4;
-		
+		//setup key binding buttons and labels
+		final int MENU_COLS = 4; //1 label + MENU_COLS buttons per row
+		//setup top label row
 		for (int col = 1; col < MENU_COLS; ++col) {
 			settingsMenu.add(new TextBox(renderer.font, String.valueOf(col), -30*MENU_COLS + 60*col, -150));
 		}
-		
 		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
+			//setup left label column
 			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, -125 + 30*row));
 			
+			//setup each row of buttons
 			final int r = row;
 			List<Integer> bindings = input.getBoundKeyIdsFor(row);
 			for (int col = 1; col < MENU_COLS; ++col) {
@@ -173,6 +176,10 @@ public class LD31 extends PApplet {
 		gameState = ST_MENU;
 	}
 
+	/**
+	 * ONLY USE THIS AFTER setup() IS CALLED - DO NOT REFERENCE IN STATIC INITIALIZERS
+	 * @return the current LD31 context (a singleton)
+	 */
 	public static LD31 getContext() {
 		return context;
 	}
@@ -182,12 +189,16 @@ public class LD31 extends PApplet {
 		return (x >= 0 && y >= 0 && x < lastWidth && y < lastHeight);
 	}
 
+	/**
+	 * Used to avoid runtime out-of-bounds exceptions when the screen size changes in the middle of a tick
+	 * Use these instead of width and height whenever you're doing something that depends on the screen size
+	 */
 	public int lastWidth, lastHeight;
 
 	@Override
 	public void draw() {
 		if (width != lastWidth || height != lastHeight)
-				resize();
+			resize(); //allows for free window resizing without affecting gameplay
 
 		switch (gameState) {
 			case ST_RESET_HARD: reset(); resize(); break;
@@ -211,12 +222,15 @@ public class LD31 extends PApplet {
 		renderer.cropTextures(lastWidth, lastHeight);
 	}
 
+	/** Reloads the current level completely */
 	private void reset() {
 		level = new Level("res/test-level.txt"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
 		gameState = ST_RUNNING;
 	}
 
+	/** Updates the footer HUD text to reflect control bindings */
+	//TODO: update this to work with new InputHandler class
 	private void applyFooterText() {
 //		String footerText = String.format(MSG_FOOTER,
 //			input.keyMap(CTL_UP   , 0),
