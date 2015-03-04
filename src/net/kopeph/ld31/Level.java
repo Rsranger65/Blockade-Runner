@@ -8,6 +8,7 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
+import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -162,7 +163,8 @@ public class Level {
 		
 		//retrieve all possible properties before determining the specifier
 		//because it's simple and avoids code repetition
-		int x = -1, y = -1, color = Enemy.randomColor(); //dummy values
+		int x = -1, y = -1, color = Enemy.randomColor(); //placeholder values
+		List<Vector2> route = null; //placeholder value
 		for (int i = 1; i < parts.length; ++i) {
 			if (parts[i].isEmpty()) continue;
 			String[] pair = parts[i].split(":");
@@ -179,6 +181,10 @@ public class Level {
 					if (color == Level.FLOOR_NONE) //if the string given is invalid
 						color = Enemy.randomColor();
 					break;
+				case "route":
+				case "path":
+					route = parseRoute(pair[1]);
+					break;
 			}
 		}
 		
@@ -194,11 +200,29 @@ public class Level {
 				//if incomplete coordinates are given, place enemy in a random location
 				//this behavior is subject to change
 				if (validTile(x, y))
-					enemies.add(new Enemy(this, x, y, color));
+					enemies.add(new Enemy(this, x, y, color, route));
 				else
-					enemies.add(new Enemy(this, color));
+					enemies.add(new Enemy(this, color, route));
 				break;
 		}
+	}
+	
+	//helper function for parseLine()
+	List<Vector2> parseRoute(String in) {
+		String[] coords = in.toLowerCase().split(",");
+		List<Vector2> route = new ArrayList<>(coords.length/2);
+		try {
+			for (int i = 0; i < coords.length; i += 2) {
+				route.add(new Vector2(Integer.parseInt(coords[i    ].trim()),
+									  Integer.parseInt(coords[i + 1].trim())));
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			return null;
+		}
+		if (route.size() == 0)
+			return null;
+		return route;
 	}
 	
 	//helper function for constructors

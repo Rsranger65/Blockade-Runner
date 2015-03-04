@@ -1,5 +1,8 @@
 package net.kopeph.ld31.entity;
 
+import java.util.List;
+
+import processing.core.PApplet;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
@@ -11,6 +14,9 @@ public class Enemy extends Entity {
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	private float direction; //radians
 	private boolean pursuing; //used in render() so that we can know
+	
+	List<Vector2> route;
+	private int routeIndex;
 
 	public Enemy(Level level) {
 		super(level, randomColor());
@@ -26,6 +32,16 @@ public class Enemy extends Entity {
 	
 	public Enemy(Level level, int x, int y, int color) {
 		super(level, x, y, color);
+	}
+	
+	public Enemy(Level level, int color, List<Vector2> route) {
+		super(level, color);
+		this.route = route;
+	}
+	
+	public Enemy(Level level, int x, int y, int color, List<Vector2> route) {
+		super(level, x, y, color);
+		this.route = route;
 	}
 	
 	//helper function for constructor
@@ -51,14 +67,17 @@ public class Enemy extends Entity {
 		pursuing = checkPursuing();
 		if (pursuing) {
 			speedMultiplier = 1.25; //set speed slightly faster than player
-			move(level.player.pos().sub(pos()).theta());
+			move(level.player.pos().sub(pos()).theta()); //Pursue
 		} else {
 			speedMultiplier = 0.75; //set speed slightly slower than player
-			moveIdle(); //Wiggle
+			if (route == null)
+				moveIdle(); //Wiggle
+			else
+				followRoute();
 		}
 	}
 
-	public void moveIdle() {
+	private void moveIdle() {
 		direction += context.random(-1.0f/2, 1.0f/2);
 		direction += TWO_PI; //because modulus sucks with negative numbers
 		direction %= TWO_PI;
@@ -67,11 +86,35 @@ public class Enemy extends Entity {
 		if (pos().equals(oldPos)) //If we didn't move, pick a random direction to fake a bounce
 			direction = context.random(8);
 	}
+	
+	private void followRoute() {
+		Vector2 v = route.get(routeIndex);
+		if (PApplet.dist((float)pos().x, (float)pos().y, (float)v.x, (float)v.y) < SP*speedMultiplier) {
+			routeIndex = (routeIndex + 1)%route.size();
+			v = route.get(routeIndex);
+		}
+		move(v.sub(pos()).theta()); //move toward the next node
+	}
 
 	@Override
 	public void render() {
+		//draw route lines, if one exists
+		if (route != null) {
+			for (int i = 1; i <= route.size(); ++i) {
+				Trace.line((int)route.get(i - 1).x,          (int)route.get(i - 1).y,
+						   (int)route.get(i%route.size()).x, (int)route.get(i%route.size()).y,
+						   (x, y) -> {
+					if (level.inBounds(x, y))
+						context.pixels[y*context.lastWidth + x] = this.color;// | 0xFF555555;
+					return true;
+				});
+			}
+		}
+		
+		//draw enemy rectangle
 		super.render();
 
+		//draw line to player, if pursuing
 		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
 				if (level.inBounds(x, y))

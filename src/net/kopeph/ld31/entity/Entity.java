@@ -12,7 +12,7 @@ import processing.core.PApplet;
 
 public class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
-	private static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
+	protected static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
 
 	public static final int
 		COLOR_OBJECTIVE = 0xFFFF7F7F,
