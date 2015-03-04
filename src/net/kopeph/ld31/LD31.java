@@ -120,7 +120,7 @@ public class LD31 extends PApplet {
 				exit();
 			} else if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
-				menuHeight = 1;
+				menuHeight = 10;
 			} else if (gameState == ST_PAUSE) {
 				gameState = ST_RUNNING;
 			} else {
@@ -339,15 +339,10 @@ public class LD31 extends PApplet {
 
 		//since the pause menu is of irregular dimensions, we're taking manual control
 		pauseMenu.setBounds(PAUSE_MENU_WIDTH, menuHeight); //Manual override! Get to your battle stations!
-		if (menuHeight > MAX_MENUHEIGHT - 20) {
+		if (menuHeight > MAX_MENUHEIGHT - 40) {
 			pauseMenu.render(); //only render the menu (with buttons) if the menu height is enough that the buttons won't be off the menu
-		} else { //otherwise, draw a rectangle identical to the menu background (this is sort of a dumb hack)
-			//TODO: move this functionality into Menu
-			pushStyle();
-			fill(100, 200); //default menu background color (translucent grey)
-			rectMode(CENTER);
-			rect(width/2, height/2, PAUSE_MENU_WIDTH, menuHeight, 10);
-			popStyle();
+		} else {
+			pauseMenu.renderBack(); //otherwise, draw only the menu's background rectangle
 		}
 	}
 

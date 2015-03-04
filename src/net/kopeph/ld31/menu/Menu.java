@@ -51,13 +51,16 @@ public class Menu extends MenuWidget {
 	@Override
 	public void render() {
 		updateBounds();
-
+		renderBack();
+		for (MenuWidget w : widgets)
+			w.render();
+	}
+	
+	/** Draws the backing rectangle, should be called before drawing the MenuWidgets */
+	public void renderBack() {
 		context.pushStyle();
 		context.fill(100, 200);
 		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 10);
 		context.popStyle();
-
-		for (MenuWidget w : widgets)
-			w.render();
 	}
 }
