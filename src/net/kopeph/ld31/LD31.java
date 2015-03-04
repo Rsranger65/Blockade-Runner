@@ -246,6 +246,7 @@ public class LD31 extends PApplet {
 //		die.footer  = footerEndText;
 	}
 
+	/** tick logic for Free Play game mode */
 	private void drawRunning() {
 		//move player
 		profiler.start(Profiler.PLAYER_MOVE);
@@ -331,15 +332,17 @@ public class LD31 extends PApplet {
 	private static final int PAUSE_MENU_WIDTH = 240;
 
 	private void drawPause() {
-		updatePixels();
+		updatePixels(); //doing this every frame allows us to draw the pause menu over a still of the game
 
-		menuHeight += 20;
+		menuHeight += 20; //menu expands vertically from height of 0 to MAX_MENUHEIGHT
 		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
 
-		pauseMenu.setBounds(PAUSE_MENU_WIDTH, menuHeight);
+		//since the pause menu is of irregular dimensions, we're taking manual control
+		pauseMenu.setBounds(PAUSE_MENU_WIDTH, menuHeight); //Manual override! Get to your battle stations!
 		if (menuHeight > MAX_MENUHEIGHT - 20) {
-			pauseMenu.render();
-		} else {
+			pauseMenu.render(); //only render the menu (with buttons) if the menu height is enough that the buttons won't be off the menu
+		} else { //otherwise, draw a rectangle identical to the menu background (this is sort of a dumb hack)
+			//TODO: move this functionality into Menu
 			pushStyle();
 			fill(100, 200); //default menu background color (translucent grey)
 			rectMode(CENTER);
