@@ -134,6 +134,24 @@ public final class InputHandler {
 		return boundKeyIds;
 	}
 	
+	/** @return the main keyId for the given controlCode, based on a hard-coded preference heuristic */
+	public int getMainBindingFor(int controlCode) {
+		List<Integer> bindings = getBoundKeyIdsFor(controlCode);
+		if (bindings.size() == 0)
+			return K_UNBOUND;
+		//prefer alphabetic characters, then arrow keys, then numbers, then anything else
+		for (int i : bindings)
+			if (Character.isAlphabetic(i))
+				return i;
+		for (int i : bindings)
+			if (i == K_UP || i == K_LEFT || i == K_DOWN || i == K_RIGHT)
+				return i;
+		for (int i : bindings)
+			if (Character.isDigit(i))
+				return i;
+		return bindings.get(0);
+	}
+	
 	private Map<Integer, Interaction> controlCodeActions = new HashMap<>();
 	
 	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
@@ -176,7 +194,9 @@ public final class InputHandler {
 				unbindKeyId(bindingButton.tag);
 				bindKeyId(keyId, bindingControlCode);
 				bindingButton.tag = keyId;
-			} //if there is a conflict with an existing binding, do nothing - the button be reset to its previous state by cancelBind()
+			}
+			
+			//if there is a conflict with an existing binding, do nothing - the button be reset to its previous state by cancelBind()
 			cancelBind();
 		} else if (keyIdBindings.containsKey(keyId)) {
 			int controlCode = keyIdBindings.get(keyId);

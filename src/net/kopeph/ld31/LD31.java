@@ -226,24 +226,23 @@ public class LD31 extends PApplet {
 	private void reset() {
 		level = new Level("res/test-level.txt"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
+		applyFooterText();
 		gameState = ST_RUNNING;
 	}
 
 	/** Updates the footer HUD text to reflect control bindings */
-	//TODO: update this to work with new InputHandler class
 	private void applyFooterText() {
-//		String footerText = String.format(MSG_FOOTER,
-//			input.keyMap(CTL_UP   , 0),
-//			input.keyMap(CTL_LEFT , 0),
-//			input.keyMap(CTL_DOWN , 0),
-//			input.keyMap(CTL_RIGHT, 0),
-//			input.keyMap(CTL_RESTART, 0));
-//		String footerEndText = String.format(MSG_FOOTER_END,
-//			input.keyMap(CTL_RESTART, 0));
-
-//		footer.text = footerText;
-//		win.footer  = footerEndText;
-//		die.footer  = footerEndText;
+		String footerText = String.format(MSG_FOOTER,
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_UP)),
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_LEFT)),
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_DOWN)),
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RIGHT)),
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RESET)));
+		String footerEndText = String.format(MSG_FOOTER_END,
+			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RESET)));
+		footer.text = footerText;
+		win.footer  = footerEndText;
+		die.footer  = footerEndText;
 	}
 
 	/** tick logic for Free Play game mode */
@@ -339,11 +338,10 @@ public class LD31 extends PApplet {
 
 		//since the pause menu is of irregular dimensions, we're taking manual control
 		pauseMenu.setBounds(PAUSE_MENU_WIDTH, menuHeight); //Manual override! Get to your battle stations!
-		if (menuHeight > MAX_MENUHEIGHT - 40) {
+		if (menuHeight > MAX_MENUHEIGHT - 40)
 			pauseMenu.render(); //only render the menu (with buttons) if the menu height is enough that the buttons won't be off the menu
-		} else {
+		else
 			pauseMenu.renderBack(); //otherwise, draw only the menu's background rectangle
-		}
 	}
 
 	private void drawMenu() {
