@@ -2,6 +2,7 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
+import net.kopeph.ld31.graphics.HUD;
 import net.kopeph.ld31.graphics.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -15,15 +16,14 @@ public class EndScreen implements Renderable {
 
 	private final PApplet context = LD31.getContext();
 	private final Font font;
-	public String title, footer;
+	public String title;
 	private final int backColor;
 	private int phase;
 	private int lastFrame;
 
-	public EndScreen(Font font, String title, String footer, int backColor) {
+	public EndScreen(Font font, String title, int backColor) {
 		this.font = font;
 		this.title = title;
-		this.footer = footer;
 		this.backColor = backColor;
 	}
 
@@ -31,7 +31,7 @@ public class EndScreen implements Renderable {
 	public void render() {
 		//keeping track of the phase
 		if (lastFrame < context.frameCount - 1)
-			phase = PHASE_ONE; //reset
+			phase = PHASE_ONE; //reset only if we weren't rendered last frame
 		if (phase > 0)
 			--phase;
 		lastFrame = context.frameCount;
@@ -45,9 +45,10 @@ public class EndScreen implements Renderable {
 		context.rect(context.width/2, context.height/2, context.width,
 			(PHASE_ONE - phase) * context.height / (PHASE_ONE - PHASE_TWO));
 		font.renderCentered(title, context.width/2, context.height/2);
-		font.render(footer, 4, context.height - 12); //XXX: Must match values in LD31.java
 
 		context.popStyle();
+		
+		HUD.render();
 	}
 }
 

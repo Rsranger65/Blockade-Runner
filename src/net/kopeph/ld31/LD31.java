@@ -1,21 +1,16 @@
 package net.kopeph.ld31;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
+import net.kopeph.ld31.graphics.HUD;
 import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
-import net.kopeph.ld31.menu.MenuWidget;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
 import processing.core.PApplet;
@@ -24,17 +19,9 @@ import processing.core.PApplet;
 public class LD31 extends PApplet {
 	private static final long serialVersionUID = 1L;
 
-	//THESE ARE ALL THE USER MESSAGES
-	private static final String MSG_FOOTER =
-	"%s%s%s%s: Move %8s: Restart    Objective: Capture the Pink Square    Beware Of: White Light";
-	private static final String MSG_FOOTER_END =
-	    "           %8s: Restart";
-	private static final String MSG_WIN = "YA DID IT!";
-	private static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
-
 	private static final String BG_MUSIC = "res/music.mp3"; //file path
 
-	private static final int // Game state enum
+	public static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
 		ST_RESET      = -1,  // Level needs regenerated
 		ST_RUNNING    =  0,  // Normal Condition
@@ -46,7 +33,6 @@ public class LD31 extends PApplet {
 		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
-	private static TextBox buildVersion, footer; //HUD text
 
 	private final Profiler profiler = new Profiler();
 
@@ -78,17 +64,9 @@ public class LD31 extends PApplet {
 		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000); //fade in for 10 seconds
 		audio.play(BG_MUSIC, true);
 
-		//setup HUD
-		buildVersion = new TextBox(renderer.font, 0, 4, width, 8, buildVersion());
-		buildVersion.xAnchor = MenuWidget.ANCHOR_RIGHT;
-		buildVersion.xPos    = width - buildVersion.text.length() * 8 - 4;
-
-		footer = new TextBox(renderer.font, 4, height - 12, width, 8, ""); //$NON-NLS-1$
-		footer.yAnchor = MenuWidget.ANCHOR_BOTTOM; //XXX: Positioning must match in EndScreen.java
-
 		//setup end screens
-		win = new EndScreen(renderer.font, MSG_WIN, "", color(0, 120, 0)); //$NON-NLS-1$
-		die = new EndScreen(renderer.font, MSG_DIE, "", color(120, 0, 0)); //$NON-NLS-1$
+		win = new EndScreen(renderer.font, HUD.MSG_WIN, color(0, 120, 0)); //$NON-NLS-1$
+		die = new EndScreen(renderer.font, HUD.MSG_DIE, color(120, 0, 0)); //$NON-NLS-1$
 
 		//setup main menu
 		mainMenu = new Menu();
@@ -171,17 +149,25 @@ public class LD31 extends PApplet {
 		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
 		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
 
-		applyFooterText();
+		HUD.updateFooterText(input);
 
 		gameState = ST_MENU;
 	}
 
 	/**
 	 * ONLY USE THIS AFTER setup() IS CALLED - DO NOT REFERENCE IN STATIC INITIALIZERS
-	 * @return the current LD31 context (a singleton)
+	 * @return the current LD31 context (a singleton), context should always == this
 	 */
 	public static LD31 getContext() {
 		return context;
+	}
+	
+	/**
+	 * For use in classes that need to know the game state, so we don't have to pass it around,
+	 * and can delegate work more easily to other classes, especially those implementing Renderable
+	 */
+	public int gameState() {
+		return gameState;
 	}
 
 	@Override
@@ -211,7 +197,8 @@ public class LD31 extends PApplet {
 			case ST_SETTINGS:   drawSettings();    break;
 			case ST_CAMPAIGN:   drawCampaign();    break;
 		}
-		buildVersion.render();
+		
+		HUD.render();
 	}
 
 	private void resize() {
@@ -226,23 +213,8 @@ public class LD31 extends PApplet {
 	private void reset() {
 		level = new Level("res/test-level.txt"); //level verifies itself so we don't do that here anymore
 		fadePhase = -(255 + 100);
-		applyFooterText();
+		HUD.updateFooterText(input);
 		gameState = ST_RUNNING;
-	}
-
-	/** Updates the footer HUD text to reflect control bindings */
-	private void applyFooterText() {
-		String footerText = String.format(MSG_FOOTER,
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_UP)),
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_LEFT)),
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_DOWN)),
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RIGHT)),
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RESET)));
-		String footerEndText = String.format(MSG_FOOTER_END,
-			InputHandler.getKeyIdString(input.getMainBindingFor(InputHandler.CTL_RESET)));
-		footer.text = footerText;
-		win.footer  = footerEndText;
-		die.footer  = footerEndText;
 	}
 
 	/** tick logic for Free Play game mode */
@@ -312,9 +284,6 @@ public class LD31 extends PApplet {
 			});
 		}
 
-		//Print out Text for directions
-		footer.render();
-
 		profiler.report(this);
 	}
 
@@ -378,30 +347,5 @@ public class LD31 extends PApplet {
 	/** Global Entry Point */
 	public static void main(String[] args) {
 		PApplet.main(new String[] { LD31.class.getName() });
-	}
-
-	private static String buildVersion() {
-		try {
-			return ResourceBundle.getBundle("version").getString("build.versionString"); //$NON-NLS-1$ //$NON-NLS-2$
-		} catch (MissingResourceException e) {
-			//If the version file doesn't exist, make a version string based on
-			//branch name and short hash
-
-			String branchName = "?"; //$NON-NLS-1$
-			String branchHash = "?"; //$NON-NLS-1$
-			try (BufferedReader gitHead = new BufferedReader(new FileReader(".git/HEAD"))) { //$NON-NLS-1$
-				branchName = gitHead.readLine();
-				branchName = branchName.substring(branchName.lastIndexOf('/') + 1);
-				try (BufferedReader gitRefHead = new BufferedReader(new FileReader(".git/refs/heads/" + branchName))) { //$NON-NLS-1$
-					branchHash = gitRefHead.readLine().substring(0, 7);
-				} catch (IOException ew) {
-					//Oops. Ignore
-				}
-			} catch (IOException ew) {
-				//Oops. Ignore
-			}
-
-			return String.format("git %S.%s", branchName, branchHash); //$NON-NLS-1$
-		}
 	}
 }
