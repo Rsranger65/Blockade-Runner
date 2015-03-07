@@ -92,12 +92,12 @@ public final class InputHandler {
 	
 	public void resetKeyIdBindings() {
 		keyIdBindings.clear();
-		bindKeyIds(new int[] { (int)'W', (int)'8', InputHandler.K_UP    }, CTL_UP     );
-		bindKeyIds(new int[] { (int)'A', (int)'4', InputHandler.K_LEFT  }, CTL_LEFT   );
-		bindKeyIds(new int[] { (int)'S', (int)'2', InputHandler.K_DOWN  }, CTL_DOWN   );
-		bindKeyIds(new int[] { (int)'D', (int)'6', InputHandler.K_RIGHT }, CTL_RIGHT  );
-		bindKeyIds(new int[] { (int)'R', (int)' ', InputHandler.K_ENTER }, CTL_RESET  );
-		bindKeyIds(new int[] { (int)'P',           InputHandler.K_TAB   }, CTL_PAUSE  );
+		bindKeyIds(new int[] { 'W', '8', InputHandler.K_UP    }, CTL_UP     );
+		bindKeyIds(new int[] { 'A', '4', InputHandler.K_LEFT  }, CTL_LEFT   );
+		bindKeyIds(new int[] { 'S', '2', InputHandler.K_DOWN  }, CTL_DOWN   );
+		bindKeyIds(new int[] { 'D', '6', InputHandler.K_RIGHT }, CTL_RIGHT  );
+		bindKeyIds(new int[] { 'R', ' ', InputHandler.K_ENTER }, CTL_RESET  );
+		bindKeyIds(new int[] { 'P',      InputHandler.K_TAB   }, CTL_PAUSE  );
 		bindKeyId(K_ESC, CTL_ESCAPE);
 	}
 	
