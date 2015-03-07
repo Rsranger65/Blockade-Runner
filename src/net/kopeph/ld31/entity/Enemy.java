@@ -8,7 +8,24 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Vector2;
 
-public class Enemy extends Entity {
+public class Enemy extends Creature {
+	public static final int
+		ENEMY_COM_COLOR = 0xFFFF7F00;
+	
+	public static int getColorByString(String value) {
+		switch (value.trim().toLowerCase()) {
+			case "red":   return Level.FLOOR_RED;
+			case "green": return Level.FLOOR_GREEN;
+			case "blue":  return Level.FLOOR_BLUE;
+			case "yellow": return Level.FLOOR_YELLOW;
+			case "cyan": return Level.FLOOR_CYAN;
+			case "magenta": return Level.FLOOR_MAGENTA;
+			case "black": return Level.FLOOR_BLACK;
+			case "white": return Level.FLOOR_WHITE;
+		}
+		return Level.FLOOR_NONE;
+	}
+	
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
@@ -60,7 +77,6 @@ public class Enemy extends Entity {
 				return true;
 			return false;
 		});
-		//XXX: consider making enemy communication omnidistant (would remove this logic entirely)
 	}
 
 	public void moveAuto() {
@@ -118,7 +134,7 @@ public class Enemy extends Entity {
 		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
 				if (level.inBounds(x, y))
-					context.pixels[y*context.lastWidth + x] = Entity.COLOR_ENEMY_COM;
+					context.pixels[y*context.lastWidth + x] = ENEMY_COM_COLOR;
 				return true;
 			});
 		}

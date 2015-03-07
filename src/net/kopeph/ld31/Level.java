@@ -5,7 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.kopeph.ld31.entity.Enemy;
-import net.kopeph.ld31.entity.Entity;
+import net.kopeph.ld31.entity.Objective;
+import net.kopeph.ld31.entity.Player;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.Vector2;
@@ -33,8 +34,8 @@ public class Level {
 
 	//enemies and player
 	public List<Enemy> enemies = new ArrayList<>();
-	public Entity  player;
-	public Entity  objective;
+	public Player player;
+	public Objective objective;
 
 	public final int[] tiles;
 	
@@ -177,7 +178,7 @@ public class Level {
 					y = Integer.parseInt(pair[1]);
 					break;
 				case "color":
-					color = Entity.getColorByString(pair[1]);
+					color = Enemy.getColorByString(pair[1]);
 					if (color == Level.FLOOR_NONE) //if the string given is invalid
 						color = Enemy.randomColor();
 					break;
@@ -191,10 +192,10 @@ public class Level {
 		//determine how to use information based on the specifier
 		switch (parts[0].trim().toLowerCase()) {
 			case "player":
-				player = new Entity(this, x, y, Entity.COLOR_PLAYER);
+				player = new Player(this, x, y);
 				break;
 			case "objective":
-				objective = new Entity(this, x, y, Entity.COLOR_OBJECTIVE);
+				objective = new Objective(this, x, y);
 				break;
 			case "enemy":
 				//if incomplete coordinates are given, place enemy in a random location
@@ -233,7 +234,7 @@ public class Level {
 		
 		if (player == null) { //if we haven't already placed a player
 			do {
-				player = new Entity(this, Entity.COLOR_PLAYER);
+				player = new Player(this);
 				++placementFailCount;
 			} while (!goodPlayerPlacement() && placementFailCount < 100);
 		}
@@ -241,7 +242,7 @@ public class Level {
 		if (objective == null) { //if we haven't already placed an objective
 			placementFailCount = 0;
 			do {
-				objective = new Entity(this, Entity.COLOR_OBJECTIVE);
+				objective = new Objective(this);
 				++placementFailCount;
 			} while (!goodObjectivePlacement() && placementFailCount < 100);
 		}

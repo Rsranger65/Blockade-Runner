@@ -7,7 +7,6 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.HUD;
 import net.kopeph.ld31.graphics.Renderer;
-import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
@@ -35,8 +34,7 @@ public class LD31 extends PApplet {
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 
 	private final Profiler profiler = new Profiler();
-
-	private InputHandler input = new InputHandler();
+	private final InputHandler input = new InputHandler();
 	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
@@ -255,13 +253,6 @@ public class LD31 extends PApplet {
 		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
 		renderer.renderEntities(level);
 
-		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
-		Trace.circle(level.objective.screenX(), level.objective.screenY(), PApplet.abs(frameCount % 50 - 25) + 50, (x, y) -> {
-			if (contains(x, y) && level.inBounds(x, y))
-				pixels[y*width + x] = Entity.COLOR_OBJECTIVE;
-			return true;
-		});
-
 		//update pixels/wrap things up
 		profiler.swap(Profiler.ENTITY_DRAW, Profiler.PIXEL_UPDATE);
 		updatePixels();
@@ -271,17 +262,7 @@ public class LD31 extends PApplet {
 		if (fadePhase < 0) {
 			fill(0, -(fadePhase += 4));
 			rect(0, 0, width, height);
-			//equivalent to the functionality of level.player.draw(Entity.COLOR_PLAYER)
-			Trace.rectangle(level.player.screenX() - Entity.SIZE, level.player.screenY() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
-				set(x, y, Entity.COLOR_PLAYER);
-				return true;
-			});
-			//draw a circle closing in on the player
-			Trace.circle(level.player.screenX(), level.player.screenY(), max(0, -fadePhase - 255), (x, y) -> {
-				if (level.inBounds(x, y))
-					set(x, y, Entity.COLOR_PLAYER);
-				return true;
-			});
+			level.player.renderAlternate(max(0, -fadePhase - 255));
 		}
 
 		profiler.report(this);
