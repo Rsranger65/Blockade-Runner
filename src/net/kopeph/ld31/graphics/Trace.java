@@ -48,11 +48,11 @@ public class Trace {
 			}
 		}
 	}
-	
+
 	/** A version of line() that doesn't check to stop if it's reached the end point */
 	public static void ray(int x1, int y1, int x2, int y2, PointPredicate op) {
 		if (x1 == x2 && y1 == y2) return; //avoid infinite loop if starting position is ending position
-		
+
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
 		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
@@ -124,7 +124,7 @@ public class Trace {
 			if (op.on(p.x - 1, p.y    )) points.push(new Point(p.x - 1, p.y    ));
 		}
 	}
-	
+
 	/** Traces a filled rectangle */
 	public static void rectangle(int x0, int y0, int width, int height, PointPredicate op) {
 		for (int y =  y0 + height; y --> y0;) {

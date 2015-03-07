@@ -21,19 +21,19 @@ public class HUD {
 	    "           %8s: Restart";
 	public static final String MSG_WIN = "YA DID IT!";
 	public static final String MSG_DIE = "You ded Jim!"; //Sorry, this project is not MSG free
-	
+
 	private static String footerText = MSG_FOOTER, endFooterText = MSG_FOOTER_END, buildVersionText;
 	static { buildVersionText = buildVersion(); }
-	
+
 	public static void render() {
 		LD31 context = LD31.getContext();
-		
+
 		if (context.gameState() == LD31.ST_WIN || context.gameState() == LD31.ST_DIE) {
 			context.renderer.font.render(endFooterText, 4, context.height - 12);
 		} else if (context.gameState() == LD31.ST_RUNNING) {
 			context.renderer.font.render(footerText, 4, context.height - 12);
 		}
-		
+
 		context.renderer.font.render(buildVersionText, context.width - buildVersionText.length()*8 - 4, 4);
 	}
 

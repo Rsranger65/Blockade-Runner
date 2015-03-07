@@ -48,7 +48,7 @@ public class EndScreen implements Renderable {
 		font.renderCentered(title, context.width/2, context.height/2);
 
 		context.popStyle();
-		
+
 		HUD.render();
 	}
 }

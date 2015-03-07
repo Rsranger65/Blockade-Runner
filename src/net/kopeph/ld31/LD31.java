@@ -58,7 +58,7 @@ public class LD31 extends PApplet {
 		frame.setResizable(true);
 		frame.setTitle("Blockade Runner");
 		//TODO: give the window a custom icon
-		
+
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
 		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000); //fade in for 10 seconds
@@ -109,7 +109,7 @@ public class LD31 extends PApplet {
 		//setup settings menu
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
-		
+
 		//setup key binding buttons and labels
 		final int MENU_COLS = 4; //1 label + MENU_COLS buttons per row
 		//setup top label row
@@ -119,20 +119,20 @@ public class LD31 extends PApplet {
 		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
 			//setup left label column
 			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, -125 + 30*row));
-			
+
 			//setup each row of buttons
 			final int r = row;
 			List<Integer> bindings = input.getBoundKeyIdsFor(row);
 			for (int col = 1; col < MENU_COLS; ++col) {
 				final int keyId = (col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND);
 				final MenuButton b = new MenuButton(renderer.font, InputHandler.getKeyIdString(keyId),
-													-30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
+				                                    -30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
 				b.replaceInteraction((down) -> { input.handleBind(b, r); }); //working around the strict lambda capture requirements
 				b.tag = keyId;
 				settingsMenu.add(b);
 			}
 		}
-		
+
 		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
@@ -162,7 +162,7 @@ public class LD31 extends PApplet {
 	public static LD31 getContext() {
 		return context;
 	}
-	
+
 	/**
 	 * For use in classes that need to know the game state, so we don't have to pass it around,
 	 * and can delegate work more easily to other classes, especially those implementing Renderable
@@ -198,7 +198,7 @@ public class LD31 extends PApplet {
 			case ST_SETTINGS:   drawSettings();    break;
 			case ST_CAMPAIGN:   drawCampaign();    break;
 		}
-		
+
 		HUD.render();
 	}
 
@@ -212,8 +212,8 @@ public class LD31 extends PApplet {
 
 	/** Reloads the current level completely */
 	private void reset() {
-		if (currentLevel == null)	level = new Level(1920, 1080);
-		else						level = new Level(currentLevel);
+		if (currentLevel == null) level = new Level(1920, 1080);
+		else                      level = new Level(currentLevel);
 		fadePhase = -(255 + 100);
 		HUD.updateFooterText(input);
 		gameState = ST_RUNNING;

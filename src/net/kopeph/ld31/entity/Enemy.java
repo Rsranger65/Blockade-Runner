@@ -2,17 +2,17 @@ package net.kopeph.ld31.entity;
 
 import java.util.List;
 
-import processing.core.PApplet;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Vector2;
+import processing.core.PApplet;
 
 /** @author stuntddude */
 public class Enemy extends Creature {
 	public static final int
 		ENEMY_COM_COLOR = 0xFFFF7F00;
-	
+
 	public static int getColorByString(String value) {
 		switch (value.trim().toLowerCase()) {
 			case "red":   return Level.FLOOR_RED;
@@ -26,42 +26,42 @@ public class Enemy extends Creature {
 		}
 		return Level.FLOOR_NONE;
 	}
-	
+
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
 	public final int viewDistance = 120; //distance that enemy light can reach in pixels
 	private float direction; //radians
 	private boolean pursuing; //used in render() so that we can know
-	
+
 	List<Vector2> route;
 	private int routeIndex;
 
 	public Enemy(Level level) {
 		super(level, randomColor());
 	}
-	
+
 	public Enemy(Level level, int color) {
 		super(level, color);
 	}
-	
+
 	public Enemy(Level level, int x, int y) {
 		super(level, x, y, randomColor());
 	}
-	
+
 	public Enemy(Level level, int x, int y, int color) {
 		super(level, x, y, color);
 	}
-	
+
 	public Enemy(Level level, int color, List<Vector2> route) {
 		super(level, color);
 		this.route = route;
 	}
-	
+
 	public Enemy(Level level, int x, int y, int color, List<Vector2> route) {
 		super(level, x, y, color);
 		this.route = route;
 	}
-	
+
 	//helper function for constructor
 	public static int randomColor() {
 		int[] possibleColors = { Level.FLOOR_RED, Level.FLOOR_GREEN, Level.FLOOR_BLUE };
@@ -103,7 +103,7 @@ public class Enemy extends Creature {
 		if (pos().equals(oldPos)) //If we didn't move, pick a random direction to fake a bounce
 			direction = context.random(8);
 	}
-	
+
 	private void followRoute() {
 		Vector2 v = route.get(routeIndex);
 		if (PApplet.dist((float)pos().x, (float)pos().y, (float)v.x, (float)v.y) < SP*speedMultiplier) {
@@ -127,7 +127,7 @@ public class Enemy extends Creature {
 				});
 			}
 		}
-		
+
 		//draw enemy rectangle
 		super.render();
 

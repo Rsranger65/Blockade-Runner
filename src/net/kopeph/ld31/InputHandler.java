@@ -24,7 +24,7 @@ public final class InputHandler {
 		CTL_PAUSE    = 5,
 		CTL_ESCAPE   = 6,
 		CTL_UNCAUGHT = 7;
-	
+
 	public static String getControlString(int controlCode) {
 		switch (controlCode) {
 			case CTL_UP    : return "    UP";
@@ -37,12 +37,12 @@ public final class InputHandler {
 		}
 		return "UNCAUGHT";
 	}
-	
+
 	//enumeration of keyIds (should match results of convertToKeyId())
 	public static final int
 		K_UNBOUND = -1, //These fill both halves of the word, so they can't collide
 		K_BINDING = -2,
-		
+
 		K_ESC     = PConstants.ESC,
 		K_TAB     = PConstants.TAB,
 		K_ENTER   = PConstants.ENTER,
@@ -54,7 +54,7 @@ public final class InputHandler {
 		K_DOWN    = PConstants.DOWN    << 16,
 		K_LEFT    = PConstants.LEFT    << 16,
 		K_RIGHT   = PConstants.RIGHT   << 16;
-	
+
 	public static String getKeyIdString(int keyId) {
 		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes
 			return String.valueOf((char) keyId);
@@ -75,21 +75,21 @@ public final class InputHandler {
 		}
 		return "!!!"; //well shit, we got a weird key
 	}
-	
-	
-	
+
+
+
 	/** Converts the key and keyCode values given by Processing into a unique keyId for internal use */
 	public static int convertToKeyId(char key, int keyCode) {
 		//TODO: add documentation explaining keyId values here if we think we need it
 		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key));
 	}
-	
+
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
 	public void loadKeyIdBindings() {
 		resetKeyIdBindings();
 		//XXX: stub
 	}
-	
+
 	public void resetKeyIdBindings() {
 		keyIdBindings.clear();
 		bindKeyIds(new int[] { 'W', '8', InputHandler.K_UP    }, CTL_UP     );
@@ -100,28 +100,28 @@ public final class InputHandler {
 		bindKeyIds(new int[] { 'P',      InputHandler.K_TAB   }, CTL_PAUSE  );
 		bindKeyId(K_ESC, CTL_ESCAPE);
 	}
-	
-	
-	
+
+
+
 	private Map<Integer, Integer> keyIdBindings = new HashMap<>();
-	
+
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
 	public void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
 		//TODO: save bindings to system preferences as we supply them
 	}
-	
+
 	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
 	public void bindKeyIds(int[] keyIds, int controlCode) {
 		for (int keyId : keyIds)
 			bindKeyId(keyId, controlCode);
 	}
-	
+
 	/** Removes the binding for the given keyId, if one exists */
 	public void unbindKeyId(int keyId) {
 		keyIdBindings.remove(keyId);
 	}
-	
+
 	/** @return a List of all keyIds bound to the given controlCode */
 	public List<Integer> getBoundKeyIdsFor(int controlCode) {
 		Set<Integer> fullKeyIdSet = keyIdBindings.keySet();
@@ -133,7 +133,7 @@ public final class InputHandler {
 		Collections.sort(boundKeyIds);
 		return boundKeyIds;
 	}
-	
+
 	/** @return the main keyId for the given controlCode, based on a hard-coded preference heuristic */
 	public int getMainBindingFor(int controlCode) {
 		List<Integer> bindings = getBoundKeyIdsFor(controlCode);
@@ -151,37 +151,37 @@ public final class InputHandler {
 				return i;
 		return bindings.get(0);
 	}
-	
+
 	private Map<Integer, Interaction> controlCodeActions = new HashMap<>();
-	
+
 	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
 	public void bindControlCode(int controlCode, Interaction action) {
 		controlCodeActions.put(controlCode, action);
 	}
-	
+
 	private boolean[] controlCodeStates = new boolean[CTL_UNCAUGHT];
-	
+
 	/** @return whether the given controlCode is active (whether its associated keys are pressed down) */
 	public boolean isPressed(int controlCode) {
 		return controlCodeStates[controlCode];
 	}
-	
+
 	private MenuButton bindingButton;
 	private int bindingControlCode;
-	
+
 	public void handleBind(MenuButton button, int controlCode) {
 		bindingButton = button;
 		bindingControlCode = controlCode;
 		bindingButton.text = getKeyIdString(K_BINDING);
 	}
-	
+
 	public void cancelBind() {
 		if (bindingButton != null) {
 			bindingButton.text = getKeyIdString(bindingButton.tag);
 			bindingButton = null;
 		}
 	}
-	
+
 	/** Handles key presses and releases based on current key bindings */
 	public void handleKeyEvent(int keyId, boolean down) {
 		if (bindingButton != null && down) {
@@ -195,15 +195,15 @@ public final class InputHandler {
 				bindKeyId(keyId, bindingControlCode);
 				bindingButton.tag = keyId;
 			}
-			
+
 			//if there is a conflict with an existing binding, do nothing - the button be reset to its previous state by cancelBind()
 			cancelBind();
 		} else if (keyIdBindings.containsKey(keyId)) {
 			int controlCode = keyIdBindings.get(keyId);
-			
+
 			//keep track of key state
 			controlCodeStates[controlCode] = down;
-			
+
 			//activate any associated Interactions
 			if (down && controlCodeActions.containsKey(controlCode)) {
 				controlCodeActions.get(controlCode).interact(down);

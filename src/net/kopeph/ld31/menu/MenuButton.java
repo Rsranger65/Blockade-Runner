@@ -24,7 +24,7 @@ public class MenuButton extends TextBox {
 		this.height = height;
 		this.interaction = interaction;
 	}
-	
+
 	/** Replaces the previous functionality with the supplied functionality */
 	public void replaceInteraction(Interaction replacement) {
 		interaction = replacement;

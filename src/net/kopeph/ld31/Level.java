@@ -38,7 +38,7 @@ public class Level {
 	public Objective objective;
 
 	public final int[] tiles;
-	
+
 	public Level(int width, int height) {
 		PApplet context = LD31.getContext();
 
@@ -136,32 +136,32 @@ public class Level {
 		int enemyCount = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
 		for (int i = 0; i < enemyCount; ++i)
 			enemies.add(new Enemy(this));
-		
+
 		placeEntities();
 	}
-	
+
 	//filePath should be a plain text file containing level information
 	//see level file spec for more information
 	public Level(String filePath) {
 		PApplet context = LD31.getContext();
-		
+
 		String[] lines = context.loadStrings(filePath);
 		PImage img = context.loadImage(lines[0]);
 		LEVEL_WIDTH = img.width;
 		LEVEL_HEIGHT = img.height;
 		tiles = img.pixels;
-		
+
 		for (String line : lines)
 			parseLine(line);
-		
+
 		placeEntities();
 	}
-	
+
 	//helper function for constructor
 	private void parseLine(String line) {
 		if (line.isEmpty()) return;
 		String[] parts = line.split("\t");
-		
+
 		//retrieve all possible properties before determining the specifier
 		//because it's simple and avoids code repetition
 		int x = -1, y = -1, color = Enemy.randomColor(); //placeholder values
@@ -169,7 +169,7 @@ public class Level {
 		for (int i = 1; i < parts.length; ++i) {
 			if (parts[i].isEmpty()) continue;
 			String[] pair = parts[i].split(":");
-			
+
 			switch (pair[0].trim().toLowerCase()) {
 				case "x":
 					x = Integer.parseInt(pair[1]);
@@ -188,7 +188,7 @@ public class Level {
 					break;
 			}
 		}
-		
+
 		//determine how to use information based on the specifier
 		switch (parts[0].trim().toLowerCase()) {
 			case "player":
@@ -207,7 +207,7 @@ public class Level {
 				break;
 		}
 	}
-	
+
 	//helper function for parseLine()
 	List<Vector2> parseRoute(String in) {
 		String[] coords = in.toLowerCase().split(",");
@@ -215,7 +215,7 @@ public class Level {
 		try {
 			for (int i = 0; i < coords.length; i += 2) {
 				route.add(new Vector2(Integer.parseInt(coords[i    ].trim()),
-									  Integer.parseInt(coords[i + 1].trim())));
+				                      Integer.parseInt(coords[i + 1].trim())));
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -225,13 +225,13 @@ public class Level {
 			return null;
 		return route;
 	}
-	
+
 	//helper function for constructors
 	private void placeEntities() {
 		//allow the player + objective placement to give up after so many attempts
 		//this is so we don't lock up on edge cases where one of the placements can't possibly succeed
 		int placementFailCount = 0;
-		
+
 		if (player == null) { //if we haven't already placed a player
 			do {
 				player = new Player(this);

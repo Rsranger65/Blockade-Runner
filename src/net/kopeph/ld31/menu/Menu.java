@@ -56,7 +56,7 @@ public class Menu extends MenuWidget {
 		for (MenuWidget w : widgets)
 			w.render();
 	}
-	
+
 	/** Draws the backing rectangle, should be called before drawing the MenuWidgets */
 	public void renderBack() {
 		context.pushStyle();
