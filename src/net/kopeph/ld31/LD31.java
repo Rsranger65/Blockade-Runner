@@ -19,6 +19,7 @@ public class LD31 extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	private static final String BG_MUSIC = "res/music.mp3"; //file path
+	private static final String TEST_LEVEL = "res/test-level.txt"; //file path
 
 	public static final int // Game state enum
 		ST_RESET_HARD = -2,  // Window size has changed
@@ -41,6 +42,7 @@ public class LD31 extends PApplet {
 	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
 	private volatile int gameState;
 	private int fadePhase;
+	private String currentLevel;
 
 	public Renderer renderer;
 
@@ -69,10 +71,10 @@ public class LD31 extends PApplet {
 		//setup main menu
 		mainMenu = new Menu();
 		mainMenu.add(new TextBox(renderer.font,  "Blockade Runner", 0, -175));
-		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; }));
-		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { gameState = ST_CAMPAIGN;   }));
-		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS;   }));
-		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit();                    }));
+		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; currentLevel = null; }));
+		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { gameState = ST_CAMPAIGN; }));
+		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS; }));
+		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit(); }));
 
 		//setup behaviors for keyboard controls
 		input.loadKeyIdBindings();
@@ -136,8 +138,9 @@ public class LD31 extends PApplet {
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
 		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
-		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -100, 400, 50, (down) -> { gameState = ST_MENU; }));
-		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode hasn't been implemented yet :(", 0,  150));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Play Test Level", 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; currentLevel = TEST_LEVEL; }));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -40, 400, 50, (down) -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode is still in early development!", 0,  150));
 
 		//setup pause menu
 		pauseMenu = new Menu(); //Dynamic size. see drawPause();
@@ -209,7 +212,8 @@ public class LD31 extends PApplet {
 
 	/** Reloads the current level completely */
 	private void reset() {
-		level = new Level("res/test-level.txt"); //level verifies itself so we don't do that here anymore
+		if (currentLevel == null)	level = new Level(1920, 1080);
+		else						level = new Level(currentLevel);
 		fadePhase = -(255 + 100);
 		HUD.updateFooterText(input);
 		gameState = ST_RUNNING;
