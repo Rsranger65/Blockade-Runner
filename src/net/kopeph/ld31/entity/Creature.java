@@ -7,6 +7,7 @@ import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
 
+/** @author alexg */
 public class Creature extends Entity {
 	protected double speedMultiplier = 1.0;
 

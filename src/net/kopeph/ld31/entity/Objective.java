@@ -4,6 +4,7 @@ import processing.core.PApplet;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 
+/** @author stuntddude */
 public class Objective extends Entity {
 	public static final int COLOR = 0xFFFF7F7F;
 

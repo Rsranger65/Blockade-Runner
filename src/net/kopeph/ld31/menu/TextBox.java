@@ -4,7 +4,7 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 
 /**
- * @author alexg, stuntddude
+ * @author alexg
  */
 public class TextBox extends MenuWidget {
 	private final Font font;

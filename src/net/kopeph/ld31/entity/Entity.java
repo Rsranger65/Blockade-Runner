@@ -7,6 +7,7 @@ import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Vector2;
 
+/** @author alexg */
 public abstract class Entity implements Renderable {
 	public static final int SIZE = 2; //radius-.5
 	protected static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed

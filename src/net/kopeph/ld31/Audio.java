@@ -8,10 +8,8 @@ import java.util.Map;
 import ddf.minim.AudioPlayer;
 import ddf.minim.Minim;
 
-
 /**
  * Filename strings are used as keys for clips.
- *
  * @author alexg
  */
 public class Audio {

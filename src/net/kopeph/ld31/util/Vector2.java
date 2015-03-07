@@ -2,7 +2,10 @@ package net.kopeph.ld31.util;
 
 import java.util.Arrays;
 
-/** @immutable */
+/**
+ * @immutable
+ * @author alexg
+ */
 public final class Vector2  {
 	public final double x;
 	public final double y;

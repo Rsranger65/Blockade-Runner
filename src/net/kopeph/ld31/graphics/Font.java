@@ -3,9 +3,7 @@ package net.kopeph.ld31.graphics;
 import net.kopeph.ld31.LD31;
 import processing.core.PImage;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class Font {
 	public static final char
 		ARROW_RIGHT = 0x14,

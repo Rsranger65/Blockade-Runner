@@ -8,9 +8,7 @@ import net.kopeph.ld31.LD31;
 import processing.core.PConstants;
 import processing.core.PImage;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class Util {
 	private Util() {
 		throw new AssertionError("No Instantiation of: " + getClass().getName()); //$NON-NLS-1$
@@ -49,6 +47,7 @@ public class Util {
 				   return  0;
 	}
 
+	//TODO: add documentation here
 	public static PImage crop(PImage img, int x, int y, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		cropped.copy(img, x, y, w, h, 0, 0, w, h);
@@ -56,6 +55,7 @@ public class Util {
 		return cropped;
 	}
 
+	//TODO: add documentation here
 	public static PImage crop(PImage img, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		for (int x = 0; x < w; x += img.width)

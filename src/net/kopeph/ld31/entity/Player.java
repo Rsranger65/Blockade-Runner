@@ -3,6 +3,7 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 
+/** @auther alexg */
 public final class Player extends Creature {
 	public static final int COLOR = 0xFFFFFFFF;
 

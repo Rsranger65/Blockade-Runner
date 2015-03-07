@@ -6,7 +6,10 @@ import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-/** implemented by all visual elements */
+/**
+ * implemented by all visual menu elements
+ * @author alexg
+ */
 public abstract class MenuWidget implements Renderable {
 	public static final int
 		ANCHOR_CENTER = 0,                    //Move origin by delta/2

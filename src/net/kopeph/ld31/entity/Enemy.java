@@ -8,6 +8,7 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Vector2;
 
+/** @author stuntddude */
 public class Enemy extends Creature {
 	public static final int
 		ENEMY_COM_COLOR = 0xFFFF7F00;

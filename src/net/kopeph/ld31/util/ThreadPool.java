@@ -5,9 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class ThreadPool implements AutoCloseable {
 	private final ExecutorService pool;
 

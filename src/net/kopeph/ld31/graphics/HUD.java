@@ -9,6 +9,10 @@ import java.util.ResourceBundle;
 import net.kopeph.ld31.InputHandler;
 import net.kopeph.ld31.LD31;
 
+/**
+ * @author alexg
+ * @author stuntddude
+ */
 public class HUD {
 	//THESE ARE ALL THE USER MESSAGES
 	public static final String MSG_FOOTER =

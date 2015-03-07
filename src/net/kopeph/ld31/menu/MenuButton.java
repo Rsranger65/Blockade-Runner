@@ -1,12 +1,9 @@
 package net.kopeph.ld31.menu;
 
-import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 
-/**
- * @author stuntddude
- */
+/** @author stuntddude */
 public class MenuButton extends TextBox {
 	private static boolean wasPressed;
 
@@ -21,8 +18,8 @@ public class MenuButton extends TextBox {
 	public MenuButton(Font font, String text, float xPos, float yPos, float width, float height, Interaction interaction) {
 		super(font, text, xPos, yPos);
 
-		this.xPos += (LD31.getContext().width - width) / 2;
-		this.yPos += (LD31.getContext().height - height) / 2;
+		this.xPos += (context.width - width) / 2;
+		this.yPos += (context.height - height) / 2;
 		this.width = width;
 		this.height = height;
 		this.interaction = interaction;

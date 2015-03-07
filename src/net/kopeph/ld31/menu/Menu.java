@@ -6,6 +6,7 @@ import java.util.List;
 import net.kopeph.ld31.LD31;
 
 /**
+ * @author alexg
  * @author stuntddude
  */
 public class Menu extends MenuWidget {

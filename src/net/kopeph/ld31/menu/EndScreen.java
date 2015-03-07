@@ -9,6 +9,7 @@ import processing.core.PConstants;
 
 /**
  * @author alexg
+ * @author stuntddude
  */
 public class EndScreen implements Renderable {
 	private static final int PHASE_ONE = 200;

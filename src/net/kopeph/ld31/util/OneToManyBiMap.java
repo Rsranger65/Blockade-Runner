@@ -19,9 +19,7 @@ import java.util.Set;
  *   - fwdMap.containsKey(element)
  */
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class OneToManyBiMap<L, R> implements Map<L, List<R>> {
 	private Map<L, List<R>> fwdMap = new HashMap<>();
 	private Map<R, L> backMap = new HashMap<>();

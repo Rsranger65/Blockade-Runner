@@ -6,9 +6,7 @@ import java.util.PriorityQueue;
 
 import net.kopeph.ld31.spi.PointPredicate;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class Paths {
 	private Paths() {
 		throw new AssertionError("No Instantiation of: " + getClass().getName()); //$NON-NLS-1$

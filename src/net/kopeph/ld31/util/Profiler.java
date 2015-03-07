@@ -2,9 +2,7 @@ package net.kopeph.ld31.util;
 
 import processing.core.PApplet;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class Profiler {
 	public static final int
 		PLAYER_MOVE  = 0,

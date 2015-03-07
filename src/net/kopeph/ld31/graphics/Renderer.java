@@ -11,6 +11,7 @@ import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/** @author stuntddude */
 public class Renderer {
 	public PImage textureRed    , rawTextureRed;
 	public PImage textureGreen  , rawTextureGreen;

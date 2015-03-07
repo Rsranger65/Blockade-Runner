@@ -8,9 +8,7 @@ import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-/**
- * @author alexg
- */
+/** @author alexg */
 public class SpriteSheet {
 	private final PApplet context;
 	private List<PImage> splitImages = new ArrayList<>();
