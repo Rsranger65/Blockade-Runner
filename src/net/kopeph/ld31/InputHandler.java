@@ -12,7 +12,7 @@ import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
-/** @author stuntdddue */
+/** @author stuntddude */
 public final class InputHandler {
 	//enumeration of controlCodes
 	public static final int

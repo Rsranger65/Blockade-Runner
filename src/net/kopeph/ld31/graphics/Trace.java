@@ -16,6 +16,7 @@ public class Trace {
 	}
 
 	/**
+	 * Traces along a line.
 	 * Source: http://en.wikipedia.org/wiki/Bresenham's_line_algorithm#Simplification
 	 * @return true if the end of the line is reached, false if it is stopped partway
 	 */
@@ -124,6 +125,7 @@ public class Trace {
 		}
 	}
 	
+	/** Traces a filled rectangle */
 	public static void rectangle(int x0, int y0, int width, int height, PointPredicate op) {
 		for (int y =  y0 + height; y --> y0;) {
 			for (int x = x0 +width; x --> x0;) {

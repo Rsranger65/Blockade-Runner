@@ -10,14 +10,17 @@ public final class Vector2  {
 	public final double x;
 	public final double y;
 
+	/** constructs the <0, 0> vector */
 	public Vector2() {
 		this(0, 0);
 	}
 
+	/** Copy constructor */
 	public Vector2(Vector2 other) {
 		this(other.x, other.y);
 	}
 
+	/** constructs an <x, y> vector */
 	public Vector2(double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -65,6 +68,7 @@ public final class Vector2  {
 		return equals((Vector2) rhs);
 	}
 
+	/** See: equals(Object) */
 	public boolean equals(Vector2 rhs) {
 		return x == rhs.x && y == rhs.y;
 	}

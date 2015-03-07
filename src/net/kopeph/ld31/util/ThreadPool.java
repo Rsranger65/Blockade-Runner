@@ -15,8 +15,8 @@ public class ThreadPool implements AutoCloseable {
 	private final Semaphore s = new Semaphore(0);
 	private int pendingTasks;
 
+	/** Maximum number of jobs that will run at any given time (set by ctor) */
 	public final int poolSize;
-
 
 	/** Creates a new thread pool using one thread per core. */
 	public ThreadPool() {

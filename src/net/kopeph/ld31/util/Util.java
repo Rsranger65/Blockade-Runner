@@ -47,7 +47,14 @@ public class Util {
 				   return  0;
 	}
 
-	//TODO: add documentation here
+	/**
+	 * Creates a new PImage of a different size.
+	 * @param img source image
+	 * @param x & y position of top-left corner to be the new origin
+	 * @param w new width
+	 * @param h new height
+	 * @return resultant image, extra space in new image is transparent
+	 */
 	public static PImage crop(PImage img, int x, int y, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		cropped.copy(img, x, y, w, h, 0, 0, w, h);
@@ -55,7 +62,13 @@ public class Util {
 		return cropped;
 	}
 
-	//TODO: add documentation here
+	/**
+	 * Creates a new PImage of a different size.
+	 * @param img source image
+	 * @param w new width
+	 * @param h new height
+	 * @return resultant image, tiling the result
+	 */
 	public static PImage crop(PImage img, int w, int h) {
 		PImage cropped = LD31.getContext().createImage(w, h, PConstants.ARGB);
 		for (int x = 0; x < w; x += img.width)
@@ -64,6 +77,10 @@ public class Util {
 		return cropped;
 	}
 
+	/**
+	 * @return true iif (xTest, yTest) is inside (an not on the border of)
+	 *          the described rectangle
+	 */
 	public static boolean boxContains(double x, double y, double w, double h,
 	                                  double xTest, double yTest) {
 		return xTest > x     && yTest > y &&

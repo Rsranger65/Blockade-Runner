@@ -1,6 +1,9 @@
 package net.kopeph.ld31.graphics;
 
-/** @author alexg */
+/**
+ * @author alexg
+ * @see net.kopeph.ld31.graphics.Paths
+ */
 public class Node implements Comparable<Node> {
 	public Node parent = null;
 	public final int x;
