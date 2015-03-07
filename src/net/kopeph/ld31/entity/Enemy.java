@@ -9,7 +9,7 @@ import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
 /** @author stuntddude */
-public class Enemy extends Creature {
+public class Enemy extends MovingEntity {
 	public static final int
 		ENEMY_COM_COLOR = 0xFFFF7F00;
 

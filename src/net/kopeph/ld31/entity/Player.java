@@ -4,7 +4,7 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 
 /** @auther alexg */
-public final class Player extends Creature {
+public final class Player extends MovingEntity {
 	public static final int COLOR = 0xFFFFFFFF;
 
 	private static final double

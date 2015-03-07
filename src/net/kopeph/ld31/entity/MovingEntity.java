@@ -8,14 +8,14 @@ import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
-public class Creature extends Entity {
+public class MovingEntity extends Entity {
 	protected double speedMultiplier = 1.0;
 
-	public Creature(Level level, int color) {
+	public MovingEntity(Level level, int color) {
 		super(level, color);
 	}
 
-	public Creature(Level level, int x, int y, int color) {
+	public MovingEntity(Level level, int x, int y, int color) {
 		super(level, x, y, color);
 	}
 
