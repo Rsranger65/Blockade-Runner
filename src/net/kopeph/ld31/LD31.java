@@ -18,7 +18,7 @@ import processing.core.PApplet;
 public class LD31 extends PApplet {
 	private static final long serialVersionUID = 1L;
 
-	private static final String BG_MUSIC = "res/music.mp3"; //file path
+	private static final String BG_MUSIC = "res/sound/music.mp3"; //file path
 	private static final String TEST_LEVEL = "res/test-level.txt"; //file path
 
 	public static final int // Game state enum
