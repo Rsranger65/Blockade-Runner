@@ -88,8 +88,8 @@ public final class InputHandler {
 
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
 	public void loadKeyIdBindings() {
-		resetKeyIdBindings();
-		//XXX: stub
+		if (!pullFromDisk())
+			resetKeyIdBindings();
 	}
 
 	public void resetKeyIdBindings() {
@@ -110,7 +110,7 @@ public final class InputHandler {
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
 	public void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
-		//TODO: save bindings to system preferences as we supply them
+		pushToDisk(); //save bindings to system preferences as we supply them
 	}
 
 	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
@@ -122,6 +122,7 @@ public final class InputHandler {
 	/** Removes the binding for the given keyId, if one exists */
 	public void unbindKeyId(int keyId) {
 		keyIdBindings.remove(keyId);
+		pushToDisk(); //update bindings on disk when they are removed as well as when they are added
 	}
 
 	/** @return a List of all keyIds bound to the given controlCode */
