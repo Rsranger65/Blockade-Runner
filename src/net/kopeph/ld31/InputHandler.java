@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.menu.MenuButton;
@@ -211,9 +213,14 @@ public final class InputHandler {
 		}
 	}
 
+	private static final String PREF_SUBNODE = "inputv1"; //$NON-NLS-1$
+
 	/** @author alexg */
 	private void pushToDisk() {
+		Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
 
+		for (Map.Entry<Integer, Integer> entry : keyIdBindings.entrySet())
+			prefs.put(entry.getKey().toString(), entry.getValue().toString());
 	}
 
 	/**
@@ -222,6 +229,18 @@ public final class InputHandler {
 	 * @author alexg
 	 */
 	private boolean pullFromDisk() {
-		return false;
+		Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
+		boolean pulledAnId = false;
+
+		try {
+			for(String key : prefs.keys()) {
+				bindKeyId(Integer.parseInt(key), Integer.parseInt(prefs.get(key, null)));
+				pulledAnId = true;
+			}
+		} catch (BackingStoreException e) {
+			return false;
+		}
+
+		return pulledAnId;
 	}
 }
