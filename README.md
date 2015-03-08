@@ -24,4 +24,11 @@ Building Directions (Eclipse Java 8)
 5. **Run/Debug** with Main class: `net.kopeph.ld31.LD31`
 6. **Export** as a *Runnable Jar*.
 
+Usage
+-----
+
+`java -jar blockaderunner-<version>.jar [--input-reset]`
+
+- **input-reset**: Resets the key map settings to their defaults before loading the game.
+
 [Building under Java 7](https://github.com/Rsranger65/Blockade-Runner/wiki/Java-7-Building-Directions)
