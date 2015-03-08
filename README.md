@@ -6,6 +6,7 @@ Contributors:
 - Dave Chen (Graphics)
 - Miles Fogle (Code)
 - Alex Gittemeier (Code)
+- Florence (Graphics)
 
 
 Building Directions (Eclipse Java 8)
