@@ -221,14 +221,14 @@ public final class InputHandler {
 	}
 
 	private static final String PREF_SUBNODE = "inputv1"; //$NON-NLS-1$
-	Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
+	private Preferences diskStore = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
 
 	/** @author alexg */
 	private void pushToDisk() {
 		resetDiskPreferences();
 
 		for (Map.Entry<Integer, Integer> entry : keyIdBindings.entrySet())
-			prefs.put(entry.getKey().toString(), entry.getValue().toString());
+			diskStore.put(entry.getKey().toString(), entry.getValue().toString());
 	}
 
 	/**
@@ -240,8 +240,8 @@ public final class InputHandler {
 		boolean pulledAnId = false;
 
 		try {
-			for(String key : prefs.keys()) {
-				keyIdBindings.put(Integer.parseInt(key), Integer.parseInt(prefs.get(key, null)));
+			for(String key : diskStore.keys()) {
+				keyIdBindings.put(Integer.parseInt(key), Integer.parseInt(diskStore.get(key, null)));
 				pulledAnId = true;
 			}
 		} catch (BackingStoreException e) {
@@ -254,8 +254,8 @@ public final class InputHandler {
 	/** @author alexg */
 	private void resetDiskPreferences() {
 		try {
-			for(String key : prefs.keys())
-				prefs.remove(key);
+			for(String key : diskStore.keys())
+				diskStore.remove(key);
 		} catch (BackingStoreException e) {
 			//If this errors out, there is nothing to be done
 		}
