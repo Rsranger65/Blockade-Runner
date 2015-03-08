@@ -33,9 +33,10 @@ public class LD31 extends PApplet {
 		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
+	public static String[] args; //from command line
 
-	private final Profiler profiler = new Profiler();
-	private final InputHandler input = new InputHandler();
+	private Profiler profiler;
+	private InputHandler input;
 	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
@@ -51,6 +52,7 @@ public class LD31 extends PApplet {
 		context = this;
 		renderer = new Renderer();
 		audio = new Audio();
+		profiler = new Profiler();
 
 		size(800, 600);
 		frameRate(60);
@@ -77,6 +79,7 @@ public class LD31 extends PApplet {
 		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit(); }));
 
 		//setup behaviors for keyboard controls
+		input = new InputHandler();
 		input.loadKeyIdBindings();
 		input.bindControlCode(InputHandler.CTL_RESET, (down) -> {
 			if (gameState == ST_RUNNING ||
@@ -331,6 +334,8 @@ public class LD31 extends PApplet {
 
 	/** Global Entry Point */
 	public static void main(String[] args) {
+		Arrays.sort(args);
+		LD31.args = args;
 		PApplet.main(new String[] { LD31.class.getName() });
 	}
 }

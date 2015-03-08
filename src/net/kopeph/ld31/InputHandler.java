@@ -1,6 +1,7 @@
 package net.kopeph.ld31;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,11 @@ public final class InputHandler {
 		K_DOWN    = PConstants.DOWN    << 16,
 		K_LEFT    = PConstants.LEFT    << 16,
 		K_RIGHT   = PConstants.RIGHT   << 16;
+
+	public InputHandler() {
+		if (Arrays.binarySearch(LD31.args, "--input-reset") >= 0) //$NON-NLS-1$
+			resetDiskPreferences();
+	}
 
 	public static String getKeyIdString(int keyId) {
 		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes
@@ -215,10 +221,11 @@ public final class InputHandler {
 	}
 
 	private static final String PREF_SUBNODE = "inputv1"; //$NON-NLS-1$
+	Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
 
 	/** @author alexg */
 	private void pushToDisk() {
-		Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
+		resetDiskPreferences();
 
 		for (Map.Entry<Integer, Integer> entry : keyIdBindings.entrySet())
 			prefs.put(entry.getKey().toString(), entry.getValue().toString());
@@ -230,12 +237,11 @@ public final class InputHandler {
 	 * @author alexg
 	 */
 	private boolean pullFromDisk() {
-		Preferences prefs = Preferences.userNodeForPackage(getClass()).node(PREF_SUBNODE);
 		boolean pulledAnId = false;
 
 		try {
 			for(String key : prefs.keys()) {
-				bindKeyId(Integer.parseInt(key), Integer.parseInt(prefs.get(key, null)));
+				keyIdBindings.put(Integer.parseInt(key), Integer.parseInt(prefs.get(key, null)));
 				pulledAnId = true;
 			}
 		} catch (BackingStoreException e) {
@@ -243,5 +249,15 @@ public final class InputHandler {
 		}
 
 		return pulledAnId;
+	}
+
+	/** @author alexg */
+	private void resetDiskPreferences() {
+		try {
+			for(String key : prefs.keys())
+				prefs.remove(key);
+		} catch (BackingStoreException e) {
+			//If this errors out, there is nothing to be done
+		}
 	}
 }
