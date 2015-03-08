@@ -210,4 +210,18 @@ public final class InputHandler {
 			}
 		}
 	}
+
+	/** @author alexg */
+	private void pushToDisk() {
+
+	}
+
+	/**
+	 * @return true if settings were found and correctly loaded,
+	 *         false indicates nothing happened.
+	 * @author alexg
+	 */
+	private boolean pullFromDisk() {
+		return false;
+	}
 }
