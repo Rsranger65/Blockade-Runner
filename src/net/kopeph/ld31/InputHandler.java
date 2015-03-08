@@ -73,6 +73,7 @@ public final class InputHandler {
 			case K_ESC    : return "ESC";
 			case K_TAB    : return "TAB";
 			case K_ENTER  : return "ENTER";
+			case K_BKSP   : return "BKSP";
 			case K_SHIFT  : return "SHIFT";
 			case K_CTRL   : return "CTRL";
 			case K_ALT    : return "ALT";

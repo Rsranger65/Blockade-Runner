@@ -99,7 +99,7 @@ public class LD31 extends PApplet {
 		input.bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
 			if (gameState == ST_MENU) {
 				exit();
-			} else if (gameState == ST_RUNNING) {
+			} else if (gameState == ST_RUNNING || gameState == ST_WIN || gameState == ST_DIE) {
 				gameState = ST_PAUSE;
 				menuHeight = 10;
 			} else if (gameState == ST_PAUSE) {
