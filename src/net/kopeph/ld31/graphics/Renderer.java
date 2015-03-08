@@ -35,15 +35,15 @@ public class Renderer {
 		context = LD31.getContext();
 
 		//load raw textures
-		rawTextureRed     = context.loadImage("res/red-background.jpg"    ); //$NON-NLS-1$
-		rawTextureGreen   = context.loadImage("res/green-background.jpg"  ); //$NON-NLS-1$
-		rawTextureBlue    = context.loadImage("res/blue-background.jpg"   ); //$NON-NLS-1$
-		rawTextureCyan    = context.loadImage("res/cyan-background.jpg"   ); //$NON-NLS-1$
-		rawTextureMagenta = context.loadImage("res/magenta-background.jpg"); //$NON-NLS-1$
-		rawTextureYellow  = context.loadImage("res/yellow-background.jpg" ); //$NON-NLS-1$
-		rawTextureGrey    = context.loadImage("res/grey-background.jpg"   ); //$NON-NLS-1$
-		rawTextureWhite   = context.loadImage("res/white-background.jpg"  ); //$NON-NLS-1$
-		rawTextureBlack   = context.loadImage("res/black-background.jpg"  ); //$NON-NLS-1$
+		rawTextureRed     = context.loadImage("res/textures/red-background.jpg"    ); //$NON-NLS-1$
+		rawTextureGreen   = context.loadImage("res/textures/green-background.jpg"  ); //$NON-NLS-1$
+		rawTextureBlue    = context.loadImage("res/textures/blue-background.jpg"   ); //$NON-NLS-1$
+		rawTextureCyan    = context.loadImage("res/textures/cyan-background.jpg"   ); //$NON-NLS-1$
+		rawTextureMagenta = context.loadImage("res/textures/magenta-background.jpg"); //$NON-NLS-1$
+		rawTextureYellow  = context.loadImage("res/textures/yellow-background.jpg" ); //$NON-NLS-1$
+		rawTextureGrey    = context.loadImage("res/textures/grey-background.jpg"   ); //$NON-NLS-1$
+		rawTextureWhite   = context.loadImage("res/textures/white-background.jpg"  ); //$NON-NLS-1$
+		rawTextureBlack   = context.loadImage("res/textures/black-background.jpg"  ); //$NON-NLS-1$
 
 		font = new Font("res/font-16-white.png"); //$NON-NLS-1$
 	}
