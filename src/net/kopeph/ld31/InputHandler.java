@@ -90,6 +90,7 @@ public final class InputHandler {
 	/** Converts the key and keyCode values given by Processing into a unique keyId for internal use */
 	public static int convertToKeyId(char key, int keyCode) {
 		//TODO: add documentation explaining keyId values here if we think we need it
+		if (key == PConstants.RETURN) key = PConstants.ENTER; //special case - transform '\r' to '\n'
 		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key));
 	}
 
