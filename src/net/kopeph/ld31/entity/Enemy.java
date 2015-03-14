@@ -121,7 +121,7 @@ public class Enemy extends MovingEntity {
 				Trace.line((int)route.get(i - 1).x,          (int)route.get(i - 1).y,
 						   (int)route.get(i%route.size()).x, (int)route.get(i%route.size()).y,
 						   (x, y) -> {
-					if (level.inBounds(x, y))
+					if (context.contains(x, y))
 						context.pixels[y*context.lastWidth + x] = this.color;// | 0xFF555555;
 					return true;
 				});
@@ -134,7 +134,7 @@ public class Enemy extends MovingEntity {
 		//draw line to player, if pursuing
 		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
-				if (level.inBounds(x, y))
+				if (context.contains(x, y))
 					context.pixels[y*context.lastWidth + x] = ENEMY_COM_COLOR;
 				return true;
 			});
