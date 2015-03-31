@@ -108,8 +108,32 @@ public class LD31 extends PApplet {
 				gameState = ST_MENU;
 			}
 		});
-
+		
 		//setup settings menu
+		setupSettingsMenu();
+
+		//setup dummy campaign menu
+		dummyCampaignMenu = new Menu();
+		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Play Test Level", 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; currentLevel = TEST_LEVEL; }));
+		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -40, 400, 50, (down) -> { gameState = ST_MENU; }));
+		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode is still in early development!", 0,  150));
+
+		//setup pause menu
+		pauseMenu = new Menu(); //Dynamic size. see drawPause();
+		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
+		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { gameState = ST_RUNNING; }));
+		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, (down) -> { gameState = ST_RESET;   }));
+		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
+		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
+
+		HUD.updateFooterText(input);
+
+		gameState = ST_MENU;
+	}
+	
+	/** helper function for setup(), which is also called by the "Revert to Defaults" button in the settings menu */
+	private void setupSettingsMenu() {
 		settingsMenu = new Menu();
 		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
 
@@ -136,26 +160,8 @@ public class LD31 extends PApplet {
 			}
 		}
 
-		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
-
-		//setup dummy campaign menu
-		dummyCampaignMenu = new Menu();
-		dummyCampaignMenu.add(new TextBox(renderer.font, "Campaign Mode", 0, -175));
-		dummyCampaignMenu.add(new MenuButton(renderer.font, "Play Test Level", 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; currentLevel = TEST_LEVEL; }));
-		dummyCampaignMenu.add(new MenuButton(renderer.font, "Back", 0, -40, 400, 50, (down) -> { gameState = ST_MENU; }));
-		dummyCampaignMenu.add(new TextBox(renderer.font, "This game mode is still in early development!", 0,  150));
-
-		//setup pause menu
-		pauseMenu = new Menu(); //Dynamic size. see drawPause();
-		pauseMenu.add(new TextBox(renderer.font, "Game Paused", 0, -200));
-		pauseMenu.add(new MenuButton(renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { gameState = ST_RUNNING; }));
-		pauseMenu.add(new MenuButton(renderer.font, "Reset"              , 0,   -50, 200, 50, (down) -> { gameState = ST_RESET;   }));
-		pauseMenu.add(new MenuButton(renderer.font, "Return to Main Menu", 0,    50, 200, 50, (down) -> { gameState = ST_MENU;    }));
-		pauseMenu.add(new MenuButton(renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { exit();                 }));
-
-		HUD.updateFooterText(input);
-
-		gameState = ST_MENU;
+		settingsMenu.add(new MenuButton(renderer.font, "Revert to Defaults", 0, 80, 400, 50, (down) -> { input.resetKeyIdBindings(); setupSettingsMenu(); }));
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 140, 400, 50, (down) -> { gameState = ST_MENU; }));
 	}
 
 	/**
