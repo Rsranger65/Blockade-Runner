@@ -10,6 +10,7 @@ import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
+import net.kopeph.ld31.menu.Slider;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
 import processing.core.PApplet;
@@ -63,7 +64,7 @@ public class LD31 extends PApplet {
 
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
-		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000); //fade in for 10 seconds
+		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 0.5F, 10 * 1000); //fade in for 10 seconds
 		audio.play(BG_MUSIC, true);
 
 		//setup end screens
@@ -162,6 +163,7 @@ public class LD31 extends PApplet {
 
 		settingsMenu.add(new MenuButton(renderer.font, "Revert to Defaults", 0, 80, 400, 50, (down) -> { input.resetKeyIdBindings(); setupSettingsMenu(); }));
 		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 140, 400, 50, (down) -> { gameState = ST_MENU; }));
+		settingsMenu.add(new Slider(renderer.font, 40, 200, 320, 10, 0.5f, (value) -> { audio.setVolume(Audio.VOL_MUSIC, value); }));
 	}
 
 	/**
