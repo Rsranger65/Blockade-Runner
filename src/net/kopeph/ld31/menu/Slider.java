@@ -1,7 +1,7 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.spi.SliderPredicate;
+import net.kopeph.ld31.spi.SliderHandler;
 import processing.core.PApplet;
 
 /**
@@ -12,12 +12,12 @@ public class Slider extends MenuWidget {
 	private static final int BUTTON_WIDTH = 20;
 	private static final int BUTTON_HEIGHT = 50;
 	
-	MenuButton button;
-	boolean isHeld;
-	SliderPredicate op;
+	private final MenuButton button;
+	private final SliderHandler op;
+	private boolean isHeld;
 
 	/** @param value a number from 0 to 1 determining the initial position of the button */
-	public Slider(Font font, int x, int y, int width, int height, float value, SliderPredicate functionality) {
+	public Slider(Font font, int x, int y, int width, int height, float value, SliderHandler functionality) {
 		super(x, y, width, height);
 		
 		this.xPos += (context.width - width) / 2;
