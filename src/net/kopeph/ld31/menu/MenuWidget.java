@@ -20,7 +20,7 @@ public abstract class MenuWidget implements Renderable {
 	protected final PApplet context = LD31.getContext();
 
 	public float xPos, yPos, width, height;
-	public int xAnchor = ANCHOR_LEFT, yAnchor = ANCHOR_TOP;
+	public int xAnchor = ANCHOR_CENTER, yAnchor = ANCHOR_CENTER;
 	public int tag; //Used for key binding
 
 	private int curCtxWidth, curCtxHeight;

@@ -28,6 +28,8 @@ public class Slider extends MenuWidget {
 	}
 	
 	public void render() {
+		updateBounds();
+		
 		context.fill(50, 200);
 		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 1);
 		

@@ -133,16 +133,16 @@ public class LD31 extends PApplet {
 		gameState = ST_MENU;
 	}
 	
-	private static final int BINDINGS_YPOS = -130;
+	private static final int BINDINGS_YPOS = -150;
 	
 	/** helper function for setup(), which is also called by the "Revert to Defaults" button in the settings menu */
 	private void setupSettingsMenu() {
-		settingsMenu = new Menu();
-		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
+		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, 500);
+		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -225));
 		
 		//setup volume slider
-		settingsMenu.add(new TextBox(renderer.font, "Volume", -180, -140));
-		settingsMenu.add(new Slider(renderer.font, 40, -140, 360, 10, 0.5f, (value) -> { audio.setVolume(Audio.VOL_MUSIC, PApplet.pow(value, 0.25f)); }));
+		settingsMenu.add(new TextBox(renderer.font, "Volume", -180, -175));
+		settingsMenu.add(new Slider(renderer.font, 40, -175, 360, 10, 0.5f, (value) -> { audio.setVolume(Audio.VOL_MUSIC, PApplet.pow(value, 0.25f)); }));
 
 		//setup key binding buttons and labels
 		final int MENU_COLS = 4; //1 label + MENU_COLS buttons per row
@@ -152,7 +152,7 @@ public class LD31 extends PApplet {
 		}
 		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
 			//setup left label column
-			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, BINDINGS_YPOS + 50 + 25*row));
+			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, BINDINGS_YPOS + 50 + 30*row));
 
 			//setup each row of buttons
 			final int r = row;
@@ -160,7 +160,7 @@ public class LD31 extends PApplet {
 			for (int col = 1; col < MENU_COLS; ++col) {
 				final int keyId = (col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND);
 				final MenuButton b = new MenuButton(renderer.font, InputHandler.getKeyIdString(keyId),
-				                                    -30*MENU_COLS + 60*col, BINDINGS_YPOS + 50 + 25*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
+				                                    -30*MENU_COLS + 60*col, BINDINGS_YPOS + 50 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
 				b.replaceInteraction((down) -> { input.handleBind(b, r); }); //working around the strict lambda capture requirements
 				b.tag = keyId;
 				settingsMenu.add(b);
@@ -168,7 +168,7 @@ public class LD31 extends PApplet {
 		}
 
 		settingsMenu.add(new MenuButton(renderer.font, "Revert to Defaults", 0, 100, 400, 50, (down) -> { input.resetKeyIdBindings(); setupSettingsMenu(); }));
-		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 160, 400, 50, (down) -> { gameState = ST_MENU; }));
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 200, 400, 50, (down) -> { gameState = ST_MENU; }));
 	}
 
 	/**
