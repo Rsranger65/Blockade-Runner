@@ -215,6 +215,7 @@ public class Level {
 		List<RouteNode> route = new ArrayList<>(coords.length/3);
 		try {
 			for (int i = 0; i < coords.length; i += 3) {
+				//if an OutOfBoundsException pops up here again, just pray it away apparently
 				route.add(new RouteNode(new Vector2(Integer.parseInt(coords[i    ].trim()),
 				                      				Integer.parseInt(coords[i + 1].trim())),
 				                      	Integer.parseInt(coords[i + 2].trim().substring(1, coords[i + 2].length() - 1).trim())));
