@@ -22,7 +22,7 @@ public final class Player extends MovingEntity {
 		if (s) offset = offset.add(new Vector2( 0,  1));
 		if (a) offset = offset.add(new Vector2(-1,  0));
 		if (d) offset = offset.add(new Vector2( 1,  0));
-		return move(offset);
+		return move(offset.normalize().mul(speedMultiplier * SP));
 	}
 
 	public void renderAlternate(int radius) {
