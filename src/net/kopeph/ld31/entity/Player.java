@@ -2,28 +2,11 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
 public final class Player extends MovingEntity {
 	public static final int COLOR = 0xFFFFFFFF;
-
-	private static final double
-		NONE = -1          ,
-		 E   =  0*Math.PI/4,
-		SE   =  1*Math.PI/4,
-		S    =  2*Math.PI/4,
-		SW   =  3*Math.PI/4,
-		 W   =  4*Math.PI/4,
-		NW   =  5*Math.PI/4,
-		N    =  6*Math.PI/4,
-		NE   =  7*Math.PI/4;
-
-	private static final double[] DIRECTION = {
-		NONE,  E,  W, NONE,
-		S   , SE, SW, S   ,
-		N   , NE, NW, N   ,
-		NONE,  E,  W, NONE
-	};
 
 	public Player(Level level) {
 		super(level, COLOR);
@@ -34,15 +17,12 @@ public final class Player extends MovingEntity {
 	}
 
 	public boolean move(boolean w, boolean s, boolean a, boolean d) {
-		int buttonFlags = (w ? 8 : 0);
-		buttonFlags    |= (s ? 4 : 0);
-		buttonFlags    |= (a ? 2 : 0);
-		buttonFlags    |= (d ? 1 : 0);
-
-		if (DIRECTION[buttonFlags] == NONE)
-			return true;
-
-		return move(DIRECTION[buttonFlags]);
+		Vector2 offset = new Vector2(0, 0);
+		if (w) offset = offset.add(new Vector2( 0, -1));
+		if (s) offset = offset.add(new Vector2( 0,  1));
+		if (a) offset = offset.add(new Vector2(-1,  0));
+		if (d) offset = offset.add(new Vector2( 1,  0));
+		return move(offset);
 	}
 
 	public void renderAlternate(int radius) {

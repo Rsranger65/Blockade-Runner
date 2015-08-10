@@ -23,7 +23,7 @@ public class MovingEntity extends Entity {
 		return move(Vector2.polar(speedMultiplier * SP, angle));
 	}
 
-	private boolean move(Vector2 offset) {
+	public boolean move(Vector2 offset) {
 		//Check direct move
 		if (move0(offset)) return true;
 
