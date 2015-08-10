@@ -3,7 +3,7 @@ package net.kopeph.ld31.entity;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 
-/** @auther alexg */
+/** @author alexg */
 public final class Player extends MovingEntity {
 	public static final int COLOR = 0xFFFFFFFF;
 
@@ -44,7 +44,7 @@ public final class Player extends MovingEntity {
 
 		return move(DIRECTION[buttonFlags]);
 	}
-	
+
 	public void renderAlternate(int radius) {
 		//equivalent to the functionality of Entity.render(), but after a call to PApplet.updatePixels()
 		Trace.rectangle(level.player.screenX() - Entity.SIZE, level.player.screenY() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
