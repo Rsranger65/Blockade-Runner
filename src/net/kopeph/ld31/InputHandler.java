@@ -73,6 +73,7 @@ public final class InputHandler {
 			case K_ESC    : return "ESC";
 			case K_TAB    : return "TAB";
 			case K_ENTER  : return "ENTER";
+			case K_BKSP   : return "BKSP";
 			case K_SHIFT  : return "SHIFT";
 			case K_CTRL   : return "CTRL";
 			case K_ALT    : return "ALT";
@@ -89,6 +90,7 @@ public final class InputHandler {
 	/** Converts the key and keyCode values given by Processing into a unique keyId for internal use */
 	public static int convertToKeyId(char key, int keyCode) {
 		//TODO: add documentation explaining keyId values here if we think we need it
+		if (key == PConstants.RETURN) key = PConstants.ENTER; //special case - transform '\r' to '\n'
 		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key));
 	}
 

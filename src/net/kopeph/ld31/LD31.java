@@ -10,6 +10,7 @@ import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
+import net.kopeph.ld31.menu.Slider;
 import net.kopeph.ld31.menu.TextBox;
 import net.kopeph.ld31.util.Profiler;
 import processing.core.PApplet;
@@ -63,7 +64,7 @@ public class LD31 extends PApplet {
 
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
-		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, 1.0F, 10 * 1000); //fade in for 10 seconds
+		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, PApplet.pow(0.5f, 0.25f), 6 * 1000); //fade in for 5 seconds
 		audio.play(BG_MUSIC, true);
 
 		//setup end screens
@@ -99,7 +100,7 @@ public class LD31 extends PApplet {
 		input.bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
 			if (gameState == ST_MENU) {
 				exit();
-			} else if (gameState == ST_RUNNING) {
+			} else if (gameState == ST_RUNNING || gameState == ST_WIN || gameState == ST_DIE) {
 				gameState = ST_PAUSE;
 				menuHeight = 10;
 			} else if (gameState == ST_PAUSE) {
@@ -108,35 +109,9 @@ public class LD31 extends PApplet {
 				gameState = ST_MENU;
 			}
 		});
-
+		
 		//setup settings menu
-		settingsMenu = new Menu();
-		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -175));
-
-		//setup key binding buttons and labels
-		final int MENU_COLS = 4; //1 label + MENU_COLS buttons per row
-		//setup top label row
-		for (int col = 1; col < MENU_COLS; ++col) {
-			settingsMenu.add(new TextBox(renderer.font, String.valueOf(col), -30*MENU_COLS + 60*col, -150));
-		}
-		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
-			//setup left label column
-			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, -125 + 30*row));
-
-			//setup each row of buttons
-			final int r = row;
-			List<Integer> bindings = input.getBoundKeyIdsFor(row);
-			for (int col = 1; col < MENU_COLS; ++col) {
-				final int keyId = (col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND);
-				final MenuButton b = new MenuButton(renderer.font, InputHandler.getKeyIdString(keyId),
-				                                    -30*MENU_COLS + 60*col, -125 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
-				b.replaceInteraction((down) -> { input.handleBind(b, r); }); //working around the strict lambda capture requirements
-				b.tag = keyId;
-				settingsMenu.add(b);
-			}
-		}
-
-		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 120, 400, 50, (down) -> { gameState = ST_MENU; }));
+		setupSettingsMenu();
 
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
@@ -156,6 +131,44 @@ public class LD31 extends PApplet {
 		HUD.updateFooterText(input);
 
 		gameState = ST_MENU;
+	}
+	
+	private static final int BINDINGS_YPOS = -150;
+	
+	/** helper function for setup(), which is also called by the "Revert to Defaults" button in the settings menu */
+	private void setupSettingsMenu() {
+		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, 500);
+		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -225));
+		
+		//setup volume slider
+		settingsMenu.add(new TextBox(renderer.font, "Volume", -180, -175));
+		settingsMenu.add(new Slider(renderer.font, 40, -175, 360, 10, 0.5f, (value) -> { audio.setVolume(Audio.VOL_MUSIC, PApplet.pow(value, 0.25f)); }));
+
+		//setup key binding buttons and labels
+		final int MENU_COLS = 4; //1 label + MENU_COLS buttons per row
+		//setup top label row
+		for (int col = 1; col < MENU_COLS; ++col) {
+			settingsMenu.add(new TextBox(renderer.font, String.valueOf(col), -30*MENU_COLS + 60*col, BINDINGS_YPOS + 25));
+		}
+		for (int row = 0; row < InputHandler.CTL_ESCAPE; ++row) {
+			//setup left label column
+			settingsMenu.add(new TextBox(renderer.font, InputHandler.getControlString(row), -30*MENU_COLS, BINDINGS_YPOS + 50 + 30*row));
+
+			//setup each row of buttons
+			final int r = row;
+			List<Integer> bindings = input.getBoundKeyIdsFor(row);
+			for (int col = 1; col < MENU_COLS; ++col) {
+				final int keyId = (col <= bindings.size()? bindings.get(col - 1) : InputHandler.K_UNBOUND);
+				final MenuButton b = new MenuButton(renderer.font, InputHandler.getKeyIdString(keyId),
+				                                    -30*MENU_COLS + 60*col, BINDINGS_YPOS + 50 + 30*row, 50, 20, (down) -> { /* dummy argument (gets replaced immediately) */ });
+				b.replaceInteraction((down) -> { input.handleBind(b, r); }); //working around the strict lambda capture requirements
+				b.tag = keyId;
+				settingsMenu.add(b);
+			}
+		}
+
+		settingsMenu.add(new MenuButton(renderer.font, "Revert to Defaults", 0, 100, 400, 50, (down) -> { input.resetKeyIdBindings(); setupSettingsMenu(); }));
+		settingsMenu.add(new MenuButton(renderer.font, "Back", 0, 200, 400, 50, (down) -> { gameState = ST_MENU; }));
 	}
 
 	/**

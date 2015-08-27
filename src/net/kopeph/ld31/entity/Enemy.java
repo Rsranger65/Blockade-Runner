@@ -5,6 +5,7 @@ import java.util.List;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.util.RouteNode;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 
@@ -33,7 +34,8 @@ public class Enemy extends MovingEntity {
 	private float direction; //radians
 	private boolean pursuing; //used in render() so that we can know
 
-	List<Vector2> route;
+	private List<RouteNode> route;
+	private int waitTime;
 	private int routeIndex;
 
 	public Enemy(Level level) {
@@ -52,12 +54,12 @@ public class Enemy extends MovingEntity {
 		super(level, x, y, color);
 	}
 
-	public Enemy(Level level, int color, List<Vector2> route) {
+	public Enemy(Level level, int color, List<RouteNode> route) {
 		super(level, color);
 		this.route = route;
 	}
 
-	public Enemy(Level level, int x, int y, int color, List<Vector2> route) {
+	public Enemy(Level level, int x, int y, int color, List<RouteNode> route) {
 		super(level, x, y, color);
 		this.route = route;
 	}
@@ -105,12 +107,19 @@ public class Enemy extends MovingEntity {
 	}
 
 	private void followRoute() {
-		Vector2 v = route.get(routeIndex);
-		if (PApplet.dist((float)pos().x, (float)pos().y, (float)v.x, (float)v.y) < SP*speedMultiplier) {
-			routeIndex = (routeIndex + 1)%route.size();
-			v = route.get(routeIndex);
+		if (waitTime == 0) { //if not waiting
+			Vector2 v = route.get(routeIndex).pos;
+			//if we've just arrived at our destination
+			if (PApplet.dist((float)pos().x, (float)pos().y, (float)v.x, (float)v.y) < SP*speedMultiplier) {
+				routeIndex = (routeIndex + 1) % route.size();
+				v = route.get(routeIndex).pos;
+				waitTime = route.get(routeIndex).waitTime;
+			}
+			move(v.sub(pos()).theta()); //move toward the next node
+		} else {
+			//wait for the specified amount of time
+			waitTime -= 1;
 		}
-		move(v.sub(pos()).theta()); //move toward the next node
 	}
 
 	@Override
@@ -118,10 +127,10 @@ public class Enemy extends MovingEntity {
 		//draw route lines, if one exists
 		if (route != null) {
 			for (int i = 1; i <= route.size(); ++i) {
-				Trace.line((int)route.get(i - 1).x,          (int)route.get(i - 1).y,
-						   (int)route.get(i%route.size()).x, (int)route.get(i%route.size()).y,
+				Trace.line((int)route.get(i - 1).pos.x,          (int)route.get(i - 1).pos.y,
+						   (int)route.get(i%route.size()).pos.x, (int)route.get(i%route.size()).pos.y,
 						   (x, y) -> {
-					if (level.inBounds(x, y))
+					if (context.contains(x, y))
 						context.pixels[y*context.lastWidth + x] = this.color;// | 0xFF555555;
 					return true;
 				});
@@ -134,7 +143,7 @@ public class Enemy extends MovingEntity {
 		//draw line to player, if pursuing
 		if (pursuing) {
 			Trace.line(screenX(), screenY(), level.player.screenX(), level.player.screenY(), (x, y) -> {
-				if (level.inBounds(x, y))
+				if (context.contains(x, y))
 					context.pixels[y*context.lastWidth + x] = ENEMY_COM_COLOR;
 				return true;
 			});
