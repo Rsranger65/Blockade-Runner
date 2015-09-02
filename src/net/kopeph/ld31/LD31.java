@@ -7,11 +7,7 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Entity;
 import net.kopeph.ld31.graphics.HUD;
 import net.kopeph.ld31.graphics.Renderer;
-import net.kopeph.ld31.menu.EndScreen;
-import net.kopeph.ld31.menu.Menu;
-import net.kopeph.ld31.menu.MenuButton;
-import net.kopeph.ld31.menu.Slider;
-import net.kopeph.ld31.menu.TextBox;
+import net.kopeph.ld31.menu.*;
 import net.kopeph.ld31.util.Profiler;
 import processing.core.PApplet;
 
@@ -100,7 +96,7 @@ public class LD31 extends PApplet {
 		input.bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
 			if (gameState == ST_MENU) {
 				exit();
-			} else if (gameState == ST_RUNNING || gameState == ST_WIN || gameState == ST_DIE) {
+			} else if (gameState == ST_RUNNING) {
 				gameState = ST_PAUSE;
 				menuHeight = 10;
 			} else if (gameState == ST_PAUSE) {
@@ -109,7 +105,7 @@ public class LD31 extends PApplet {
 				gameState = ST_MENU;
 			}
 		});
-		
+
 		//setup settings menu
 		setupSettingsMenu();
 
@@ -132,14 +128,14 @@ public class LD31 extends PApplet {
 
 		gameState = ST_MENU;
 	}
-	
+
 	private static final int BINDINGS_YPOS = -150;
-	
+
 	/** helper function for setup(), which is also called by the "Revert to Defaults" button in the settings menu */
 	private void setupSettingsMenu() {
 		settingsMenu = new Menu(Menu.DEFAULT_WIDTH, 500);
 		settingsMenu.add(new TextBox(renderer.font, "Settings Menu", 0, -225));
-		
+
 		//setup volume slider
 		settingsMenu.add(new TextBox(renderer.font, "Volume", -180, -175));
 		settingsMenu.add(new Slider(renderer.font, 40, -175, 360, 10, 0.5f, (value) -> { audio.setVolume(Audio.VOL_MUSIC, PApplet.pow(value, 0.25f)); }));
