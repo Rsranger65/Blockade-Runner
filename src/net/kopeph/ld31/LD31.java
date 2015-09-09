@@ -200,7 +200,7 @@ public class LD31 extends PApplet {
 			resize(); //allows for free window resizing without affecting gameplay
 
 		switch (gameState) {
-			case ST_RESET_HARD: reset(); resize(); break;
+			case ST_RESET_HARD: resize(); reset(); break; //order here is important
 			case ST_RESET:      reset();           break;
 			case ST_RUNNING:    drawRunning();     break;
 			case ST_WIN:        drawWin();         break;
@@ -216,7 +216,6 @@ public class LD31 extends PApplet {
 
 	private void resize() {
 		loadPixels(); //must be done whenever the size of pixels changes
-		Arrays.fill(pixels, 0);
 		lastWidth = width;
 		lastHeight = height;
 		renderer.cropTextures(lastWidth, lastHeight);
@@ -224,11 +223,13 @@ public class LD31 extends PApplet {
 
 	/** Reloads the current level completely */
 	private void reset() {
-		if (currentLevel == null) level = new Level(1920, 1080);
+		if (currentLevel == null) level = new Level(800, 600);
 		else                      level = new Level(currentLevel);
 		fadePhase = -(255 + 100);
 		HUD.updateFooterText(input);
 		gameState = ST_RUNNING;
+		//clear out previously rendered data in case the player starts near the edge of the map
+		Arrays.fill(pixels, 0);
 	}
 
 	/** tick logic for Free Play game mode */
@@ -265,14 +266,14 @@ public class LD31 extends PApplet {
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
 		renderer.applyTexture(pixels);
 
-		//draw all entities
-		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
-		renderer.renderEntities(level);
-
 		//update pixels/wrap things up
 		profiler.swap(Profiler.ENTITY_DRAW, Profiler.PIXEL_UPDATE);
 		updatePixels();
 		profiler.end(Profiler.PIXEL_UPDATE);
+
+		//draw all entities
+		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
+		renderer.renderEntities(level);
 
 		//fade in and draw circle closing in on player at beginning of level
 		if (fadePhase < 0) {

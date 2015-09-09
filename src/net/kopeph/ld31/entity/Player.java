@@ -26,15 +26,11 @@ public final class Player extends MovingEntity {
 	}
 
 	public void renderAlternate(int radius) {
-		//equivalent to the functionality of Entity.render(), but after a call to PApplet.updatePixels()
-		Trace.rectangle(level.player.screenX() - Entity.SIZE, level.player.screenY() - Entity.SIZE, Entity.SIZE*2 + 1, Entity.SIZE*2 + 1, (x, y) -> {
-			context.set(x, y, Player.COLOR);
-			return true;
-		});
+		super.render();
+
 		//draw a circle closing in on the player
 		Trace.circle(level.player.screenX(), level.player.screenY(), radius, (x, y) -> {
-			if (level.inBounds(x, y))
-				context.set(x, y, Player.COLOR);
+			context.set(x, y, COLOR);
 			return true;
 		});
 	}

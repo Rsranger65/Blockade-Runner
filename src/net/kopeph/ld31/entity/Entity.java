@@ -4,7 +4,6 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Renderable;
-import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
@@ -76,10 +75,7 @@ public abstract class Entity implements Renderable {
 
 	@Override
 	public void render() {
-		Trace.rectangle(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
-			if (!context.contains(x, y)) return false;
-			context.pixels[y*context.lastWidth + x] = color;
-			return true;
-		});
+		context.fill(color);
+		context.rect(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1);
 	}
 }
