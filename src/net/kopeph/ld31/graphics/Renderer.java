@@ -61,13 +61,22 @@ public class Renderer {
 	}
 
 	public void calculateLighting(int[] lighting, Level level) {
-		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.lastWidth, level.player.x() - context.lastWidth/2));
-		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.lastHeight, level.player.y() - context.lastHeight/2));
+		viewX = level.player.x() - context.lastWidth/2;
+		viewY = level.player.y() - context.lastHeight/2;
 
 		//crop the tiles array into the pixels array
 		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
-		for (int y = 0; y < PApplet.min(context.lastHeight, level.LEVEL_HEIGHT); ++y) {
-			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
+		int sourceX = PApplet.max(viewX, 0);
+		int sourceY = PApplet.max(viewY, 0);
+
+		int destinationX = PApplet.max(-viewX, 0);
+		int destinationY = PApplet.max(-viewY, 0);
+
+		int cropWidth = PApplet.min(level.LEVEL_WIDTH - sourceX, context.lastWidth - destinationX);
+		int cropHeight = PApplet.min(level.LEVEL_HEIGHT - sourceY, context.lastHeight - destinationY);
+
+		for (int y = destinationY; y < destinationY + cropHeight; ++y) {
+			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + sourceX, lighting, y*context.lastWidth + destinationX, cropWidth);
 		}
 
 		for (final Enemy e : level.enemies) {
