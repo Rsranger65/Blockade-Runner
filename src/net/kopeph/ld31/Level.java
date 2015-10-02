@@ -90,11 +90,8 @@ public class Level {
 				         !validTile(rx1, ry1) || !validTile(rx2, ry2));
 
 				//clear out the tiles
-				for (int x = rx1; x != rx2; x += (rx1 < rx2? 1 : -1))
-					clearRect(x - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
-				for (int y = ry1; y != ry2; y += (ry1 < ry2? 1 : -1))
-					clearRect(rx2 - HALLWAY_SIZE, y - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
-				clearRect(rx2 - HALLWAY_SIZE, ry2 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
+				clearRect(PApplet.min(rx1, rx2) - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, PApplet.abs(rx2 - rx1) + HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
+				clearRect(rx2 - HALLWAY_SIZE, PApplet.min(ry1, ry2) - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, PApplet.abs(ry2 - ry1) + HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
 			}
 		} while (!validateLevel()); //keep generating new layouts until we get one that's continuous
 
@@ -121,7 +118,7 @@ public class Level {
 				int x = i%LEVEL_WIDTH;
 				int y = i/LEVEL_WIDTH;
 
-				for (int v = VORONOI_POINTS - 1; v-- != 0;) {
+				for (int v = VORONOI_POINTS - 1; v --> 0;) {
 					int distance = Math.abs(posx[v] - x) + Math.abs(posy[v] - y);
 					if (distance < minDistance) {
 						minDistance = distance;
@@ -278,10 +275,9 @@ public class Level {
 
 	//helper function for constructor/room + hallway generation
 	private void clearRect(int x0, int y0, int w, int h, int color) {
-		Trace.rectangle(x0, y0, w, h, (x, y) -> {
-			tiles[y*LEVEL_WIDTH + x] = color;
-			return true;
-		});
+		for (int y = y0 + h; y --> y0;)
+			for (int x = x0 + w; x --> x0;)
+				tiles[y*LEVEL_WIDTH + x] = color;
 	}
 
 	//helper function for constructor/player placement

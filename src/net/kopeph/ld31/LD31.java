@@ -223,7 +223,7 @@ public class LD31 extends PApplet {
 
 	/** Reloads the current level completely */
 	private void reset() {
-		if (currentLevel == null) level = new Level(800, 600);
+		if (currentLevel == null) level = new Level(1920, 1200);
 		else                      level = new Level(currentLevel);
 		fadePhase = -(255 + 100);
 		HUD.updateFooterText(input);
