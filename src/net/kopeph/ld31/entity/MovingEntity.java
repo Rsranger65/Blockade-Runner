@@ -59,7 +59,7 @@ public class MovingEntity extends Entity {
 		int newXi = (int)Math.round(newPos.x);
 		int newYi = (int)Math.round(newPos.y);
 
-		return !Trace.line(oldXi, oldYi, newXi, newYi, (x, y) -> { return validPosition(x, y);});
+		return Trace.line(oldXi, oldYi, newXi, newYi, (x, y) -> { return validPosition(x, y);});
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {

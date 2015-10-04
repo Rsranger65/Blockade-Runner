@@ -37,7 +37,7 @@ public abstract class MenuWidget implements Renderable {
 	}
 
 	public boolean contains(int x, int y) {
-		return x > xPos && x < xPos + width && y < yPos && y > yPos + height;
+		return x > xPos && x < xPos + width && y > yPos && y < yPos + height;
 	}
 
 	public boolean isHovered() {

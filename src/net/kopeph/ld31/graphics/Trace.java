@@ -23,7 +23,7 @@ public class Trace {
 	public static boolean line(int x1, int y1, int x2, int y2, PointPredicate op) {
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
-		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to possibly save a clock cycle down there
 
 		sx = x1 < x2? 1 : -1;
 		sy = y1 < y2? 1 : -1;
@@ -38,10 +38,6 @@ public class Trace {
 				err += dy;
 				x1 += sx;
 			}
-			if (x1 == x2 && y1 == y2) {
-				op.on(x1,y1);
-				return true;
-			}
 			if (e2 < dx) {
 				err += dx;
 				y1 += sy;
@@ -55,7 +51,7 @@ public class Trace {
 
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
-		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to possibly save a clock cycle down there
 
 		sx = x1 < x2? 1 : -1;
 		sy = y1 < y2? 1 : -1;
