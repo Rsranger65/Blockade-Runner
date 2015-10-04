@@ -1,6 +1,5 @@
 package net.kopeph.ld31.spi;
 
-
 /**
  * Referenced in:
  * <li> net.kopeph.ld31.graphics.Paths

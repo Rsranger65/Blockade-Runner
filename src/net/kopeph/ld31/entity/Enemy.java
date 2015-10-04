@@ -42,18 +42,6 @@ public class Enemy extends MovingEntity {
 		super(level, randomColor());
 	}
 
-	public Enemy(Level level, int color) {
-		super(level, color);
-	}
-
-	public Enemy(Level level, int x, int y) {
-		super(level, x, y, randomColor());
-	}
-
-	public Enemy(Level level, int x, int y, int color) {
-		super(level, x, y, color);
-	}
-
 	public Enemy(Level level, int color, List<RouteNode> route) {
 		super(level, color);
 		this.route = route;

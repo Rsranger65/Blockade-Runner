@@ -8,7 +8,6 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Objective;
 import net.kopeph.ld31.entity.Player;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.RouteNode;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
@@ -253,13 +252,11 @@ public class Level {
 		for (int i = 0; i < tiles.length; ++i) {
 			if (tiles[i] == FLOOR_BLACK) {
 				//find the first pixel of floor and flood fill from there
-				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x0, y0) -> {
-					return validTile(x0, y0, (x, y) -> {
-						if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
-							return false;
-						tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
-						return true;
-					});
+				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x, y) -> {
+					if (!inBounds(x, y) || tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
+						return false;
+					tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
+					return true;
 				});
 				break;
 			}
@@ -296,10 +293,6 @@ public class Level {
 	//returns true if an only if the coordinates are inside the level and not inside a wall
 	public boolean validTile(int x, int y) {
 		return (inBounds(x, y) && tiles[y*LEVEL_WIDTH + x] != FLOOR_NONE);
-	}
-
-	public boolean validTile(int x, int y, PointPredicate op) {
-		return (inBounds(x, y) && op.on(x, y));
 	}
 
 	public boolean inBounds(int x, int y) {

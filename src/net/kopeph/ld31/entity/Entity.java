@@ -2,7 +2,6 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
-import net.kopeph.ld31.graphics.Node;
 import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.util.Vector2;
 
@@ -45,10 +44,6 @@ public abstract class Entity implements Renderable {
 		return true;
 	}
 
-	public void setPos(Vector2 pos) {
-		this.pos = pos;
-	}
-
 	public int x() {
 		return (int)Math.round(pos.x);
 	}
@@ -67,10 +62,6 @@ public abstract class Entity implements Renderable {
 
 	public Vector2 pos() {
 		return pos;
-	}
-
-	public Node toNode() {
-		return new Node(x(), y());
 	}
 
 	@Override

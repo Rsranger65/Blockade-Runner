@@ -116,15 +116,6 @@ public class Renderer {
 		}
 	}
 
-	public void addContext(Integer state, List<Renderable> targets) {
-		states.put(state, targets);
-	}
-
-	public void renderContext(Integer state) {
-		for (Renderable r : states.get(state))
-			r.render();
-	}
-
 	public void renderEntities(Level level) {
 		level.objective.render();
 		level.player.render();

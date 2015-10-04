@@ -124,13 +124,4 @@ public class Trace {
 			if (op.on(p.x - 1, p.y    )) points.push(new Point(p.x - 1, p.y    ));
 		}
 	}
-
-	/** Traces a filled rectangle */
-	public static void rectangle(int x0, int y0, int width, int height, PointPredicate op) {
-		for (int y =  y0 + height; y --> y0;) {
-			for (int x = x0 +width; x --> x0;) {
-				op.on(x, y);
-			}
-		}
-	}
 }

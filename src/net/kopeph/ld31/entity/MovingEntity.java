@@ -2,7 +2,6 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.util.Pointer;
 import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
@@ -45,26 +44,22 @@ public class MovingEntity extends Entity {
 	private boolean move0(Vector2...offsets) {
 		Vector2 futurePos = new Vector2(pos);
 
-		for (Vector2 offset : offsets) {
+		for (Vector2 offset : offsets)
 			if (!checkOffset(futurePos, futurePos = futurePos.add(offset)))
 				return false;
-		}
 
 		pos = futurePos;
 		return true;
 	}
 
-	/** This checks the whole move operation */
+	/** @return true only if the whole movement is valid */
 	private boolean checkOffset(Vector2 oldPos, Vector2 newPos) {
 		int oldXi = (int)Math.round(oldPos.x);
 		int oldYi = (int)Math.round(oldPos.y);
 		int newXi = (int)Math.round(newPos.x);
 		int newYi = (int)Math.round(newPos.y);
-		final Pointer<Boolean> passable = new Pointer<>(true);
 
-		Trace.line(oldXi, oldYi, newXi, newYi, (x, y) -> { return passable.value = validPosition(x, y);});
-
-		return passable.value;
+		return !Trace.line(oldXi, oldYi, newXi, newYi, (x, y) -> { return validPosition(x, y);});
 	}
 
 	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {

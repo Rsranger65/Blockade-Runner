@@ -2,7 +2,6 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Renderable;
-import net.kopeph.ld31.util.Util;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -37,8 +36,12 @@ public abstract class MenuWidget implements Renderable {
 		this.height = height;
 	}
 
+	public boolean contains(int x, int y) {
+		return x > xPos && x < xPos + width && y < yPos && y > yPos + height;
+	}
+
 	public boolean isHovered() {
-		return Util.boxContains(xPos, yPos, width, height, context.mouseX, context.mouseY);
+		return contains(context.mouseX, context.mouseY);
 	}
 
 	public boolean isMouseDown() {

@@ -25,10 +25,6 @@ public class Menu extends MenuWidget {
 		setBounds(width, height);
 	}
 
-	public Menu(int x, int y, int width, int height) {
-		super(x, y, width, height);
-	}
-
 	public void setBounds(int width, int height) {
 		setBounds((LD31.getContext().getWidth() - width) / 2,
 		          (LD31.getContext().getHeight() - height) / 2,
@@ -39,14 +35,6 @@ public class Menu extends MenuWidget {
 
 	public void add(MenuWidget b) {
 		widgets.add(b);
-	}
-
-	public MenuWidget getChild(int index) { //hide yo kids, hide yo wife
-		return widgets.get(index);
-	}
-
-	public int getChildCount() {
-		return widgets.size();
 	}
 
 	@Override

@@ -11,10 +11,6 @@ public class TextBox extends MenuWidget {
 	public String text;
 	public boolean xCenter, yCenter;
 
-	public TextBox(Font font, float x, float y, float w, float h) {
-		this(font, x, y, w, h, ""); //$NON-NLS-1$
-	}
-
 	public TextBox(Font font, float x, float y, float w, float h, String text) {
 		super(x, y, w, h);
 		this.font = font;
