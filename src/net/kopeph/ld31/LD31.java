@@ -27,7 +27,8 @@ public class LD31 extends PApplet {
 		ST_PAUSE      =  3,  // Displaying Pause Menu
 		ST_MENU       =  4,  // Displaying Main Menu
 		ST_SETTINGS   =  5,  // Displaying Settings Menu
-		ST_CAMPAIGN   =  6;  // Displaying Dummy Campaign menu
+		ST_CAMPAIGN   =  6,  // Displaying Dummy Campaign menu
+		ST_FREE_PLAY  =  7;  // Displaying Free Play Menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 	public static String[] args; //from command line
@@ -37,10 +38,11 @@ public class LD31 extends PApplet {
 	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
-	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu;
+	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu, freePlayMenu;
 	private volatile int gameState;
 	private int fadePhase;
 	private String currentLevel;
+	private int freePlayWidth = 800, freePlayHeight = 600;
 
 	public Renderer renderer;
 
@@ -64,13 +66,13 @@ public class LD31 extends PApplet {
 		audio.play(BG_MUSIC, true);
 
 		//setup end screens
-		win = new EndScreen(renderer.font, HUD.MSG_WIN, color(0, 120, 0)); //$NON-NLS-1$
-		die = new EndScreen(renderer.font, HUD.MSG_DIE, color(120, 0, 0)); //$NON-NLS-1$
+		win = new EndScreen(renderer.font, HUD.MSG_WIN, color(0, 120, 0));
+		die = new EndScreen(renderer.font, HUD.MSG_DIE, color(120, 0, 0));
 
 		//setup main menu
 		mainMenu = new Menu();
 		mainMenu.add(new TextBox(renderer.font,  "Blockade Runner", 0, -175));
-		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_RESET_HARD; currentLevel = null; }));
+		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_FREE_PLAY; /*gameState = ST_RESET_HARD; currentLevel = null;*/ }));
 		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { gameState = ST_CAMPAIGN; }));
 		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS; }));
 		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit(); }));
@@ -108,6 +110,16 @@ public class LD31 extends PApplet {
 
 		//setup settings menu
 		setupSettingsMenu();
+
+		//setup free play menu
+		freePlayMenu = new Menu();
+		freePlayMenu.add(new TextBox(renderer.font, "Free Play Mode", 0, -175));
+		freePlayMenu.add(new MenuButton(renderer.font, "Tiny (480x340)", 0, -130, 400, 40, (down) -> { freePlayWidth = 640; freePlayHeight = 480; gameState = ST_RESET_HARD; currentLevel = null; }));
+		freePlayMenu.add(new MenuButton(renderer.font, "Small (800x600)", 0, -80, 400, 40, (down) -> { freePlayWidth = 800; freePlayHeight = 600; gameState = ST_RESET_HARD; currentLevel = null; }));
+		freePlayMenu.add(new MenuButton(renderer.font, "Medium (1280x720)", 0, -30, 400, 40, (down) -> { freePlayWidth = 1280; freePlayHeight = 720; gameState = ST_RESET_HARD; currentLevel = null; }));
+		freePlayMenu.add(new MenuButton(renderer.font, "Large (1920x1080)", 0, 20, 400, 40, (down) -> { freePlayWidth = 1920; freePlayHeight = 1080; gameState = ST_RESET_HARD; currentLevel = null; }));
+		freePlayMenu.add(new MenuButton(renderer.font, "Huge (2560x1440)", 0, 70, 400, 40, (down) -> { freePlayWidth = 2560; freePlayHeight = 1440; gameState = ST_RESET_HARD; currentLevel = null; }));
+		freePlayMenu.add(new MenuButton(renderer.font, "Back", 0, 150, 400, 50, (down) -> { gameState = ST_MENU; }));
 
 		//setup dummy campaign menu
 		dummyCampaignMenu = new Menu();
@@ -209,6 +221,7 @@ public class LD31 extends PApplet {
 			case ST_MENU:       drawMenu();        break;
 			case ST_SETTINGS:   drawSettings();    break;
 			case ST_CAMPAIGN:   drawCampaign();    break;
+			case ST_FREE_PLAY:  drawFreePlay();    break;
 		}
 
 		HUD.render();
@@ -223,7 +236,7 @@ public class LD31 extends PApplet {
 
 	/** Reloads the current level completely */
 	private void reset() {
-		if (currentLevel == null) level = new Level(1920, 1200);
+		if (currentLevel == null) level = new Level(freePlayWidth, freePlayHeight);
 		else                      level = new Level(currentLevel);
 		fadePhase = -(255 + 100);
 		HUD.updateFooterText(input);
@@ -322,8 +335,13 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawCampaign() {
-		image(renderer.textureGreen, 0, 0); //TODO: placeholder background
+		image(renderer.textureMagenta, 0, 0); //TODO: placeholder background
 		dummyCampaignMenu.render();
+	}
+
+	private void drawFreePlay() {
+		image(renderer.textureCyan, 0, 0);
+		freePlayMenu.render();
 	}
 
 	@Override
