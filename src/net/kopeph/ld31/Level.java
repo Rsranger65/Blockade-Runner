@@ -49,18 +49,19 @@ public class Level {
 		//these are more or less just arbitrary magic numbers that are "close enough" to the desired result
 		final int AVERAGE_DIMENSION = (LEVEL_WIDTH + LEVEL_HEIGHT)/2,
 		          ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 56000 + 10,
-		          MIN_ROOM_WIDTH = 25 + AVERAGE_DIMENSION/50,
-		          MIN_ROOM_HEIGHT = 25 + AVERAGE_DIMENSION/50,
-		          MAX_ROOM_WIDTH = 100 + AVERAGE_DIMENSION/20,
-		          MAX_ROOM_HEIGHT = 100 + AVERAGE_DIMENSION/20,
+		          MIN_ROOM_WIDTH = 25 + AVERAGE_DIMENSION / 50,
+		          MIN_ROOM_HEIGHT = 25 + AVERAGE_DIMENSION / 50,
+		          MAX_ROOM_WIDTH = 100 + AVERAGE_DIMENSION / 20,
+		          MAX_ROOM_HEIGHT = 100 + AVERAGE_DIMENSION / 20,
 
 		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 32000 + 10,
 		          MIN_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 18000,
 		          MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200,
-		          HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
+		          MIN_HALLWAY_SIZE = 3,
+		          MAX_HALLWAY_SIZE = 7, //4 + AVERAGE_DIMENSION / 500,
 
-		          VORONOI_POINTS = 1 + AVERAGE_DIMENSION/100 + LEVEL_WIDTH*LEVEL_HEIGHT/128000,
-		          ENEMY_COUNT = AVERAGE_DIMENSION/250 + LEVEL_WIDTH*LEVEL_HEIGHT / 72000;
+		          VORONOI_POINTS = 1 + AVERAGE_DIMENSION / 100 + LEVEL_WIDTH*LEVEL_HEIGHT / 128000,
+		          ENEMY_COUNT = AVERAGE_DIMENSION / 250 + LEVEL_WIDTH*LEVEL_HEIGHT / 72000;
 
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 
@@ -79,13 +80,14 @@ public class Level {
 
 			//clear out some hallways
 			for (int i = 0; i < HALLWAY_COUNT; ++i) {
+		        int HALLWAY_SIZE = (int)context.random(MIN_HALLWAY_SIZE, MAX_HALLWAY_SIZE + 1); //number of pixels to either side of the center of a hallway
 				int rx1, ry1, rx2, ry2;
 				//find valid start and end points
 				do {
-					rx1 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE - 1);
-					ry1 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE - 1);
-					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE - 1);
-					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE - 1);
+					rx1 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
+					ry1 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
+					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
+					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
 				} while (Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) < MIN_HALLWAY_LENGTH ||
 				         Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
 				         !validRect(rx1 - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1) ||
