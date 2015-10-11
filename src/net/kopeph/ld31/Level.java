@@ -82,13 +82,14 @@ public class Level {
 				int rx1, ry1, rx2, ry2;
 				//find valid start and end points
 				do {
-					rx1 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
-					ry1 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
-					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE);
-					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
+					rx1 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE - 1);
+					ry1 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE - 1);
+					rx2 = (int)context.random(HALLWAY_SIZE, LEVEL_WIDTH - HALLWAY_SIZE - 1);
+					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE - 1);
 				} while (Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) < MIN_HALLWAY_LENGTH ||
 				         Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
-				         !validTile(rx1, ry1) || !validTile(rx2, ry2));
+				         !validRect(rx1 - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1) ||
+				         !validRect(rx2 - HALLWAY_SIZE, ry2 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1));
 
 				//clear out the tiles
 				clearRect(PApplet.min(rx1, rx2) - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, PApplet.abs(rx2 - rx1) + HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
@@ -308,6 +309,16 @@ public class Level {
 	//helper function for constructor/objective placement
 	private boolean goodObjectivePlacement() {
 		return (PApplet.dist(player.x(), player.y(), objective.x(), objective.y()) > 200); //the magic numbers are real
+	}
+
+	//returns true if and only all tiles within the given rectangle are floor tiles
+	private boolean validRect(int x0, int y0, int w, int h) {
+		for (int y = y0 + h; y --> y0;)
+			for (int x = x0 + w; x --> x0;)
+				if (tiles[y*LEVEL_WIDTH + x] == FLOOR_NONE)
+					return false;
+
+		return true;
 	}
 
 	//returns true if an only if the coordinates are inside the level and not inside a wall
