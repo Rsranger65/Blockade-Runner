@@ -7,7 +7,6 @@ import net.kopeph.ld31.menu.TextBox;
 
 public final class MainMenu extends Menu {
 	public MainMenu() {
-		super();
 		add(new TextBox(context.renderer.font,  "Blockade Runner", 0, -175));
 		add(new MenuButton(context.renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { context.setGameState(LD31.ST_FREE_PLAY); }));
 		add(new MenuButton(context.renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { context.setGameState(LD31.ST_CAMPAIGN); }));

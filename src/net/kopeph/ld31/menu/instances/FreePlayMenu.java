@@ -7,7 +7,6 @@ import net.kopeph.ld31.menu.TextBox;
 
 public final class FreePlayMenu extends Menu {
 	public FreePlayMenu() {
-		super();
 		add(new TextBox(context.renderer.font, "Free Play Mode", 0, -175));
 		add(new MenuButton(context.renderer.font, "Tiny (480x340)"   , 0, -130, 400, 40, (down) -> { context.setLevelSize(480, 340);   context.setGameState(LD31.ST_RESET_HARD); context.setLevelPath(null); }));
 		add(new MenuButton(context.renderer.font, "Small (800x600)"  , 0,  -80, 400, 40, (down) -> { context.setLevelSize(800, 600);   context.setGameState(LD31.ST_RESET_HARD); context.setLevelPath(null); }));
