@@ -47,18 +47,20 @@ public class Level {
 
 		//a few adjustments to make the level properties scale somewhat with the game size
 		//these are more or less just arbitrary magic numbers that are "close enough" to the desired result
-		final int ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 36000,
-		          MIN_ROOM_WIDTH = 50,
-		          MIN_ROOM_HEIGHT = 50,
-		          MAX_ROOM_WIDTH = 150,
-		          MAX_ROOM_HEIGHT = 150,
+		final int AVERAGE_DIMENSION = (LEVEL_WIDTH + LEVEL_HEIGHT)/2,
+		          ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 56000 + 10,
+		          MIN_ROOM_WIDTH = 25 + AVERAGE_DIMENSION/50,
+		          MIN_ROOM_HEIGHT = 25 + AVERAGE_DIMENSION/50,
+		          MAX_ROOM_WIDTH = 100 + AVERAGE_DIMENSION/20,
+		          MAX_ROOM_HEIGHT = 100 + AVERAGE_DIMENSION/20,
 
-		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 18000 + 10,
+		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 32000 + 10,
 		          MIN_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 18000,
 		          MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200,
 		          HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
 
-		          VORONOI_POINTS = 50;
+		          VORONOI_POINTS = 1 + AVERAGE_DIMENSION/100 + LEVEL_WIDTH*LEVEL_HEIGHT/128000,
+		          ENEMY_COUNT = AVERAGE_DIMENSION/250 + LEVEL_WIDTH*LEVEL_HEIGHT / 72000;
 
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 
@@ -140,8 +142,7 @@ public class Level {
 		}
 
 		//add enemies
-		int enemyCount = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
-		for (int i = 0; i < enemyCount; ++i)
+		for (int i = 0; i < ENEMY_COUNT; ++i)
 			enemies.add(new Enemy(this));
 
 		placeEntities();
