@@ -2,7 +2,6 @@ package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Renderable;
-import processing.core.PApplet;
 import processing.core.PConstants;
 
 /**
@@ -16,7 +15,7 @@ public abstract class MenuWidget implements Renderable {
 		ANCHOR_RIGHT  = 2, ANCHOR_BOTTOM = 2, //Move origin by delta
 		ANCHOR_FILL   = 3;                    //Move size by delta
 
-	protected final PApplet context = LD31.getContext();
+	protected final LD31 context = LD31.getContext();
 
 	public float xPos, yPos, width, height;
 	public int xAnchor = ANCHOR_CENTER, yAnchor = ANCHOR_CENTER;
