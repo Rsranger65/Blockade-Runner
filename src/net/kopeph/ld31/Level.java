@@ -283,8 +283,7 @@ public class Level {
 	//helper function for constructor/room + hallway generation
 	private void clearRect(int x0, int y0, int w, int h, int color) {
 		for (int y = y0 + h; y --> y0;)
-			for (int x = x0 + w; x --> x0;)
-				tiles[y*LEVEL_WIDTH + x] = color;
+			Arrays.fill(tiles, y*LEVEL_WIDTH + x0, y*LEVEL_WIDTH + x0 + w, color);
 	}
 
 	//helper function for constructor/player placement
