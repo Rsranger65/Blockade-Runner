@@ -115,8 +115,8 @@ public class Enemy extends MovingEntity {
 		//draw route lines, if one exists
 		if (route != null) {
 			for (int i = 1; i <= route.size(); ++i) {
-				Trace.line((int)route.get(i - 1).pos.x,          (int)route.get(i - 1).pos.y,
-						   (int)route.get(i%route.size()).pos.x, (int)route.get(i%route.size()).pos.y,
+				Trace.line((int)route.get(i - 1).pos.x          - context.renderer.viewX, (int)route.get(i - 1).pos.y          - context.renderer.viewY,
+						   (int)route.get(i%route.size()).pos.x - context.renderer.viewX, (int)route.get(i%route.size()).pos.y - context.renderer.viewY,
 						   (x, y) -> {
 					context.set(x, y, color);
 					return true;
