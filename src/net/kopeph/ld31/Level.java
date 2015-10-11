@@ -92,6 +92,16 @@ public class Level {
 				clearRect(PApplet.min(rx1, rx2) - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, PApplet.abs(rx2 - rx1) + HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
 				clearRect(rx2 - HALLWAY_SIZE, PApplet.min(ry1, ry2) - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, PApplet.abs(ry2 - ry1) + HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
 			}
+
+			//remove one-pixel-wide level artifacts
+			for (int i = tiles.length - LEVEL_WIDTH - 1; i --> LEVEL_WIDTH;) {
+				if (tiles[i] == FLOOR_NONE) {
+					if (tiles[i + 1] != FLOOR_NONE && tiles[i - 1] != FLOOR_NONE)
+						tiles[i] = FLOOR_BLACK;
+					else if (tiles[i + LEVEL_WIDTH] != FLOOR_NONE && tiles[i - LEVEL_WIDTH] != FLOOR_NONE)
+						tiles[i] = FLOOR_BLACK;
+				}
+			}
 		} while (!validateLevel()); //keep generating new layouts until we get one that's continuous
 
 		//create points for a voronoi diagram which will determine level coloring
