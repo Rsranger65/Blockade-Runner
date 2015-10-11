@@ -1,12 +1,6 @@
 package net.kopeph.ld31;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -57,11 +51,6 @@ public final class InputHandler {
 		K_DOWN    = PConstants.DOWN    << 16,
 		K_LEFT    = PConstants.LEFT    << 16,
 		K_RIGHT   = PConstants.RIGHT   << 16;
-
-	public InputHandler() {
-		if (Arrays.binarySearch(LD31.args, "--input-reset") >= 0) //$NON-NLS-1$
-			resetDiskPreferences();
-	}
 
 	public static String getKeyIdString(int keyId) {
 		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes

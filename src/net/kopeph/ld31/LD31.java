@@ -32,7 +32,6 @@ public class LD31 extends PApplet {
 		ST_FREE_PLAY  =  7;  // Displaying Free Play Menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
-	public static String[] args; //from command line
 
 	private Profiler profiler;
 	private InputHandler input;
@@ -300,8 +299,6 @@ public class LD31 extends PApplet {
 
 	/** Global Entry Point */
 	public static void main(String[] args) {
-		Arrays.sort(args);
-		LD31.args = args;
 		PApplet.main(new String[] { LD31.class.getName() });
 	}
 }
