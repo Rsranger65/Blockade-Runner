@@ -2,7 +2,7 @@ res/test-level.png
 player		x:100	y:500
 objective	x:700	y:75
 enemy		x:700	y:75	color:red
-enemy		x:600	y:300	color:blue	route:600,300,(120), 650,300,(60), 650,350,(0), 600,340,(10), 625,325,(300)
+enemy		x:600	y:300	color:blue	route:600,300,(120),  650,300,(60),  650,350,  600,340,(10),  625,325,(300)
 enemy		x:560	y:500	color:green
 enemy		x:300	y:400	color:invalid
 enemy		x:10

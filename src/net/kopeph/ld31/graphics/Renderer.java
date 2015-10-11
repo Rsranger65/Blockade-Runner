@@ -1,8 +1,6 @@
 package net.kopeph.ld31.graphics;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
@@ -29,8 +27,6 @@ public class Renderer {
 
 	private final LD31 context;
 	private final ThreadPool renderingPool = new ThreadPool();
-
-	private Map<Integer, List<Renderable>> states;
 
 	public Renderer() {
 		context = LD31.getContext();

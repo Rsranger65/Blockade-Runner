@@ -175,25 +175,27 @@ public class Level {
 		int x = -1, y = -1, color = Enemy.randomColor(); //placeholder values
 		List<RouteNode> route = null; //placeholder value
 		for (int i = 1; i < parts.length; ++i) {
-			if (parts[i].isEmpty()) continue;
 			String[] pair = parts[i].split(":");
 
-			switch (pair[0].trim().toLowerCase()) {
-				case "x":
-					x = Integer.parseInt(pair[1]);
-					break;
-				case "y":
-					y = Integer.parseInt(pair[1]);
-					break;
-				case "color":
-					color = Enemy.getColorByString(pair[1]);
-					if (color == Level.FLOOR_NONE) //if the string given is invalid
-						color = Enemy.randomColor();
-					break;
-				case "route":
-				case "path":
-					route = parseRoute(pair[1]);
-					break;
+			if (pair.length == 2) { //guard against OutOfBoundsException
+				switch (pair[0].trim().toLowerCase()) {
+					case "x":
+						x = Integer.parseInt(pair[1].trim());
+						break;
+					case "y":
+						y = Integer.parseInt(pair[1].trim());
+						break;
+					case "color":
+						color = Enemy.getColorByString(pair[1].trim());
+						//TODO: support for hex colors, maybe
+						if (color == Level.FLOOR_NONE) //if the string given is invalid
+							color = Enemy.randomColor();
+						break;
+					case "route":
+					case "path":
+						route = parseRoute(pair[1].trim());
+						break;
+				}
 			}
 		}
 
@@ -221,11 +223,19 @@ public class Level {
 		String[] coords = in.toLowerCase().split(",");
 		List<RouteNode> route = new ArrayList<>(coords.length/3);
 		try {
-			for (int i = 0; i < coords.length; i += 3) {
-				//if an OutOfBoundsException pops up here again, just pray it away apparently
-				route.add(new RouteNode(new Vector2(Integer.parseInt(coords[i    ].trim()),
-				                      				Integer.parseInt(coords[i + 1].trim())),
-				                      	Integer.parseInt(coords[i + 2].trim().substring(1, coords[i + 2].length() - 1).trim())));
+			int i = 0;
+			while (i < coords.length) {
+				double x = Double.valueOf(coords[i++].trim());
+				if (i >= coords.length) break; //guard against OutOfBoundsException
+				double y = Double.valueOf(coords[i++].trim());
+
+				//optionally parse a wait time, if one is given within (parenthesis) or [brackets]
+				int waitTime = 0;
+				if (i < coords.length && (coords[i].trim().startsWith("(") || coords[i].trim().startsWith("[")))
+					waitTime = Integer.parseInt(coords[i].trim().substring(1, coords[i++].length() - 1).trim());
+
+				//add the new additions to the route
+				route.add(new RouteNode(new Vector2(x, y), waitTime));
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
