@@ -79,9 +79,12 @@ public class Renderer {
 		}
 
 		for (final Enemy e : level.enemies) {
-			//create a new thread to run the lighting process of each enemy
+			//only render enemies that have a chance of casting light into the scene
 			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
 				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.lastHeight + e.viewDistance - 2) {
+				//TODO: distance formula to check for circle intersection with screen corners (minor optimization to ignore certain enemies)
+
+				//create a new thread to run the lighting process of each enemy
 				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
 			}
 		}

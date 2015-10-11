@@ -5,6 +5,7 @@ import java.util.List;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.spi.PointPredicate;
 import net.kopeph.ld31.util.RouteNode;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
@@ -107,6 +108,113 @@ public class Enemy extends MovingEntity {
 		} else {
 			//wait for the specified amount of time
 			waitTime -= 1;
+		}
+	}
+
+	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {
+		final int xi = screenX(); //pre-calculating these gives a huge performance boost
+		final int yi = screenY();
+		final int vdsq = viewDistance*viewDistance; //don't judge, ever CPU cycle counts!
+
+		final int width = context.lastWidth;
+		final int height = context.lastHeight;
+		final int size = array.length;
+
+		//determine the most efficient way to do ray casting based on whether the enemy is inside or outside the level
+		PointPredicate op;
+		if (context.contains(xi, yi)) {
+			op = (x, y) -> {
+				//restrict light to a circle
+				final int dx = x - xi, dy = y - yi;
+				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+
+				final int i = y*width + x; //we use this value twice, so pre-calculate it
+				if (array[i] == Level.FLOOR_NONE) return false;
+
+				array[i] |= lightColor;
+				return true;
+			};
+		} else {
+			op = (x, y) -> {
+				//restrict light to a circle
+				final int dx = x - xi, dy = y - yi;
+				if (dx*dx + dy*dy >= vdsq) return false; //distance formula
+
+				final int i = y*width + x; //we use this value thrice, so pre-calculate it
+				if (i < 0 || i >= size) return true; //avoid OutOfBoundsException
+				if (array[i] == Level.FLOOR_NONE) return false;
+
+				array[i] |= lightColor;
+
+				return true;
+			};
+		}
+
+		//change the bounds of the for loop to optimally stay within the level
+		final int minx = PApplet.max(xi - viewDistance + 1, 0);
+		final int miny = PApplet.max(yi - viewDistance + 1, 0);
+		final int maxx = PApplet.min(xi + viewDistance - 1, width - 1);
+		final int maxy = PApplet.min(yi + viewDistance - 1, height - 1);
+
+		//flags to optimize out unnecessary ray casts
+		final boolean traceRight = xi < maxx;
+		final boolean traceLeft  = xi > minx;
+		final boolean traceDown  = yi < maxy;
+		final boolean traceUp    = yi > miny;
+
+		//flags to determine whether rays cast toward a particular edge could end up out of bounds
+		final boolean cautionRight = maxx < xi + viewDistance - 1;
+		final boolean cautionLeft  = minx > xi - viewDistance + 1;
+		final boolean cautionDown  = maxy < yi + viewDistance - 1;
+		final boolean cautionUp    = miny > yi - viewDistance + 1;
+
+		//pre-calculated constants to help check for each individual ray whether there is a chance of going out of bounds
+		final int dy1 = yi - miny, dy1sq = dy1*dy1;
+		final int dy2 = yi - maxy, dy2sq = dy2*dy2;
+
+		//trace top and bottom
+		for (int x = minx; x <= maxx; ++x) {
+			final int dx = xi - x, dxsq = dx*dx;
+
+			if (traceUp) {
+				//check if ray has a chance of going out of bounds and adjust accordingly
+				if (cautionUp && dy1sq + dxsq < vdsq) //distance formula
+					Trace.line(xi, yi, x, miny, op);
+				else
+					Trace.ray(xi, yi, x, miny, op);
+			}
+
+			if (traceDown) {
+				//check if ray has a chance of going out of bounds and adjust accordingly
+				if (cautionDown && dy2sq + dxsq < vdsq) //distance formula
+					Trace.line(xi, yi, x, maxy, op);
+				else
+					Trace.ray(xi, yi, x, maxy, op);
+			}
+		}
+
+		//pre-calculated constants to help check for each individual ray whether there is a chance of going out of bounds
+		final int dx1 = xi - minx, dx1sq = dx1*dx1;
+		final int dx2 = xi - maxx, dx2sq = dx2*dx2;
+
+		//trace left and right (discounting corners because we already traced those in the loop above)
+		for (int y = miny + 1; y < maxy; ++y) {
+			final int dy = yi - y, dysq = dy*dy;
+
+			if (traceLeft) {
+				//check if ray has a chance of going out of bounds and adjust accordingly
+				if (cautionLeft && dx1sq + dysq < vdsq)
+					Trace.line(xi, yi, minx, y, op);
+				else
+					Trace.ray(xi, yi, minx, y, op);
+			}
+
+			if (traceRight) {
+				if (cautionRight && dx2sq + dysq < vdsq)
+					Trace.line(xi, yi, maxx, y, op);
+				else
+					Trace.ray(xi, yi, maxx, y, op);
+			}
 		}
 	}
 
