@@ -1,5 +1,6 @@
 package net.kopeph.ld31.graphics;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,8 @@ public class Renderer {
 		viewX = level.player.x() - context.lastWidth/2;
 		viewY = level.player.y() - context.lastHeight/2;
 
+		Arrays.fill(lighting, Level.FLOOR_NONE);
+
 		//crop the tiles array into the pixels array
 		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
 		int sourceX = PApplet.max(viewX, 0);
@@ -90,7 +93,7 @@ public class Renderer {
 		renderingPool.forceSync();
 	}
 
-	public void applyTexture(int[] pixels) {
+	public void applyTexture(final int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
@@ -112,6 +115,45 @@ public class Renderer {
 				case Level.FLOOR_YELLOW:  pixels[i] = textureYellow.pixels[i];  break;
 				case Level.FLOOR_BLACK:   pixels[i] = textureGrey.pixels[i];    break;
 				case Level.FLOOR_WHITE:   pixels[i] = textureWhite.pixels[i];   break;
+			}
+		}
+	}
+
+	public void applyTextureAlt(final int[] pixels) {
+		float taskSize = context.height/renderingPool.poolSize;
+		for (int i = 0; i < renderingPool.poolSize; ++i) {
+			final int j = i;
+			renderingPool.post(() -> { applyTextureAltImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+		}
+
+		renderingPool.forceSync();
+	}
+
+	private void applyTextureAltImpl(final int[] pixels, final int yBegin, final int yEnd) {
+		final int width = context.lastWidth;
+		final int height = context.lastHeight;
+		final int originX = viewX;
+		final int originY = viewY;
+
+		for (int dy = yBegin; dy < yEnd; ++dy) {
+			for (int dx = 0; dx < width; ++dx) {
+				final int sx = Math.floorMod(dx + originX, width);
+				final int sy = Math.floorMod(dy + originY, height);
+
+				final int di = dy*width + dx;
+				final int si = sy*width + sx;
+
+				switch (pixels[di]) {
+					case Level.FLOOR_NONE:    pixels[di] = textureBlack.pixels[si];   break;
+					case Level.FLOOR_RED:     pixels[di] = textureRed.pixels[si];     break;
+					case Level.FLOOR_GREEN:   pixels[di] = textureGreen.pixels[si];   break;
+					case Level.FLOOR_BLUE:    pixels[di] = textureBlue.pixels[si];    break;
+					case Level.FLOOR_CYAN:    pixels[di] = textureCyan.pixels[si];    break;
+					case Level.FLOOR_MAGENTA: pixels[di] = textureMagenta.pixels[si]; break;
+					case Level.FLOOR_YELLOW:  pixels[di] = textureYellow.pixels[si];  break;
+					case Level.FLOOR_BLACK:   pixels[di] = textureGrey.pixels[si];    break;
+					case Level.FLOOR_WHITE:   pixels[di] = textureWhite.pixels[si];   break;
+				}
 			}
 		}
 	}

@@ -19,7 +19,7 @@ import processing.core.PImage;
 public class Level {
 	//C-style enumeration of color values
 	public static final int
-		FLOOR_NONE    = 0x00000000,
+		FLOOR_NONE    = 0xFF333333,
 		FLOOR_WHITE   = 0xFFFFFFFF,
 		FLOOR_BLACK   = 0xFF000000,
 		FLOOR_RED     = 0xFFFF0000,
@@ -58,7 +58,7 @@ public class Level {
 		          MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200,
 		          HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
 
-		          VORONOI_POINTS = 100;
+		          VORONOI_POINTS = 50;
 
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 

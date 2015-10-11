@@ -72,7 +72,7 @@ public class LD31 extends PApplet {
 		//setup main menu
 		mainMenu = new Menu();
 		mainMenu.add(new TextBox(renderer.font,  "Blockade Runner", 0, -175));
-		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_FREE_PLAY; /*gameState = ST_RESET_HARD; currentLevel = null;*/ }));
+		mainMenu.add(new MenuButton(renderer.font, "Free Play"    , 0, -100, 400, 50, (down) -> { gameState = ST_FREE_PLAY; }));
 		mainMenu.add(new MenuButton(renderer.font, "Campaign Mode", 0, - 40, 400, 50, (down) -> { gameState = ST_CAMPAIGN; }));
 		mainMenu.add(new MenuButton(renderer.font, "Settings"     , 0, + 20, 400, 50, (down) -> { gameState = ST_SETTINGS; }));
 		mainMenu.add(new MenuButton(renderer.font, "Exit"         , 0, +120, 400, 50, (down) -> { exit(); }));
@@ -277,16 +277,17 @@ public class LD31 extends PApplet {
 
 		//paint the image with the proper textures
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
-		renderer.applyTexture(pixels);
+		//renderer.applyTexture(pixels);
+		renderer.applyTextureAlt(pixels);
 
 		//update pixels/wrap things up
-		profiler.swap(Profiler.ENTITY_DRAW, Profiler.PIXEL_UPDATE);
+		profiler.swap(Profiler.TEXTURE, Profiler.PIXEL_UPDATE);
 		updatePixels();
-		profiler.end(Profiler.PIXEL_UPDATE);
 
 		//draw all entities
-		profiler.swap(Profiler.TEXTURE, Profiler.ENTITY_DRAW);
+		profiler.swap(Profiler.PIXEL_UPDATE, Profiler.ENTITY_DRAW);
 		renderer.renderEntities(level);
+		profiler.end(Profiler.ENTITY_DRAW);
 
 		//fade in and draw circle closing in on player at beginning of level
 		if (fadePhase < 0) {
