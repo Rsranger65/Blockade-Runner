@@ -219,7 +219,7 @@ public class LD31 extends PApplet {
 			e.moveAuto();
 
 			//losing condition
-			if (abs(e.x() - level.player.x()) < Entity.SIZE && abs(e.y() - level.player.y()) < Entity.SIZE) {
+			if (abs(e.x() - level.player.x()) < Entity.SIZE*2 && abs(e.y() - level.player.y()) < Entity.SIZE*2) {
 				gameState = ST_DIE;
 				return;
 			}
