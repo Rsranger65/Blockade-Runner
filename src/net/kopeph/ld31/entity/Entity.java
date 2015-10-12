@@ -2,11 +2,10 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
-import net.kopeph.ld31.graphics.Renderable;
 import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
-public abstract class Entity implements Renderable {
+public abstract class Entity {
 	public static final int SIZE = 2; //radius-.5
 	protected static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
 
@@ -64,7 +63,6 @@ public abstract class Entity implements Renderable {
 		return pos;
 	}
 
-	@Override
 	public void render() {
 		context.fill(color);
 		context.rect(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1);

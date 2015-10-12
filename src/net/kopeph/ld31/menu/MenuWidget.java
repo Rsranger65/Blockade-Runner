@@ -1,14 +1,13 @@
 package net.kopeph.ld31.menu;
 
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.graphics.Renderable;
 import processing.core.PConstants;
 
 /**
  * implemented by all visual menu elements
  * @author alexg
  */
-public abstract class MenuWidget implements Renderable {
+public abstract class MenuWidget {
 	public static final int
 		ANCHOR_CENTER = 0,                    //Move origin by delta/2
 		ANCHOR_LEFT   = 1, ANCHOR_TOP    = 1, //Move nothing
@@ -68,6 +67,5 @@ public abstract class MenuWidget implements Renderable {
 		}
 	}
 
-	@Override
 	public abstract void render();
 }

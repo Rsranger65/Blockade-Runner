@@ -3,7 +3,6 @@ package net.kopeph.ld31.menu;
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.graphics.HUD;
-import net.kopeph.ld31.graphics.Renderable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -11,7 +10,7 @@ import processing.core.PConstants;
  * @author alexg
  * @author stuntddude
  */
-public class EndScreen implements Renderable {
+public class EndScreen {
 	private static final int PHASE_ONE = 200;
 	private static final int PHASE_TWO = 160;
 
@@ -28,7 +27,6 @@ public class EndScreen implements Renderable {
 		this.backColor = backColor;
 	}
 
-	@Override
 	public void render() {
 		//keeping track of the phase
 		if (lastFrame < context.frameCount - 1)
