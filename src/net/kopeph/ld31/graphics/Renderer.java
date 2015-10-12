@@ -64,7 +64,6 @@ public class Renderer {
 		Arrays.fill(lighting, Level.FLOOR_NONE);
 
 		//crop the tiles array into the pixels array
-		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
 		int sourceX = PApplet.max(viewX, 0);
 		int sourceY = PApplet.max(viewY, 0);
 
@@ -79,10 +78,18 @@ public class Renderer {
 		}
 
 		for (final Enemy e : level.enemies) {
+			final int x = e.screenX(), y = e.screenY(), vd = e.viewDistance, vdsq = vd*vd;
+			final int w = context.lastWidth - 1, h = context.lastHeight - 1;
+
 			//only render enemies that have a chance of casting light into the scene
-			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
-				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.lastHeight + e.viewDistance - 2) {
-				//TODO: distance formula to check for circle intersection with screen corners (minor optimization to ignore certain enemies)
+			if (x > -e.viewDistance + 1 && x < context.lastWidth + e.viewDistance - 2 &&
+				y > -e.viewDistance + 1 && y < context.lastHeight + e.viewDistance - 2) {
+
+				//distance formula to check for circle intersection with screen corners (minor optimization to ignore certain enemies)
+				if (x < 0 && y < 0 &&      x * x      +      y * y      >= vdsq) continue;
+				if (x < 0 && y > h &&      x * x      + (y - h)*(y - h) >= vdsq) continue;
+				if (x > w && y < 0 && (x - w)*(x - w) +      y * y      >= vdsq) continue;
+				if (x > w && y > h && (x - w)*(x - w) + (y - h)*(y - h) >= vdsq) continue;
 
 				//create a new thread to run the lighting process of each enemy
 				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
