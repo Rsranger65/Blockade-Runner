@@ -16,7 +16,7 @@ public class EndScreen {
 
 	private final PApplet context = LD31.getContext();
 	private final Font font;
-	public String title;
+	private final String title;
 	private final int backColor;
 	private int phase;
 	private int lastFrame;

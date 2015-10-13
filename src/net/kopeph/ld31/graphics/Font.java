@@ -18,7 +18,6 @@ public class Font {
 		J_DESCENDER = 0x13;
 	public static final int
 		X_SIZE = 8, Y_SIZE = 8;
-	private static final float LINE_SPACE = 1.5F;
 
 	private final SpriteSheet sheet;
 
@@ -59,41 +58,6 @@ public class Font {
 		for (String line : lines) {
 			x = xInitial - line.length() * X_SIZE / 2;
 			renderLine(line, x, y);
-		}
-	}
-
-	/**
-	 * Renders text with line-wrapping within the rectangle.
-	 *
-	 * @param str
-	 * @param x render location X
-	 * @param y render location Y
-	 */
-	public void render(String str, int x, int y, int width, int height, boolean hCenter, boolean vCenter) {
-		String[] lines = str.split("\r|\n"); //$NON-NLS-1$
-		int xMax = x + width, xInitial = x;
-		int yMax = y + height;
-
-
-		if (vCenter) {
-			y -= lines.length * Y_SIZE / 2;
-			y += height / 2;
-		}
-
-		for (String line : lines) {
-			while (!line.isEmpty()) {
-				if (y > yMax)
-					break;
-
-				x = xInitial;
-				if (hCenter) {
-					x -= line.length() * X_SIZE / 2;
-					x += width / 2;
-				}
-
-				line = renderLine(line, x, y, xMax);
-				y += Y_SIZE * LINE_SPACE;
-			}
 		}
 	}
 

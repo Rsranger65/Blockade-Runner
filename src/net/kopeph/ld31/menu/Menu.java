@@ -25,15 +25,13 @@ public class Menu extends MenuWidget {
 		setBounds(width, height);
 	}
 
-	public void setBounds(int width, int height) {
-		setBounds((LD31.getContext().getWidth() - width) / 2,
-		          (LD31.getContext().getHeight() - height) / 2,
+	protected void setBounds(int width, int height) {
+		setBounds((LD31.getContext().width - width) / 2,
+		          (LD31.getContext().height - height) / 2,
 		          width, height);
-		xAnchor = ANCHOR_FILL;
-		yAnchor = ANCHOR_FILL;
 	}
 
-	public void add(MenuWidget b) {
+	protected void add(MenuWidget b) {
 		widgets.add(b);
 	}
 
@@ -46,7 +44,7 @@ public class Menu extends MenuWidget {
 	}
 
 	/** Draws the backing rectangle, should be called before drawing the MenuWidgets */
-	public void renderBack() {
+	protected void renderBack() {
 		context.pushStyle();
 		context.fill(100, 200);
 		context.rect((int)xPos, (int)yPos, (int)width, (int)height, 10);

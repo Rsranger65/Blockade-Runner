@@ -7,7 +7,7 @@ import net.kopeph.ld31.spi.Interaction;
 public class MenuButton extends TextBox {
 	private static boolean wasPressed;
 
-	Interaction interaction;
+	private Interaction interaction;
 
 	/**
 	 * @param text        the text to be displayed centered inside the button

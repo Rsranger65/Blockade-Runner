@@ -8,16 +8,9 @@ import processing.core.PConstants;
  * @author alexg
  */
 public abstract class MenuWidget {
-	public static final int
-		ANCHOR_CENTER = 0,                    //Move origin by delta/2
-		ANCHOR_LEFT   = 1, ANCHOR_TOP    = 1, //Move nothing
-		ANCHOR_RIGHT  = 2, ANCHOR_BOTTOM = 2, //Move origin by delta
-		ANCHOR_FILL   = 3;                    //Move size by delta
-
 	protected final LD31 context = LD31.getContext();
 
-	public float xPos, yPos, width, height;
-	public int xAnchor = ANCHOR_CENTER, yAnchor = ANCHOR_CENTER;
+	protected float xPos, yPos, width, height;
 	public int tag; //Used for key binding
 
 	private int curCtxWidth, curCtxHeight;
@@ -34,15 +27,15 @@ public abstract class MenuWidget {
 		this.height = height;
 	}
 
-	public boolean contains(int x, int y) {
+	private boolean contains(int x, int y) {
 		return x > xPos && x < xPos + width && y > yPos && y < yPos + height;
 	}
 
-	public boolean isHovered() {
+	protected boolean isHovered() {
 		return contains(context.mouseX, context.mouseY);
 	}
 
-	public boolean isMouseDown() {
+	protected boolean isMouseDown() {
 		return context.mousePressed && (context.mouseButton == PConstants.LEFT);
 	}
 
@@ -52,19 +45,8 @@ public abstract class MenuWidget {
 		curCtxWidth = context.width;
 		curCtxHeight = context.height;
 
-		switch(xAnchor) {
-		case ANCHOR_CENTER: xPos += dCtxWidth/2.0; break;
-		case ANCHOR_LEFT: 						   break;
-		case ANCHOR_RIGHT:  xPos += dCtxWidth; 	   break;
-		case ANCHOR_FILL:  width += dCtxWidth; 	   break;
-		}
-
-		switch(yAnchor) {
-		case ANCHOR_CENTER: yPos += dCtxHeight/2.0; break;
-		case ANCHOR_TOP: 						    break;
-		case ANCHOR_BOTTOM: yPos += dCtxHeight;     break;
-		case ANCHOR_FILL: height += dCtxHeight;     break;
-		}
+		xPos += dCtxWidth/2.0;
+		yPos += dCtxHeight/2.0;
 	}
 
 	public abstract void render();
