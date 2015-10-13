@@ -105,19 +105,19 @@ public final class InputHandler {
 	private Map<Integer, Integer> keyIdBindings = new HashMap<>();
 
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
-	public void bindKeyId(int keyId, int controlCode) {
+	private void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
 		pushToDisk(); //save bindings to system preferences as we supply them
 	}
 
 	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
-	public void bindKeyIds(int[] keyIds, int controlCode) {
+	private void bindKeyIds(int[] keyIds, int controlCode) {
 		for (int keyId : keyIds)
 			bindKeyId(keyId, controlCode);
 	}
 
 	/** Removes the binding for the given keyId, if one exists */
-	public void unbindKeyId(int keyId) {
+	private void unbindKeyId(int keyId) {
 		keyIdBindings.remove(keyId);
 		pushToDisk(); //update bindings on disk when they are removed as well as when they are added
 	}

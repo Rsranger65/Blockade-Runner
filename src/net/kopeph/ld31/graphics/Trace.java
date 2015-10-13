@@ -72,13 +72,8 @@ public class Trace {
 		}
 	}
 
-	/** Equivalent to calling circle() with thick set to false */
-	public static void circle(int x0, int y0, int radius, PointPredicate op) {
-		circle(x0, y0, radius, false, op);
-	}
-
 	/** Source: http://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Example */
-	public static void circle(int x0, int y0, int radius, boolean thick, PointPredicate op) {
+	public static void circle(int x0, int y0, int radius, PointPredicate op) {
 		int x = radius;
 		int y = 0;
 		int radiusError = 1-x;
@@ -90,8 +85,6 @@ public class Trace {
 				radiusError += 2 * y + 1;
 			}
 			else {
-				if (thick)
-					circlePointImpl(x - 1, y - 1, x0, y0, op);
 				x--;
 				radiusError += 2 * (y - x + 1);
 			}

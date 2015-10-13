@@ -18,11 +18,11 @@ public class MovingEntity extends Entity {
 		super(level, x, y, color);
 	}
 
-	public boolean move(double angle) {
+	protected boolean move(double angle) {
 		return move(Vector2.polar(speedMultiplier * SP, angle));
 	}
 
-	public boolean move(Vector2 offset) {
+	protected boolean move(Vector2 offset) {
 		//Check direct move
 		if (move0(offset)) return true;
 

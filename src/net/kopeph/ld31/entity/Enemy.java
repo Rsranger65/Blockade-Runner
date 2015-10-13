@@ -210,6 +210,7 @@ public class Enemy extends MovingEntity {
 			}
 
 			if (traceRight) {
+				//check if ray has a chance of going out of bounds and adjust accordingly
 				if (cautionRight && dx2sq + dysq < vdsq)
 					Trace.line(xi, yi, maxx, y, op);
 				else
