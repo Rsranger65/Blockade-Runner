@@ -20,16 +20,17 @@ public class LD31 extends PApplet {
 	public static final String TEST_LEVEL = "res/test-level.txt"; //file path
 
 	public static final int // Game state enum
-		ST_RESET_HARD = -2,  // Window size has changed
-		ST_RESET      = -1,  // Level needs regenerated
-		ST_RUNNING    =  0,  // Normal Condition
-		ST_DIE        =  1,  // Displaying lose screen
-		ST_WIN        =  2,  // Displaying win screen
-		ST_PAUSE      =  3,  // Displaying Pause Menu
-		ST_MENU       =  4,  // Displaying Main Menu
-		ST_SETTINGS   =  5,  // Displaying Settings Menu
-		ST_CAMPAIGN   =  6,  // Displaying Dummy Campaign menu
-		ST_FREE_PLAY  =  7;  // Displaying Free Play Menu
+		ST_RESET_HARD = -2, // Window size has changed
+		ST_RESET      = -1, // Level needs regenerated
+		ST_RUNNING    =  0, // Normal Condition
+		ST_DIE        =  1, // Displaying lose screen
+		ST_WIN        =  2, // Displaying win screen
+		ST_PAUSE      =  3, // Displaying Pause Menu
+		ST_MENU       =  4, // Displaying Main Menu
+		ST_SETTINGS   =  5, // Displaying Settings Menu
+		ST_KEYBIND    =  6, // Displaying Key Bindings Menu
+		ST_CAMPAIGN   =  7, // Displaying Dummy Campaign menu
+		ST_FREE_PLAY  =  8; // Displaying Free Play Menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 
@@ -38,7 +39,7 @@ public class LD31 extends PApplet {
 	private Audio audio;
 	private Level level;
 	private EndScreen win, die;
-	private Menu mainMenu, settingsMenu, pauseMenu, dummyCampaignMenu, freePlayMenu;
+	private Menu mainMenu, settingsMenu, keyBindingsMenu, pauseMenu, dummyCampaignMenu, freePlayMenu;
 	private volatile int gameState;
 	private int fadePhase;
 	private String currentLevel;
@@ -77,15 +78,16 @@ public class LD31 extends PApplet {
 		freePlayMenu = new FreePlayMenu();
 		dummyCampaignMenu = new CampaignMenu();
 		pauseMenu = new PauseMenu();
-		setupSettingsMenu();
+		settingsMenu = new SettingsMenu(audio);
+		setupKeyBindingsMenu();
 		HUD.updateFooterText(input);
 
 		gameState = ST_MENU;
 	}
 
 	/** helper function for setup(), which is also called by the "Revert to Defaults" button in the settings menu */
-	public void setupSettingsMenu() {
-		settingsMenu = new SettingsMenu(Menu.DEFAULT_WIDTH, 500, input, audio);
+	public void setupKeyBindingsMenu() {
+		keyBindingsMenu = new KeyBindingsMenu(input);
 	}
 
 	/**
@@ -142,6 +144,7 @@ public class LD31 extends PApplet {
 			case ST_PAUSE:      drawPause();       break;
 			case ST_MENU:       drawMenu();        break;
 			case ST_SETTINGS:   drawSettings();    break;
+			case ST_KEYBIND:    drawKeyBindMenu(); break;
 			case ST_CAMPAIGN:   drawCampaign();    break;
 			case ST_FREE_PLAY:  drawFreePlay();    break;
 		}
@@ -234,17 +237,22 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawMenu() {
-		image(renderer.textureRed, 0, 0); //TODO: placeholder background
+		image(renderer.textureRed, 0, 0);
 		mainMenu.render();
 	}
 
 	private void drawSettings() {
-		image(renderer.textureBlue, 0, 0); //TODO: placeholder background
+		image(renderer.textureBlue, 0, 0);
 		settingsMenu.render();
 	}
 
+	private void drawKeyBindMenu() {
+		image(renderer.textureGreen, 0, 0);
+		keyBindingsMenu.render();
+	}
+
 	private void drawCampaign() {
-		image(renderer.textureMagenta, 0, 0); //TODO: placeholder background
+		image(renderer.textureMagenta, 0, 0);
 		dummyCampaignMenu.render();
 	}
 
