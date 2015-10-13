@@ -17,21 +17,22 @@ public class Enemy extends MovingEntity {
 
 	public static int getColorByString(String value) {
 		switch (value.trim().toLowerCase()) {
-			case "red":   return Level.FLOOR_RED;
-			case "green": return Level.FLOOR_GREEN;
-			case "blue":  return Level.FLOOR_BLUE;
-			case "yellow": return Level.FLOOR_YELLOW;
-			case "cyan": return Level.FLOOR_CYAN;
+			case "red":     return Level.FLOOR_RED;
+			case "green":   return Level.FLOOR_GREEN;
+			case "blue":    return Level.FLOOR_BLUE;
+			case "yellow":  return Level.FLOOR_YELLOW;
+			case "cyan":    return Level.FLOOR_CYAN;
 			case "magenta": return Level.FLOOR_MAGENTA;
-			case "black": return Level.FLOOR_BLACK;
-			case "white": return Level.FLOOR_WHITE;
+			case "black":   return Level.FLOOR_BLACK;
+			case "white":   return Level.FLOOR_WHITE;
 		}
 		return Level.FLOOR_NONE;
 	}
 
 	private static final float TWO_PI = (float) (Math.PI * 2);
 
-	public final int viewDistance = 120; //distance that enemy light can reach in pixels
+	public /*static*/ final int viewDistance = 120; //distance that enemy light can reach in pixels
+
 	private float direction; //radians
 	private boolean pursuing; //used in render() so that we can know
 
@@ -111,7 +112,9 @@ public class Enemy extends MovingEntity {
 		}
 	}
 
-	public void rayTrace(final int[] array, final int viewDistance, final int lightColor) {
+	public void rayTrace(final int[] array, final int viewDistance) {
+		final int lightColor = color;
+
 		final int xi = screenX(); //pre-calculating these gives a huge performance boost
 		final int yi = screenY();
 		final int vdsq = viewDistance*viewDistance; //don't judge, ever CPU cycle counts!

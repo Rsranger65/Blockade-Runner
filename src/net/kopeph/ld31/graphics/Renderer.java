@@ -92,7 +92,7 @@ public class Renderer {
 				if (x > w && y > h && (x - w)*(x - w) + (y - h)*(y - h) >= vdsq) continue;
 
 				//create a new thread to run the lighting process of each enemy
-				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance); });
 			}
 		}
 

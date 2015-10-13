@@ -222,7 +222,7 @@ public class Level {
 	}
 
 	//helper function for parseLine()
-	List<RouteNode> parseRoute(String in) {
+	private List<RouteNode> parseRoute(String in) {
 		String[] coords = in.toLowerCase().split(",");
 		List<RouteNode> route = new ArrayList<>(coords.length/3);
 		try {
@@ -328,7 +328,7 @@ public class Level {
 		return (inBounds(x, y) && tiles[y*LEVEL_WIDTH + x] != FLOOR_NONE);
 	}
 
-	public boolean inBounds(int x, int y) {
+	private boolean inBounds(int x, int y) {
 		return (x > 0 && x < LEVEL_WIDTH && y > 0 && y < LEVEL_HEIGHT);
 	}
 }

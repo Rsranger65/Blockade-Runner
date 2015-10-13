@@ -13,7 +13,7 @@ public abstract class Entity {
 	protected final Level level;
 
 	protected Vector2 pos = new Vector2();
-	public int color;
+	protected final int color;
 
 	public Entity(Level level, int color) {
 		this.context = LD31.getContext();
@@ -59,7 +59,7 @@ public abstract class Entity {
 		return y() - context.renderer.viewY;
 	}
 
-	public Vector2 pos() {
+	protected Vector2 pos() {
 		return pos;
 	}
 

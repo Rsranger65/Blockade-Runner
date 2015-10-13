@@ -29,9 +29,7 @@ public class Audio {
 			volumeClasses.add(new ArrayList<>());
 	}
 
-	/**
-	 * @param volumeClass possible values: VOL_*
-	 */
+	/** @param volumeClass possible values: VOL_* */
 	public void load(String filename, int volumeClass) {
 		files.put(filename, minim.loadFile(filename));
 		volumeClasses.get(volumeClass).add(filename);
@@ -42,17 +40,17 @@ public class Audio {
 		if (loop)
 			files.get(filename).loop();
 	}
+
 	public void pause(String filename) {
 		files.get(filename).pause();
 	}
+
 	public void stop(String filename) {
 		files.get(filename).pause();
 		files.get(filename).rewind();
 	}
 
-	/**
-	 * @param volumeClass possible values: VOL_*
-	 */
+	/** @param volumeClass possible values: VOL_* */
 	public void setVolume(int volumeClass, float volume) {
 		for (String filename : volumeClasses.get(volumeClass))
 			files.get(filename).setGain((volume - 1) * -MIN_DB);

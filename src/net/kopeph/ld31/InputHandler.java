@@ -84,7 +84,7 @@ public final class InputHandler {
 	}
 
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
-	public void loadKeyIdBindings() {
+	private void loadKeyIdBindings() {
 		if (!pullFromDisk())
 			resetKeyIdBindings();
 	}
@@ -188,7 +188,7 @@ public final class InputHandler {
 	private Map<Integer, Interaction> controlCodeActions = new HashMap<>();
 
 	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
-	public void bindControlCode(int controlCode, Interaction action) {
+	private void bindControlCode(int controlCode, Interaction action) {
 		controlCodeActions.put(controlCode, action);
 	}
 
