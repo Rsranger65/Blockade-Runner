@@ -4,12 +4,14 @@ import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.MenuButton;
 import net.kopeph.ld31.menu.TextBox;
+import processing.core.PApplet;
 
 public final class PauseMenu extends Menu {
 	private static final int MAX_MENUHEIGHT = 320;
 	private static final int PAUSE_MENU_WIDTH = 240;
 
-	public int menuHeight;
+	private int menuHeight;
+	private int lastFrame;
 
 	public PauseMenu() {
 		add(new TextBox(context.renderer.font, "Game Paused", 0, -200));
@@ -21,10 +23,12 @@ public final class PauseMenu extends Menu {
 
 	@Override
 	public void render() {
-		context.updatePixels(); //doing this every frame allows us to draw the pause menu over a still of the game
+		if (lastFrame < context.frameCount - 1)
+			menuHeight = 10; //reset only if we weren't rendered last frame
+		lastFrame = context.frameCount;
 
-		menuHeight += 20; //menu expands vertically from height of 0 to MAX_MENUHEIGHT
-		if(menuHeight > MAX_MENUHEIGHT) menuHeight = MAX_MENUHEIGHT;
+		context.updatePixels(); //doing this every frame allows us to draw the pause menu over a still of the game
+		menuHeight = PApplet.min(MAX_MENUHEIGHT, menuHeight + 20); //menu expands vertically from height of 0 to MAX_MENUHEIGHT
 
 		//since the pause menu is of irregular dimensions, we're taking manual control
 		setBounds(PAUSE_MENU_WIDTH, menuHeight); //Manual override! Get to your battle stations!

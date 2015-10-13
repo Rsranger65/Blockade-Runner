@@ -102,6 +102,39 @@ public final class InputHandler {
 
 
 
+	public InputHandler() {
+		loadKeyIdBindings();
+
+		final LD31 context = LD31.getContext();
+
+		bindControlCode(InputHandler.CTL_RESET, (down) -> {
+			if (context.gameState() == LD31.ST_RUNNING ||
+				context.gameState() == LD31.ST_WIN ||
+				context.gameState() == LD31.ST_DIE)
+				context.setGameState(LD31.ST_RESET);
+		});
+
+		bindControlCode(InputHandler.CTL_PAUSE, (down) -> {
+			if (context.gameState() == LD31.ST_RUNNING)
+				context.setGameState(LD31.ST_PAUSE);
+			else if (context.gameState() == LD31.ST_PAUSE)
+				context.setGameState(LD31.ST_RUNNING);
+		});
+
+		bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
+			if (context.gameState() == LD31.ST_MENU)
+				context.exit();
+			else if (context.gameState() == LD31.ST_RUNNING)
+				context.setGameState(LD31.ST_PAUSE);
+			else if (context.gameState() == LD31.ST_PAUSE)
+				context.setGameState(LD31.ST_RUNNING);
+			else
+				context.setGameState(LD31.ST_MENU);
+		});
+	}
+
+
+
 	private Map<Integer, Integer> keyIdBindings = new HashMap<>();
 
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */

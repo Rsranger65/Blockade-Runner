@@ -71,34 +71,6 @@ public class LD31 extends PApplet {
 
 		//setup behaviors for keyboard controls
 		input = new InputHandler();
-		input.loadKeyIdBindings();
-		input.bindControlCode(InputHandler.CTL_RESET, (down) -> {
-			if (gameState == ST_RUNNING ||
-				gameState == ST_WIN ||
-				gameState == ST_DIE) {
-				gameState = ST_RESET;
-			}
-		});
-		input.bindControlCode(InputHandler.CTL_PAUSE, (down) -> {
-			if (gameState == ST_RUNNING) {
-				gameState = ST_PAUSE;
-				((PauseMenu)pauseMenu).menuHeight = 1;
-			} else if (gameState == ST_PAUSE) {
-				gameState = ST_RUNNING;
-			}
-		});
-		input.bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
-			if (gameState == ST_MENU) {
-				exit();
-			} else if (gameState == ST_RUNNING) {
-				gameState = ST_PAUSE;
-				((PauseMenu)pauseMenu).menuHeight = 10;
-			} else if (gameState == ST_PAUSE) {
-				gameState = ST_RUNNING;
-			} else {
-				gameState = ST_MENU;
-			}
-		});
 
 		//setup game menus
 		mainMenu = new MainMenu();
