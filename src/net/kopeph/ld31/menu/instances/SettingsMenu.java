@@ -15,8 +15,8 @@ public final class SettingsMenu extends Menu {
 		add(new Spinner(context.renderer.font, new String[] { "Raw Colors         [ fastest ]",
 		                                                      "Color Corrected    [ faster  ]",
 		                                                      "Unmoving Textures  [ slower  ]",
-		                                                      "Moving Textures    [ slowest ]" }, 0, -60, 400, 50, (value) -> {
-			context.println(value); //DEBUG
+		                                                      "Moving Textures    [ slowest ]" }, 2, 0, -60, 400, 50, (value) -> {
+			context.renderer.textureOption = value;
 		}));
 
 		add(new MenuButton(context.renderer.font, "Key Bindings", 0,  20, 400, 50, (down) -> { context.setGameState(LD31.ST_KEYBIND); }));

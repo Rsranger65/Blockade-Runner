@@ -202,8 +202,7 @@ public class LD31 extends PApplet {
 
 		//paint the image with the proper textures
 		profiler.swap(Profiler.ENEMY_PATH, Profiler.TEXTURE);
-		//renderer.applyTexture(pixels);
-		renderer.applyTextureAlt(pixels);
+		renderer.applyTexture(pixels);
 
 		//update pixels/wrap things up
 		profiler.swap(Profiler.TEXTURE, Profiler.PIXEL_UPDATE);

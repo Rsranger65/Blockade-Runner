@@ -12,10 +12,12 @@ public class Spinner extends TextBox {
 	private final SpinnerHandler op;
 	private int state = 0;
 
-	public Spinner(Font font, String[] states, float xPos, float yPos, float width, float height, SpinnerHandler functionality) {
-		super(font, states[0], xPos, yPos);
+	public Spinner(Font font, String[] states, int state, float xPos, float yPos, float width, float height, SpinnerHandler functionality) {
+		super(font, states[state], xPos, yPos);
 		this.states = states;
+		this.state = state;
 		op = functionality;
+		op.update(state);
 
 		left  = new MenuButton(font, InputHandler.getKeyIdString(InputHandler.K_LEFT ), xPos - width/2 + BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin(-1); });
 		right = new MenuButton(font, InputHandler.getKeyIdString(InputHandler.K_RIGHT), xPos + width/2 - BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin( 1); });

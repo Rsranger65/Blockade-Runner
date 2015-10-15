@@ -12,6 +12,26 @@ import processing.core.PImage;
 
 /** @author stuntddude */
 public class Renderer {
+	private static final int
+		COLOR_NONE    = 0xFF000000,
+		COLOR_RED     = 0xFFBB3322,
+		COLOR_GREEN   = 0xFF339933,
+		COLOR_BLUE    = 0xFF2233AA,
+		COLOR_CYAN    = 0xFF55BBDD,
+		COLOR_MAGENTA = 0xFFCC55AA,
+		COLOR_YELLOW  = 0xFFDDCC33,
+		COLOR_BLACK   = 0xFF333333,
+		COLOR_WHITE   = 0xFFEEEEEE;
+
+	private static final int
+		TEX_NONE    = 0,
+		TEX_CORRECT = 1,
+		TEX_STATIC  = 2,
+		TEX_MOVING  = 3;
+
+	public int textureOption = 0;
+	public int viewX = 0, viewY = 0;
+
 	public PImage textureRed    , rawTextureRed;
 	public PImage textureGreen  , rawTextureGreen;
 	public PImage textureBlue   , rawTextureBlue;
@@ -22,8 +42,6 @@ public class Renderer {
 	public PImage textureWhite  , rawTextureWhite;
 	public PImage textureBlack  , rawTextureBlack;
 	public Font font;
-
-	public int viewX = 0, viewY = 0;
 
 	private final LD31 context;
 	private final ThreadPool renderingPool = new ThreadPool();
@@ -100,16 +118,50 @@ public class Renderer {
 	}
 
 	public void applyTexture(final int[] pixels) {
+		switch (textureOption) {
+			case TEX_CORRECT: adjustColors(pixels); break;
+			case TEX_STATIC: applyTextureStatic(pixels); break;
+			case TEX_MOVING: applyTextureMoving(pixels); break;
+		}
+	}
+
+	public void adjustColors(final int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
-			renderingPool.post(() -> { applyTextureImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+			renderingPool.post(() -> { adjustColorsImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
 		}
 
 		renderingPool.forceSync();
 	}
 
-	private void applyTextureImpl(final int[] pixels, int iBegin, int iEnd) {
+	public void adjustColorsImpl(final int[] pixels, int iBegin, int iEnd) {
+		for (int i = iBegin; i < iEnd; ++i) {
+			switch (pixels[i]) {
+				case Level.FLOOR_NONE:    pixels[i] = COLOR_NONE;    break;
+				case Level.FLOOR_RED:     pixels[i] = COLOR_RED;     break;
+				case Level.FLOOR_GREEN:   pixels[i] = COLOR_GREEN;   break;
+				case Level.FLOOR_BLUE:    pixels[i] = COLOR_BLUE;    break;
+				case Level.FLOOR_CYAN:    pixels[i] = COLOR_CYAN;    break;
+				case Level.FLOOR_MAGENTA: pixels[i] = COLOR_MAGENTA; break;
+				case Level.FLOOR_YELLOW:  pixels[i] = COLOR_YELLOW;  break;
+				case Level.FLOOR_BLACK:   pixels[i] = COLOR_BLACK;   break;
+				case Level.FLOOR_WHITE:   pixels[i] = COLOR_WHITE;   break;
+			}
+		}
+	}
+
+	public void applyTextureStatic(final int[] pixels) {
+		float taskSize = pixels.length/renderingPool.poolSize;
+		for (int i = 0; i < renderingPool.poolSize; ++i) {
+			final int j = i;
+			renderingPool.post(() -> { applyTextureStaticImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+		}
+
+		renderingPool.forceSync();
+	}
+
+	private void applyTextureStaticImpl(final int[] pixels, int iBegin, int iEnd) {
 		for (int i = iBegin; i < iEnd; ++i) {
 			switch (pixels[i]) {
 				case Level.FLOOR_NONE:    pixels[i] = textureBlack.pixels[i];   break;
@@ -125,17 +177,17 @@ public class Renderer {
 		}
 	}
 
-	public void applyTextureAlt(final int[] pixels) {
+	public void applyTextureMoving(final int[] pixels) {
 		float taskSize = context.height/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
-			renderingPool.post(() -> { applyTextureAltImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+			renderingPool.post(() -> { applyTextureMovingImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
 		}
 
 		renderingPool.forceSync();
 	}
 
-	private void applyTextureAltImpl(final int[] pixels, final int yBegin, final int yEnd) {
+	private void applyTextureMovingImpl(final int[] pixels, final int yBegin, final int yEnd) {
 		final int width = context.lastWidth;
 		final int height = context.lastHeight;
 		final int originX = viewX;
