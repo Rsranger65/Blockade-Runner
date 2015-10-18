@@ -19,7 +19,7 @@ public final class SettingsMenu extends Menu {
 			context.renderer.textureOption = value;
 		}));
 
-		add(new MenuButton(context.renderer.font, "Key Bindings", 0,  20, 400, 50, (down) -> { context.setGameState(LD31.ST_KEYBIND); }));
-		add(new MenuButton(context.renderer.font, "Back"        , 0, 120, 400, 50, (down) -> { context.setGameState(LD31.ST_MENU); }));
+		add(new Button(context.renderer.font, "Key Bindings", 0,  20, 400, 50, (down) -> { context.setGameState(LD31.ST_KEYBIND); }));
+		add(new Button(context.renderer.font, "Back"        , 0, 120, 400, 50, (down) -> { context.setGameState(LD31.ST_MENU); }));
 	}
 }

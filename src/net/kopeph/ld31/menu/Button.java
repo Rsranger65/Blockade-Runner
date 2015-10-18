@@ -4,7 +4,7 @@ import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.Interaction;
 
 /** @author stuntddude */
-public class MenuButton extends TextBox {
+public class Button extends TextBox {
 	private static boolean wasPressed;
 
 	private Interaction interaction;
@@ -15,7 +15,7 @@ public class MenuButton extends TextBox {
 	 * @param yPos        see TextBox constructor
 	 * @param interaction method to be called when the button is clicked
 	 */
-	public MenuButton(Font font, String text, float xPos, float yPos, float width, float height, Interaction interaction) {
+	public Button(Font font, String text, float xPos, float yPos, float width, float height, Interaction interaction) {
 		super(font, text, xPos, yPos);
 
 		this.xPos += (context.width - width) / 2;

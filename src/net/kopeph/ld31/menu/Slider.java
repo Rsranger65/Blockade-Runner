@@ -8,11 +8,11 @@ import processing.core.PApplet;
  * A mouse-interactive horizontal slider
  * @author stuntddude
  */
-public class Slider extends MenuWidget {
+public class Slider extends Widget {
 	private static final int BUTTON_WIDTH = 25;
 	private static final int BUTTON_HEIGHT = 50;
 
-	private final MenuButton button;
+	private final Button button;
 	private final SliderHandler op;
 	private boolean isHeld;
 
@@ -23,7 +23,7 @@ public class Slider extends MenuWidget {
 		this.xPos += (context.width - width) / 2;
 		this.yPos += (context.height - height) / 2;
 
-		button = new MenuButton(font, "", (value - 0.5f)*(width - BUTTON_WIDTH) + x, y, BUTTON_WIDTH, BUTTON_HEIGHT, (down) -> { isHeld = true; });
+		button = new Button(font, "", (value - 0.5f)*(width - BUTTON_WIDTH) + x, y, BUTTON_WIDTH, BUTTON_HEIGHT, (down) -> { isHeld = true; });
 		op = functionality;
 	}
 

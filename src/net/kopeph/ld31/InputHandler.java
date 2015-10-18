@@ -5,7 +5,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.menu.MenuButton;
+import net.kopeph.ld31.menu.Button;
 import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
@@ -201,10 +201,10 @@ public final class InputHandler {
 		return controlCodeStates[controlCode];
 	}
 
-	private MenuButton bindingButton;
+	private Button bindingButton;
 	private int bindingControlCode;
 
-	public void handleBind(MenuButton button, int controlCode) {
+	public void handleBind(Button button, int controlCode) {
 		bindingButton = button;
 		bindingControlCode = controlCode;
 		bindingButton.text = getKeyIdString(K_BINDING);

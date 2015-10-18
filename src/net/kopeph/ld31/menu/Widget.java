@@ -7,7 +7,7 @@ import processing.core.PConstants;
  * implemented by all visual menu elements
  * @author alexg
  */
-public abstract class MenuWidget {
+public abstract class Widget {
 	protected final LD31 context = LD31.getContext();
 
 	protected float xPos, yPos, width, height;
@@ -15,7 +15,7 @@ public abstract class MenuWidget {
 
 	private int curCtxWidth, curCtxHeight;
 
-	public MenuWidget(float xPos, float yPos, float width, float height) {
+	public Widget(float xPos, float yPos, float width, float height) {
 		setBounds(xPos, yPos, width, height);
 	}
 

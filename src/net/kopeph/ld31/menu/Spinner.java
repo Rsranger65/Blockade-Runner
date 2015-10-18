@@ -7,7 +7,7 @@ import net.kopeph.ld31.spi.SpinnerHandler;
 public class Spinner extends TextBox {
 	private static final int BUTTON_WIDTH = 40; //width of left and right buttons in pixels
 
-	private final MenuButton left, right;
+	private final Button left, right;
 	private final String[] states;
 	private final SpinnerHandler op;
 	private int state = 0;
@@ -19,8 +19,8 @@ public class Spinner extends TextBox {
 		op = functionality;
 		op.update(state);
 
-		left  = new MenuButton(font, InputHandler.getKeyIdString(InputHandler.K_LEFT ), xPos - width/2 + BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin(-1); });
-		right = new MenuButton(font, InputHandler.getKeyIdString(InputHandler.K_RIGHT), xPos + width/2 - BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin( 1); });
+		left  = new Button(font, InputHandler.getKeyIdString(InputHandler.K_LEFT ), xPos - width/2 + BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin(-1); });
+		right = new Button(font, InputHandler.getKeyIdString(InputHandler.K_RIGHT), xPos + width/2 - BUTTON_WIDTH/2, yPos, BUTTON_WIDTH, height, (down) -> { spin( 1); });
 	}
 
 	private void spin(int dir) {
