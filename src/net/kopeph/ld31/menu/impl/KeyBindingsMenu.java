@@ -1,4 +1,4 @@
-package net.kopeph.ld31.menu.instances;
+package net.kopeph.ld31.menu.impl;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.kopeph.ld31.menu.instances;
+package net.kopeph.ld31.menu.impl;
 
 import net.kopeph.ld31.Audio;
 import net.kopeph.ld31.LD31;

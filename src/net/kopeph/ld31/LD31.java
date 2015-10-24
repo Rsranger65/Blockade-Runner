@@ -8,7 +8,7 @@ import net.kopeph.ld31.graphics.HUD;
 import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.menu.EndScreen;
 import net.kopeph.ld31.menu.Menu;
-import net.kopeph.ld31.menu.instances.*;
+import net.kopeph.ld31.menu.impl.*;
 import net.kopeph.ld31.util.Profiler;
 import processing.core.PApplet;
 
