@@ -40,12 +40,13 @@ public class LD31 extends PApplet {
 	private Level level;
 	private EndScreen win, die;
 	private Menu mainMenu, settingsMenu, keyBindingsMenu, pauseMenu, dummyCampaignMenu, freePlayMenu;
-	private volatile int gameState;
+	private int gameState;
 	private int fadePhase;
 	private String currentLevel;
-	private int freePlayWidth = 800, freePlayHeight = 600;
+	private int freePlayWidth = 800, freePlayHeight = 600; //these defaults don't matter, as they will be overwritten later
 
 	public Renderer renderer;
+	public boolean inGame; //used for determining where to return to from the settings menu
 
 	@Override
 	public void setup() {
@@ -97,10 +98,7 @@ public class LD31 extends PApplet {
 		return context;
 	}
 
-	/**
-	 * For use in classes that need to know the game state, so we don't have to pass it around,
-	 * and can delegate work more easily to other classes, especially those implementing Renderable
-	 */
+	/** For use in classes that need to know the game state, so we don't have to pass it around */
 	public int gameState() {
 		return gameState;
 	}
@@ -240,12 +238,18 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawSettings() {
-		image(renderer.textureBlue, 0, 0);
+		if (inGame)
+			updatePixels();
+		else
+			image(renderer.textureBlue, 0, 0);
 		settingsMenu.render();
 	}
 
 	private void drawKeyBindMenu() {
-		image(renderer.textureGreen, 0, 0);
+		if (inGame)
+			updatePixels();
+		else
+			image(renderer.textureGreen, 0, 0);
 		keyBindingsMenu.render();
 	}
 
