@@ -2,6 +2,7 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
+import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
@@ -64,7 +65,10 @@ public abstract class Entity {
 	}
 
 	public void render() {
-		context.fill(color);
+		if (context.renderer.textureOption == Renderer.TEX_NONE)
+			context.fill(Renderer.getAdjustedColor(color));
+		else
+			context.fill(color);
 		context.rect(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1);
 	}
 }

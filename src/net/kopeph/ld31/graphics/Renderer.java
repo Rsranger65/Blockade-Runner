@@ -23,7 +23,7 @@ public class Renderer {
 		COLOR_BLACK   = 0xFF333333,
 		COLOR_WHITE   = 0xFFEEEEEE;
 
-	private static final int
+	public static final int
 		TEX_NONE    = 0,
 		TEX_CORRECT = 1,
 		TEX_STATIC  = 2,
@@ -125,7 +125,7 @@ public class Renderer {
 		}
 	}
 
-	public void adjustColors(final int[] pixels) {
+	private void adjustColors(final int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
@@ -135,23 +135,27 @@ public class Renderer {
 		renderingPool.forceSync();
 	}
 
-	public void adjustColorsImpl(final int[] pixels, int iBegin, int iEnd) {
-		for (int i = iBegin; i < iEnd; ++i) {
-			switch (pixels[i]) {
-				case Level.FLOOR_NONE:    pixels[i] = COLOR_NONE;    break;
-				case Level.FLOOR_RED:     pixels[i] = COLOR_RED;     break;
-				case Level.FLOOR_GREEN:   pixels[i] = COLOR_GREEN;   break;
-				case Level.FLOOR_BLUE:    pixels[i] = COLOR_BLUE;    break;
-				case Level.FLOOR_CYAN:    pixels[i] = COLOR_CYAN;    break;
-				case Level.FLOOR_MAGENTA: pixels[i] = COLOR_MAGENTA; break;
-				case Level.FLOOR_YELLOW:  pixels[i] = COLOR_YELLOW;  break;
-				case Level.FLOOR_BLACK:   pixels[i] = COLOR_BLACK;   break;
-				case Level.FLOOR_WHITE:   pixels[i] = COLOR_WHITE;   break;
-			}
-		}
+	private void adjustColorsImpl(final int[] pixels, int iBegin, int iEnd) {
+		for (int i = iBegin; i < iEnd; ++i)
+			pixels[i] = getAdjustedColor(pixels[i]);
 	}
 
-	public void applyTextureStatic(final int[] pixels) {
+	public static int getAdjustedColor(int color) {
+		switch (color) {
+			case Level.FLOOR_NONE:    return COLOR_NONE;
+			case Level.FLOOR_RED:     return COLOR_RED;
+			case Level.FLOOR_GREEN:   return COLOR_GREEN;
+			case Level.FLOOR_BLUE:    return COLOR_BLUE;
+			case Level.FLOOR_CYAN:    return COLOR_CYAN;
+			case Level.FLOOR_MAGENTA: return COLOR_MAGENTA;
+			case Level.FLOOR_YELLOW:  return COLOR_YELLOW;
+			case Level.FLOOR_BLACK:   return COLOR_BLACK;
+			case Level.FLOOR_WHITE:   return COLOR_WHITE;
+		}
+		return color;
+	}
+
+	private void applyTextureStatic(final int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
@@ -177,7 +181,7 @@ public class Renderer {
 		}
 	}
 
-	public void applyTextureMoving(final int[] pixels) {
+	private void applyTextureMoving(final int[] pixels) {
 		float taskSize = context.height/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
