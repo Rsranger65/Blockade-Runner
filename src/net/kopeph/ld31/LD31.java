@@ -63,7 +63,6 @@ public class LD31 extends PApplet {
 
 		//Setup Audio
 		audio.load(BG_MUSIC, Audio.VOL_MUSIC);
-		audio.shiftVolume(Audio.VOL_MUSIC, 0.0F, PApplet.pow(0.5f, 0.25f), 6 * 1000); //fade in for 5 seconds
 		audio.play(BG_MUSIC, true);
 
 		//setup end screens

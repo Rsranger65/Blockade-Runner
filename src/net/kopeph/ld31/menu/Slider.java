@@ -25,6 +25,7 @@ public class Slider extends Widget {
 
 		button = new Button(font, "", (value - 0.5f)*(width - BUTTON_WIDTH) + x, y, BUTTON_WIDTH, BUTTON_HEIGHT, (down) -> { isHeld = true; });
 		op = functionality;
+		op.update(value);
 	}
 
 	@Override
