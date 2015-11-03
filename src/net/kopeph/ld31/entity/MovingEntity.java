@@ -4,7 +4,6 @@ import net.kopeph.ld31.Level;
 import net.kopeph.ld31.graphics.Trace;
 import net.kopeph.ld31.util.Util;
 import net.kopeph.ld31.util.Vector2;
-import processing.core.PApplet;
 
 /** @author alexg */
 public class MovingEntity extends Entity {
