@@ -5,5 +5,6 @@ package net.kopeph.ld31.spi;
  * net.kopeph.ld31.menu.Slider
  */
 public interface SliderHandler {
+	/** called when a slider is dragged */
 	public void update(float value);
 }

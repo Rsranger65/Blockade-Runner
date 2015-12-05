@@ -133,7 +133,7 @@ public class LD31 extends PApplet {
 			resize(); //allows for free window resizing without affecting gameplay
 
 		switch (gameState) {
-			case ST_RESET_HARD: resize(); reset(); break; //order here is important
+			case ST_RESET_HARD: resize(); reset(); break; //order of resize/reset is important
 			case ST_RESET:      reset();           break;
 			case ST_RUNNING:    drawRunning();     break;
 			case ST_WIN:        drawWin();         break;

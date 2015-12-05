@@ -34,7 +34,7 @@ public final class PauseMenu extends Menu {
 		//since the pause menu is of irregular dimensions, we're taking manual control
 		setBounds(PAUSE_MENU_WIDTH, menuHeight); //Manual override! Get to your battle stations!
 		if (menuHeight > MAX_MENUHEIGHT - 40)
-			super.render(); //only render the menu (with buttons) if the menu height is enough that the buttons won't be off the menu
+			super.render(); //only render the title and buttons if the menu height is enough that the buttons won't be off the menu
 		else
 			renderBack(); //otherwise, draw only the menu's background rectangle
 	}

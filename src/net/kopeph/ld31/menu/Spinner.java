@@ -4,6 +4,10 @@ import net.kopeph.ld31.InputHandler;
 import net.kopeph.ld31.graphics.Font;
 import net.kopeph.ld31.spi.SpinnerHandler;
 
+/**
+ * A horizontal spinner that loops through a preset list of possible values
+ * @author stuntddude
+ */
 public class Spinner extends TextBox {
 	private static final int BUTTON_WIDTH = 40; //width of left and right buttons in pixels
 

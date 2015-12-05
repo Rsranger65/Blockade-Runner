@@ -13,9 +13,7 @@ import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-/**
- * @author stuntddude
- */
+/** @author stuntddude */
 public class Level {
 	//C-style enumeration of color values
 	public static final int
