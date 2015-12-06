@@ -130,6 +130,8 @@ public final class InputHandler {
 				context.setGameState(LD31.ST_RUNNING);
 			else if (context.gameState() == LD31.ST_KEYBIND)
 				context.setGameState(LD31.ST_SETTINGS);
+			else if (context.gameState() == LD31.ST_SETTINGS && context.inGame)
+				context.setGameState(LD31.ST_PAUSE);
 			else
 				context.setGameState(LD31.ST_MENU);
 		});
