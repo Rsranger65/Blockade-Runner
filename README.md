@@ -19,7 +19,7 @@ Building Directions (Eclipse Java 8)
   2. *Project Settings > Java Build Path > Libraries* Remove any existing libraries
   3. *Project Settings > Java Build Path > Libraries > Add Library > JRE System* choose jdk1.8
 4. **Add required libraries** to the class path:
-  1. [`core.jar`](http://rsranger65.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) for **Processing 2.2.1**.
+  1. [`core.jar`](http://stuntddude.github.io/Blockade-Runner/3rd-party/processing_core-2.2.1.jar) for **Processing 2.2.1**.
   2. [`library/*.jar`](http://code.compartmental.net/minim/distro/minim-2.2.0.zip) for **Minim 2.2.0**.
 5. **Run/Debug** with Main class: `net.kopeph.ld31.LD31`
 6. **Export** as a *Runnable Jar*.
@@ -31,4 +31,4 @@ Usage
 
 - `--input-reset`: Resets the key map settings to their defaults before loading the game.
 
-[Building under Java 7](https://github.com/Rsranger65/Blockade-Runner/wiki/Java-7-Building-Directions)
+[Building under Java 7](https://github.com/Stuntddude/Blockade-Runner/wiki/Java-7-Building-Directions)
