@@ -30,5 +30,3 @@ Usage
 `java -jar blockaderunner-<version>.jar [--input-reset]`
 
 - `--input-reset`: Resets the key map settings to their defaults before loading the game.
-
-[Building under Java 7](https://github.com/Stuntddude/Blockade-Runner/wiki/Java-7-Building-Directions)
