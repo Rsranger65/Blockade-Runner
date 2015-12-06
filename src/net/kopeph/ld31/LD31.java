@@ -28,9 +28,11 @@ public class LD31 extends PApplet {
 		ST_PAUSE      =  3, // Displaying Pause Menu
 		ST_MENU       =  4, // Displaying Main Menu
 		ST_SETTINGS   =  5, // Displaying Settings Menu
-		ST_KEYBIND    =  6, // Displaying Key Bindings Menu
-		ST_CAMPAIGN   =  7, // Displaying Dummy Campaign menu
-		ST_FREE_PLAY  =  8; // Displaying Free Play Menu
+		ST_SET_INGAME =  6, // Displaying Settings Menu in-game
+		ST_KEYBIND    =  7, // Displaying Key Bindings Menu
+		ST_KEY_INGAME =  8, // Displaying Key Bindings Menu in-game
+		ST_CAMPAIGN   =  9, // Displaying Dummy Campaign menu
+		ST_FREE_PLAY  = 10; // Displaying Free Play Menu
 
 	private static LD31 context; //for static access so we don't have to pass this reference around so much
 
@@ -46,7 +48,6 @@ public class LD31 extends PApplet {
 	private int freePlayWidth = 800, freePlayHeight = 600; //these defaults don't matter, as they will be overwritten later
 
 	public Renderer renderer;
-	public boolean inGame; //used for determining where to return to from the settings menu
 
 	@Override
 	public void setup() {
@@ -141,7 +142,9 @@ public class LD31 extends PApplet {
 			case ST_PAUSE:      drawPause();       break;
 			case ST_MENU:       drawMenu();        break;
 			case ST_SETTINGS:   drawSettings();    break;
+			case ST_SET_INGAME: drawSettingsAlt(); break;
 			case ST_KEYBIND:    drawKeyBindMenu(); break;
+			case ST_KEY_INGAME: drawKeyBindAlt();  break;
 			case ST_CAMPAIGN:   drawCampaign();    break;
 			case ST_FREE_PLAY:  drawFreePlay();    break;
 		}
@@ -238,18 +241,22 @@ public class LD31 extends PApplet {
 	}
 
 	private void drawSettings() {
-		if (inGame)
-			updatePixels();
-		else
-			image(renderer.textureBlue, 0, 0);
+		image(renderer.textureBlue, 0, 0);
+		settingsMenu.render();
+	}
+
+	private void drawSettingsAlt() {
+		updatePixels();
 		settingsMenu.render();
 	}
 
 	private void drawKeyBindMenu() {
-		if (inGame)
-			updatePixels();
-		else
-			image(renderer.textureGreen, 0, 0);
+		image(renderer.textureGreen, 0, 0);
+		keyBindingsMenu.render();
+	}
+
+	private void drawKeyBindAlt() {
+		updatePixels();
 		keyBindingsMenu.render();
 	}
 

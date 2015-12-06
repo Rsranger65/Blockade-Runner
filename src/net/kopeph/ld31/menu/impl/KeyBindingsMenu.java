@@ -4,8 +4,8 @@ import java.util.List;
 
 import net.kopeph.ld31.InputHandler;
 import net.kopeph.ld31.LD31;
-import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.Button;
+import net.kopeph.ld31.menu.Menu;
 import net.kopeph.ld31.menu.TextBox;
 
 public final class KeyBindingsMenu extends Menu {
@@ -34,6 +34,6 @@ public final class KeyBindingsMenu extends Menu {
 		}
 
 		add(new Button(context.renderer.font, "Revert to Defaults", 0, 70, 400, 50, (down) -> { input.resetKeyIdBindings(); context.setupKeyBindingsMenu(); }));
-		add(new Button(context.renderer.font, "Back", 0, 150, 400, 50, (down) -> { context.setGameState(LD31.ST_SETTINGS); }));
+		add(new Button(context.renderer.font, "Back", 0, 150, 400, 50, (down) -> { context.setGameState(context.gameState() == LD31.ST_KEY_INGAME? LD31.ST_SET_INGAME : LD31.ST_SETTINGS); }));
 	}
 }

@@ -17,7 +17,7 @@ public final class PauseMenu extends Menu {
 		add(new TextBox(context.renderer.font, "Game Paused", 0, -200));
 		add(new Button(context.renderer.font, "Resume Playing"     , 0,  -120, 200, 50, (down) -> { context.setGameState(LD31.ST_RUNNING); }));
 		add(new Button(context.renderer.font, "Reset"              , 0,   -60, 200, 50, (down) -> { context.setGameState(LD31.ST_RESET); }));
-		add(new Button(context.renderer.font, "Settings Menu"      , 0,     0, 200, 50, (down) -> { context.setGameState(LD31.ST_SETTINGS); context.inGame = true; }));
+		add(new Button(context.renderer.font, "Settings Menu"      , 0,     0, 200, 50, (down) -> { context.setGameState(LD31.ST_SET_INGAME); }));
 		add(new Button(context.renderer.font, "Return to Main Menu", 0,    60, 200, 50, (down) -> { context.setGameState(LD31.ST_MENU); }));
 		add(new Button(context.renderer.font, "Quit Game"          , 0,   120, 200, 50, (down) -> { context.exit(); }));
 	}
