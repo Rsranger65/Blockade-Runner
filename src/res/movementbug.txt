@@ -1,0 +1,3 @@
+res/movementbug.png
+player		x:100	y:10
+objective	x:100	y:4

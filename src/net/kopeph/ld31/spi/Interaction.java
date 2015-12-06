@@ -1,9 +1,8 @@
 package net.kopeph.ld31.spi;
 
 /** Referenced in:
- * <li> net.kopeph.ld31.Input
  * <li> net.kopeph.ld31.InputHandler
- * <li> net.kopeph.ld31.menu.MenuButton
+ * <li> net.kopeph.ld31.menu.Button
  */
 @FunctionalInterface
 public interface Interaction {

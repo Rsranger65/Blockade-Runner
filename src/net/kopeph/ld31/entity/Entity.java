@@ -2,13 +2,11 @@ package net.kopeph.ld31.entity;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
-import net.kopeph.ld31.graphics.Node;
-import net.kopeph.ld31.graphics.Renderable;
-import net.kopeph.ld31.graphics.Trace;
+import net.kopeph.ld31.graphics.Renderer;
 import net.kopeph.ld31.util.Vector2;
 
 /** @author alexg */
-public abstract class Entity implements Renderable {
+public abstract class Entity {
 	public static final int SIZE = 2; //radius-.5
 	protected static final double SP = 1.0; //horizontal/vertical (cardinal) direction movement speed
 
@@ -16,7 +14,7 @@ public abstract class Entity implements Renderable {
 	protected final Level level;
 
 	protected Vector2 pos = new Vector2();
-	public int color;
+	protected final int color;
 
 	public Entity(Level level, int color) {
 		this.context = LD31.getContext();
@@ -46,10 +44,6 @@ public abstract class Entity implements Renderable {
 		return true;
 	}
 
-	public void setPos(Vector2 pos) {
-		this.pos = pos;
-	}
-
 	public int x() {
 		return (int)Math.round(pos.x);
 	}
@@ -66,20 +60,15 @@ public abstract class Entity implements Renderable {
 		return y() - context.renderer.viewY;
 	}
 
-	public Vector2 pos() {
+	protected Vector2 pos() {
 		return pos;
 	}
 
-	public Node toNode() {
-		return new Node(x(), y());
-	}
-
-	@Override
 	public void render() {
-		Trace.rectangle(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1, (x, y) -> {
-			if (!context.contains(x, y)) return false;
-			context.pixels[y*context.lastWidth + x] = color;
-			return true;
-		});
+		if (context.renderer.textureOption == Renderer.TEX_NONE)
+			context.fill(Renderer.getAdjustedColor(color));
+		else
+			context.fill(color);
+		context.rect(screenX() - SIZE, screenY() - SIZE, SIZE*2 + 1, SIZE*2 + 1);
 	}
 }

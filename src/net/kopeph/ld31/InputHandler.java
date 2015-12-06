@@ -1,17 +1,11 @@
 package net.kopeph.ld31;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import net.kopeph.ld31.graphics.Font;
-import net.kopeph.ld31.menu.MenuButton;
+import net.kopeph.ld31.menu.Button;
 import net.kopeph.ld31.spi.Interaction;
 import processing.core.PConstants;
 
@@ -58,11 +52,6 @@ public final class InputHandler {
 		K_LEFT    = PConstants.LEFT    << 16,
 		K_RIGHT   = PConstants.RIGHT   << 16;
 
-	public InputHandler() {
-		if (Arrays.binarySearch(LD31.args, "--input-reset") >= 0) //$NON-NLS-1$
-			resetDiskPreferences();
-	}
-
 	public static String getKeyIdString(int keyId) {
 		if (keyId >= 0x21 && keyId <= 0xFFFF) //UTF-16 range minus SPACE and control codes
 			return String.valueOf((char) keyId);
@@ -73,6 +62,7 @@ public final class InputHandler {
 			case K_ESC    : return "ESC";
 			case K_TAB    : return "TAB";
 			case K_ENTER  : return "ENTER";
+			case K_BKSP   : return "BKSP";
 			case K_SHIFT  : return "SHIFT";
 			case K_CTRL   : return "CTRL";
 			case K_ALT    : return "ALT";
@@ -89,11 +79,12 @@ public final class InputHandler {
 	/** Converts the key and keyCode values given by Processing into a unique keyId for internal use */
 	public static int convertToKeyId(char key, int keyCode) {
 		//TODO: add documentation explaining keyId values here if we think we need it
+		if (key == PConstants.RETURN) key = PConstants.ENTER; //special case - transform '\r' to '\n'
 		return (key == PConstants.CODED? (keyCode << 16) : Character.toUpperCase(key));
 	}
 
 	/** Loads saved key bindings from system preferences (must be called first, BAE) */
-	public void loadKeyIdBindings() {
+	private void loadKeyIdBindings() {
 		if (!pullFromDisk())
 			resetKeyIdBindings();
 	}
@@ -111,22 +102,59 @@ public final class InputHandler {
 
 
 
+	public InputHandler() {
+		loadKeyIdBindings();
+
+		final LD31 context = LD31.getContext();
+
+		bindControlCode(InputHandler.CTL_RESET, (down) -> {
+			if (context.gameState() == LD31.ST_RUNNING ||
+				context.gameState() == LD31.ST_WIN ||
+				context.gameState() == LD31.ST_DIE)
+				context.setGameState(LD31.ST_RESET);
+		});
+
+		bindControlCode(InputHandler.CTL_PAUSE, (down) -> {
+			if (context.gameState() == LD31.ST_RUNNING)
+				context.setGameState(LD31.ST_PAUSE);
+			else if (context.gameState() == LD31.ST_PAUSE)
+				context.setGameState(LD31.ST_RUNNING);
+		});
+
+		bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
+			if (context.gameState() == LD31.ST_MENU)
+				context.exit();
+			else if (context.gameState() == LD31.ST_RUNNING)
+				context.setGameState(LD31.ST_PAUSE);
+			else if (context.gameState() == LD31.ST_PAUSE)
+				context.setGameState(LD31.ST_RUNNING);
+			else if (context.gameState() == LD31.ST_KEYBIND)
+				context.setGameState(LD31.ST_SETTINGS);
+			else if (context.gameState() == LD31.ST_SETTINGS && context.inGame)
+				context.setGameState(LD31.ST_PAUSE);
+			else
+				context.setGameState(LD31.ST_MENU);
+		});
+	}
+
+
+
 	private Map<Integer, Integer> keyIdBindings = new HashMap<>();
 
 	/** Binds a given keyId to a given controlCode, overwriting any existing bindings of the keyId */
-	public void bindKeyId(int keyId, int controlCode) {
+	private void bindKeyId(int keyId, int controlCode) {
 		keyIdBindings.put(keyId, controlCode);
 		pushToDisk(); //save bindings to system preferences as we supply them
 	}
 
 	/** Binds all given KeyIds to a given controlCode, overwriting any existing bindings for each keyId */
-	public void bindKeyIds(int[] keyIds, int controlCode) {
+	private void bindKeyIds(int[] keyIds, int controlCode) {
 		for (int keyId : keyIds)
 			bindKeyId(keyId, controlCode);
 	}
 
 	/** Removes the binding for the given keyId, if one exists */
-	public void unbindKeyId(int keyId) {
+	private void unbindKeyId(int keyId) {
 		keyIdBindings.remove(keyId);
 		pushToDisk(); //update bindings on disk when they are removed as well as when they are added
 	}
@@ -164,7 +192,7 @@ public final class InputHandler {
 	private Map<Integer, Interaction> controlCodeActions = new HashMap<>();
 
 	/** Binds a given controlCode to a given action, such that when the key is pressed, action.on() will be called */
-	public void bindControlCode(int controlCode, Interaction action) {
+	private void bindControlCode(int controlCode, Interaction action) {
 		controlCodeActions.put(controlCode, action);
 	}
 
@@ -175,10 +203,10 @@ public final class InputHandler {
 		return controlCodeStates[controlCode];
 	}
 
-	private MenuButton bindingButton;
+	private Button bindingButton;
 	private int bindingControlCode;
 
-	public void handleBind(MenuButton button, int controlCode) {
+	public void handleBind(Button button, int controlCode) {
 		bindingButton = button;
 		bindingControlCode = controlCode;
 		bindingButton.text = getKeyIdString(K_BINDING);

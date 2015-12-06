@@ -13,10 +13,6 @@ public class SpriteSheet {
 	private final PApplet context;
 	private List<PImage> splitImages = new ArrayList<>();
 
-	public SpriteSheet(String filename, int cellsX, int cellsY) {
-		this(LD31.getContext().loadImage(filename), cellsX, cellsY);
-	}
-
 	public SpriteSheet(PImage sheet, int cellsX, int cellsY) {
 		this.context = LD31.getContext();
 		int width = sheet.width / cellsX;

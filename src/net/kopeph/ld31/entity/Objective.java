@@ -22,8 +22,7 @@ public class Objective extends Entity {
 
 		//draw expanding and contracting circle around objective (uses integer triangle wave algorithm as distance)
 		Trace.circle(screenX(), screenY(), PApplet.abs(context.frameCount % 50 - 25) + 50, (x, y) -> {
-			if (context.contains(x, y))
-				context.pixels[y*context.lastWidth + x] = Objective.COLOR;
+			context.set(x, y, COLOR);
 			return true;
 		});
 	}

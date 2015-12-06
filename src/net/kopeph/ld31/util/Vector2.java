@@ -129,6 +129,11 @@ public final class Vector2  {
 		return new Vector2(0, 0);
 	}
 
+	/** @return the angle from this vector to to the supplied vector */
+	public double thetaTo(Vector2 other) {
+		return sub(other).theta();
+	}
+
 	@Override
 	public String toString() {
 		return String.format("<%.3f, %.3f>", x, y); //$NON-NLS-1$

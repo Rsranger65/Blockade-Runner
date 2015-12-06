@@ -1,7 +1,6 @@
 package net.kopeph.ld31.graphics;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 import net.kopeph.ld31.LD31;
 import net.kopeph.ld31.Level;
@@ -13,6 +12,26 @@ import processing.core.PImage;
 
 /** @author stuntddude */
 public class Renderer {
+	private static final int
+		COLOR_NONE    = 0xFF000000,
+		COLOR_RED     = 0xFFBB3322,
+		COLOR_GREEN   = 0xFF339933,
+		COLOR_BLUE    = 0xFF2233AA,
+		COLOR_CYAN    = 0xFF55BBDD,
+		COLOR_MAGENTA = 0xFFCC55AA,
+		COLOR_YELLOW  = 0xFFDDCC33,
+		COLOR_BLACK   = 0xFF333333,
+		COLOR_WHITE   = 0xFFEEEEEE;
+
+	public static final int
+		TEX_NONE    = 0,
+		TEX_CORRECT = 1,
+		TEX_STATIC  = 2,
+		TEX_MOVING  = 3;
+
+	public int textureOption = 0;
+	public int viewX = 0, viewY = 0;
+
 	public PImage textureRed    , rawTextureRed;
 	public PImage textureGreen  , rawTextureGreen;
 	public PImage textureBlue   , rawTextureBlue;
@@ -24,12 +43,8 @@ public class Renderer {
 	public PImage textureBlack  , rawTextureBlack;
 	public Font font;
 
-	public int viewX = 0, viewY = 0;
-
 	private final LD31 context;
 	private final ThreadPool renderingPool = new ThreadPool();
-
-	private Map<Integer, List<Renderable>> states;
 
 	public Renderer() {
 		context = LD31.getContext();
@@ -61,37 +76,96 @@ public class Renderer {
 	}
 
 	public void calculateLighting(int[] lighting, Level level) {
-		viewX = PApplet.max(0, PApplet.min(level.LEVEL_WIDTH - context.lastWidth, level.player.x() - context.lastWidth/2));
-		viewY = PApplet.max(0, PApplet.min(level.LEVEL_HEIGHT - context.lastHeight, level.player.y() - context.lastHeight/2));
+		viewX = level.player.x() - context.lastWidth/2;
+		viewY = level.player.y() - context.lastHeight/2;
+
+		Arrays.fill(lighting, Level.FLOOR_NONE);
 
 		//crop the tiles array into the pixels array
-		//assumes the bottom left of the screen won't be outside the level unless the level is smaller than the screen
-		for (int y = 0; y < PApplet.min(context.lastHeight, level.LEVEL_HEIGHT); ++y) {
-			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + viewX, lighting, y*context.lastWidth, PApplet.min(context.lastWidth, level.LEVEL_WIDTH));
+		int sourceX = PApplet.max(viewX, 0);
+		int sourceY = PApplet.max(viewY, 0);
+
+		int destinationX = PApplet.max(-viewX, 0);
+		int destinationY = PApplet.max(-viewY, 0);
+
+		int cropWidth = PApplet.min(level.LEVEL_WIDTH - sourceX, context.lastWidth - destinationX);
+		int cropHeight = PApplet.min(level.LEVEL_HEIGHT - sourceY, context.lastHeight - destinationY);
+
+		for (int y = destinationY; y < destinationY + cropHeight; ++y) {
+			System.arraycopy(level.tiles, (y + viewY)*level.LEVEL_WIDTH + sourceX, lighting, y*context.lastWidth + destinationX, cropWidth);
 		}
 
 		for (final Enemy e : level.enemies) {
-			//create a new thread to run the lighting process of each enemy
-			if (e.screenX() > -e.viewDistance + 1 && e.screenX() < context.lastWidth + e.viewDistance - 2 &&
-				e.screenY() > -e.viewDistance + 1 && e.screenY() < context.lastHeight + e.viewDistance - 2) {
-				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance, e.color); });
+			final int x = e.screenX(), y = e.screenY(), vd = e.viewDistance, vdsq = vd*vd;
+			final int w = context.lastWidth - 1, h = context.lastHeight - 1;
+
+			//only render enemies that have a chance of casting light into the scene
+			if (x > -e.viewDistance + 1 && x < context.lastWidth + e.viewDistance - 2 &&
+				y > -e.viewDistance + 1 && y < context.lastHeight + e.viewDistance - 2) {
+
+				//distance formula to check for circle intersection with screen corners (minor optimization to ignore certain enemies)
+				if (x < 0 && y < 0 &&      x * x      +      y * y      >= vdsq) continue;
+				if (x < 0 && y > h &&      x * x      + (y - h)*(y - h) >= vdsq) continue;
+				if (x > w && y < 0 && (x - w)*(x - w) +      y * y      >= vdsq) continue;
+				if (x > w && y > h && (x - w)*(x - w) + (y - h)*(y - h) >= vdsq) continue;
+
+				//create a new thread to run the lighting process of each enemy
+				renderingPool.post(() -> { e.rayTrace(lighting, e.viewDistance); });
 			}
 		}
 
 		renderingPool.forceSync();
 	}
 
-	public void applyTexture(int[] pixels) {
+	public void applyTexture(final int[] pixels) {
+		switch (textureOption) {
+			case TEX_CORRECT: adjustColors(pixels); break;
+			case TEX_STATIC: applyTextureStatic(pixels); break;
+			case TEX_MOVING: applyTextureMoving(pixels); break;
+		}
+	}
+
+	private void adjustColors(final int[] pixels) {
 		float taskSize = pixels.length/renderingPool.poolSize;
 		for (int i = 0; i < renderingPool.poolSize; ++i) {
 			final int j = i;
-			renderingPool.post(() -> { applyTextureImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+			renderingPool.post(() -> { adjustColorsImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
 		}
 
 		renderingPool.forceSync();
 	}
 
-	private void applyTextureImpl(final int[] pixels, int iBegin, int iEnd) {
+	private void adjustColorsImpl(final int[] pixels, int iBegin, int iEnd) {
+		for (int i = iBegin; i < iEnd; ++i)
+			pixels[i] = getAdjustedColor(pixels[i]);
+	}
+
+	public static int getAdjustedColor(int color) {
+		switch (color) {
+			case Level.FLOOR_NONE:    return COLOR_NONE;
+			case Level.FLOOR_RED:     return COLOR_RED;
+			case Level.FLOOR_GREEN:   return COLOR_GREEN;
+			case Level.FLOOR_BLUE:    return COLOR_BLUE;
+			case Level.FLOOR_CYAN:    return COLOR_CYAN;
+			case Level.FLOOR_MAGENTA: return COLOR_MAGENTA;
+			case Level.FLOOR_YELLOW:  return COLOR_YELLOW;
+			case Level.FLOOR_BLACK:   return COLOR_BLACK;
+			case Level.FLOOR_WHITE:   return COLOR_WHITE;
+		}
+		return color;
+	}
+
+	private void applyTextureStatic(final int[] pixels) {
+		float taskSize = pixels.length/renderingPool.poolSize;
+		for (int i = 0; i < renderingPool.poolSize; ++i) {
+			final int j = i;
+			renderingPool.post(() -> { applyTextureStaticImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+		}
+
+		renderingPool.forceSync();
+	}
+
+	private void applyTextureStaticImpl(final int[] pixels, int iBegin, int iEnd) {
 		for (int i = iBegin; i < iEnd; ++i) {
 			switch (pixels[i]) {
 				case Level.FLOOR_NONE:    pixels[i] = textureBlack.pixels[i];   break;
@@ -107,13 +181,43 @@ public class Renderer {
 		}
 	}
 
-	public void addContext(Integer state, List<Renderable> targets) {
-		states.put(state, targets);
+	private void applyTextureMoving(final int[] pixels) {
+		float taskSize = context.height/renderingPool.poolSize;
+		for (int i = 0; i < renderingPool.poolSize; ++i) {
+			final int j = i;
+			renderingPool.post(() -> { applyTextureMovingImpl(pixels, PApplet.round(j*taskSize), PApplet.round((j+1)*taskSize)); });
+		}
+
+		renderingPool.forceSync();
 	}
 
-	public void renderContext(Integer state) {
-		for (Renderable r : states.get(state))
-			r.render();
+	private void applyTextureMovingImpl(final int[] pixels, final int yBegin, final int yEnd) {
+		final int width = context.lastWidth;
+		final int height = context.lastHeight;
+		final int originX = viewX;
+		final int originY = viewY;
+
+		for (int dy = yBegin; dy < yEnd; ++dy) {
+			for (int dx = 0; dx < width; ++dx) {
+				final int sx = Math.floorMod(dx + originX, width);
+				final int sy = Math.floorMod(dy + originY, height);
+
+				final int di = dy*width + dx;
+				final int si = sy*width + sx;
+
+				switch (pixels[di]) {
+					case Level.FLOOR_NONE:    pixels[di] = textureBlack.pixels[si];   break;
+					case Level.FLOOR_RED:     pixels[di] = textureRed.pixels[si];     break;
+					case Level.FLOOR_GREEN:   pixels[di] = textureGreen.pixels[si];   break;
+					case Level.FLOOR_BLUE:    pixels[di] = textureBlue.pixels[si];    break;
+					case Level.FLOOR_CYAN:    pixels[di] = textureCyan.pixels[si];    break;
+					case Level.FLOOR_MAGENTA: pixels[di] = textureMagenta.pixels[si]; break;
+					case Level.FLOOR_YELLOW:  pixels[di] = textureYellow.pixels[si];  break;
+					case Level.FLOOR_BLACK:   pixels[di] = textureGrey.pixels[si];    break;
+					case Level.FLOOR_WHITE:   pixels[di] = textureWhite.pixels[si];   break;
+				}
+			}
+		}
 	}
 
 	public void renderEntities(Level level) {

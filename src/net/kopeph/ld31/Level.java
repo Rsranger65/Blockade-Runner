@@ -8,18 +8,16 @@ import net.kopeph.ld31.entity.Enemy;
 import net.kopeph.ld31.entity.Objective;
 import net.kopeph.ld31.entity.Player;
 import net.kopeph.ld31.graphics.Trace;
-import net.kopeph.ld31.spi.PointPredicate;
+import net.kopeph.ld31.util.RouteNode;
 import net.kopeph.ld31.util.Vector2;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-/**
- * @author stuntddude
- */
+/** @author stuntddude */
 public class Level {
 	//C-style enumeration of color values
 	public static final int
-		FLOOR_NONE    = 0x00000000,
+		FLOOR_NONE    = 0xFF333333,
 		FLOOR_WHITE   = 0xFFFFFFFF,
 		FLOOR_BLACK   = 0xFF000000,
 		FLOOR_RED     = 0xFFFF0000,
@@ -47,18 +45,21 @@ public class Level {
 
 		//a few adjustments to make the level properties scale somewhat with the game size
 		//these are more or less just arbitrary magic numbers that are "close enough" to the desired result
-		final int ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 36000,
-		          MIN_ROOM_WIDTH = 50,
-		          MIN_ROOM_HEIGHT = 50,
-		          MAX_ROOM_WIDTH = 150,
-		          MAX_ROOM_HEIGHT = 150,
+		final int AVERAGE_DIMENSION = (LEVEL_WIDTH + LEVEL_HEIGHT)/2,
+		          ROOM_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 56000 + 10,
+		          MIN_ROOM_WIDTH = 25 + AVERAGE_DIMENSION / 50,
+		          MIN_ROOM_HEIGHT = 25 + AVERAGE_DIMENSION / 50,
+		          MAX_ROOM_WIDTH = 100 + AVERAGE_DIMENSION / 20,
+		          MAX_ROOM_HEIGHT = 100 + AVERAGE_DIMENSION / 20,
 
-		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 18000 + 10,
-		          MIN_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 18000,
-		          MAX_HALLWAY_LENGTH = LEVEL_WIDTH*LEVEL_HEIGHT / 9000 + 200,
-		          HALLWAY_SIZE = 5, //number of pixels to either side of the center of a hallway
+		          HALLWAY_COUNT = LEVEL_WIDTH*LEVEL_HEIGHT / 32000 + 10,
+		          MIN_HALLWAY_LENGTH = AVERAGE_DIMENSION / 20,
+		          MAX_HALLWAY_LENGTH = AVERAGE_DIMENSION / 4 + 50,
+		          MIN_HALLWAY_SIZE = 3,
+		          MAX_HALLWAY_SIZE = 7,
 
-		          VORONOI_POINTS = 100;
+		          VORONOI_POINTS = 1 + AVERAGE_DIMENSION / 100 + LEVEL_WIDTH*LEVEL_HEIGHT / 128000,
+		          ENEMY_COUNT = AVERAGE_DIMENSION / 250 + LEVEL_WIDTH*LEVEL_HEIGHT / 72000;
 
 		tiles = new int[LEVEL_WIDTH * LEVEL_HEIGHT];
 
@@ -77,6 +78,7 @@ public class Level {
 
 			//clear out some hallways
 			for (int i = 0; i < HALLWAY_COUNT; ++i) {
+		        int HALLWAY_SIZE = (int)context.random(MIN_HALLWAY_SIZE, MAX_HALLWAY_SIZE + 1); //number of pixels to either side of the center of a hallway
 				int rx1, ry1, rx2, ry2;
 				//find valid start and end points
 				do {
@@ -86,14 +88,22 @@ public class Level {
 					ry2 = (int)context.random(HALLWAY_SIZE, LEVEL_HEIGHT - HALLWAY_SIZE);
 				} while (Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) < MIN_HALLWAY_LENGTH ||
 				         Math.abs(rx2 - rx1) + Math.abs(ry2 - ry1) > MAX_HALLWAY_LENGTH ||
-				         !validTile(rx1, ry1) || !validTile(rx2, ry2));
+				         !validRect(rx1 - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1) ||
+				         !validRect(rx2 - HALLWAY_SIZE, ry2 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1));
 
 				//clear out the tiles
-				for (int x = rx1; x != rx2; x += (rx1 < rx2? 1 : -1))
-					clearRect(x - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
-				for (int y = ry1; y != ry2; y += (ry1 < ry2? 1 : -1))
-					clearRect(rx2 - HALLWAY_SIZE, y - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
-				clearRect(rx2 - HALLWAY_SIZE, ry2 - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
+				clearRect(PApplet.min(rx1, rx2) - HALLWAY_SIZE, ry1 - HALLWAY_SIZE, PApplet.abs(rx2 - rx1) + HALLWAY_SIZE*2 + 1, HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
+				clearRect(rx2 - HALLWAY_SIZE, PApplet.min(ry1, ry2) - HALLWAY_SIZE, HALLWAY_SIZE*2 + 1, PApplet.abs(ry2 - ry1) + HALLWAY_SIZE*2 + 1, FLOOR_BLACK);
+			}
+
+			//remove one-pixel-wide level artifacts
+			for (int i = tiles.length - LEVEL_WIDTH - 1; i --> LEVEL_WIDTH;) {
+				if (tiles[i] == FLOOR_NONE) {
+					if (tiles[i + 1] != FLOOR_NONE && tiles[i - 1] != FLOOR_NONE)
+						tiles[i] = FLOOR_BLACK;
+					else if (tiles[i + LEVEL_WIDTH] != FLOOR_NONE && tiles[i - LEVEL_WIDTH] != FLOOR_NONE)
+						tiles[i] = FLOOR_BLACK;
+				}
 			}
 		} while (!validateLevel()); //keep generating new layouts until we get one that's continuous
 
@@ -120,7 +130,7 @@ public class Level {
 				int x = i%LEVEL_WIDTH;
 				int y = i/LEVEL_WIDTH;
 
-				for (int v = VORONOI_POINTS - 1; v-- != 0;) {
+				for (int v = VORONOI_POINTS - 1; v --> 0;) {
 					int distance = Math.abs(posx[v] - x) + Math.abs(posy[v] - y);
 					if (distance < minDistance) {
 						minDistance = distance;
@@ -133,8 +143,7 @@ public class Level {
 		}
 
 		//add enemies
-		int enemyCount = LEVEL_WIDTH*LEVEL_HEIGHT / 44100;
-		for (int i = 0; i < enemyCount; ++i)
+		for (int i = 0; i < ENEMY_COUNT; ++i)
 			enemies.add(new Enemy(this));
 
 		placeEntities();
@@ -165,27 +174,29 @@ public class Level {
 		//retrieve all possible properties before determining the specifier
 		//because it's simple and avoids code repetition
 		int x = -1, y = -1, color = Enemy.randomColor(); //placeholder values
-		List<Vector2> route = null; //placeholder value
+		List<RouteNode> route = null; //placeholder value
 		for (int i = 1; i < parts.length; ++i) {
-			if (parts[i].isEmpty()) continue;
 			String[] pair = parts[i].split(":");
 
-			switch (pair[0].trim().toLowerCase()) {
-				case "x":
-					x = Integer.parseInt(pair[1]);
-					break;
-				case "y":
-					y = Integer.parseInt(pair[1]);
-					break;
-				case "color":
-					color = Enemy.getColorByString(pair[1]);
-					if (color == Level.FLOOR_NONE) //if the string given is invalid
-						color = Enemy.randomColor();
-					break;
-				case "route":
-				case "path":
-					route = parseRoute(pair[1]);
-					break;
+			if (pair.length == 2) { //guard against OutOfBoundsException
+				switch (pair[0].trim().toLowerCase()) {
+					case "x":
+						x = Integer.parseInt(pair[1].trim());
+						break;
+					case "y":
+						y = Integer.parseInt(pair[1].trim());
+						break;
+					case "color":
+						color = Enemy.getColorByString(pair[1].trim());
+						//TODO: support for hex colors, maybe
+						if (color == Level.FLOOR_NONE) //if the string given is invalid
+							color = Enemy.randomColor();
+						break;
+					case "route":
+					case "path":
+						route = parseRoute(pair[1].trim());
+						break;
+				}
 			}
 		}
 
@@ -209,13 +220,23 @@ public class Level {
 	}
 
 	//helper function for parseLine()
-	List<Vector2> parseRoute(String in) {
+	private List<RouteNode> parseRoute(String in) {
 		String[] coords = in.toLowerCase().split(",");
-		List<Vector2> route = new ArrayList<>(coords.length/2);
+		List<RouteNode> route = new ArrayList<>(coords.length/3);
 		try {
-			for (int i = 0; i < coords.length; i += 2) {
-				route.add(new Vector2(Integer.parseInt(coords[i    ].trim()),
-				                      Integer.parseInt(coords[i + 1].trim())));
+			int i = 0;
+			while (i < coords.length) {
+				double x = Double.valueOf(coords[i++].trim());
+				if (i >= coords.length) break; //guard against OutOfBoundsException
+				double y = Double.valueOf(coords[i++].trim());
+
+				//optionally parse a wait time, if one is given within (parenthesis) or [brackets]
+				int waitTime = 0;
+				if (i < coords.length && (coords[i].trim().startsWith("(") || coords[i].trim().startsWith("[")))
+					waitTime = Integer.parseInt(coords[i].trim().substring(1, coords[i++].length() - 1).trim());
+
+				//add the new additions to the route
+				route.add(new RouteNode(new Vector2(x, y), waitTime));
 			}
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -253,13 +274,11 @@ public class Level {
 		for (int i = 0; i < tiles.length; ++i) {
 			if (tiles[i] == FLOOR_BLACK) {
 				//find the first pixel of floor and flood fill from there
-				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x0, y0) -> {
-					return validTile(x0, y0, (x, y) -> {
-						if (tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
-							return false;
-						tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
-						return true;
-					});
+				Trace.fill(i%LEVEL_WIDTH, i/LEVEL_WIDTH, (x, y) -> {
+					if (!inBounds(x, y) || tiles[y*LEVEL_WIDTH + x] != FLOOR_BLACK)
+						return false;
+					tiles[y*LEVEL_WIDTH + x] = FLOOR_WHITE;
+					return true;
 				});
 				break;
 			}
@@ -275,10 +294,8 @@ public class Level {
 
 	//helper function for constructor/room + hallway generation
 	private void clearRect(int x0, int y0, int w, int h, int color) {
-		Trace.rectangle(x0, y0, w, h, (x, y) -> {
-			tiles[y*LEVEL_WIDTH + x] = color;
-			return true;
-		});
+		for (int y = y0 + h; y --> y0;)
+			Arrays.fill(tiles, y*LEVEL_WIDTH + x0, y*LEVEL_WIDTH + x0 + w, color);
 	}
 
 	//helper function for constructor/player placement
@@ -294,16 +311,22 @@ public class Level {
 		return (PApplet.dist(player.x(), player.y(), objective.x(), objective.y()) > 200); //the magic numbers are real
 	}
 
+	//returns true if and only all tiles within the given rectangle are floor tiles
+	private boolean validRect(int x0, int y0, int w, int h) {
+		for (int y = y0 + h; y --> y0;)
+			for (int x = x0 + w; x --> x0;)
+				if (tiles[y*LEVEL_WIDTH + x] == FLOOR_NONE)
+					return false;
+
+		return true;
+	}
+
 	//returns true if an only if the coordinates are inside the level and not inside a wall
 	public boolean validTile(int x, int y) {
 		return (inBounds(x, y) && tiles[y*LEVEL_WIDTH + x] != FLOOR_NONE);
 	}
 
-	public boolean validTile(int x, int y, PointPredicate op) {
-		return (inBounds(x, y) && op.on(x, y));
-	}
-
-	public boolean inBounds(int x, int y) {
+	private boolean inBounds(int x, int y) {
 		return (x > 0 && x < LEVEL_WIDTH && y > 0 && y < LEVEL_HEIGHT);
 	}
 }

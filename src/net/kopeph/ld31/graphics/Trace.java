@@ -6,10 +6,7 @@ import java.util.Deque;
 
 import net.kopeph.ld31.spi.PointPredicate;
 
-/**
- * @author alexg
- * @author stuntddude
- */
+/** @author alexg */
 public class Trace {
 	private Trace() {
 		throw new AssertionError("No Instantiation of: " + getClass().getName()); //$NON-NLS-1$
@@ -23,7 +20,7 @@ public class Trace {
 	public static boolean line(int x1, int y1, int x2, int y2, PointPredicate op) {
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
-		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to possibly save a clock cycle down there
 
 		sx = x1 < x2? 1 : -1;
 		sy = y1 < y2? 1 : -1;
@@ -38,10 +35,6 @@ public class Trace {
 				err += dy;
 				x1 += sx;
 			}
-			if (x1 == x2 && y1 == y2) {
-				op.on(x1,y1);
-				return true;
-			}
 			if (e2 < dx) {
 				err += dx;
 				y1 += sy;
@@ -55,7 +48,7 @@ public class Trace {
 
 		int sx, sy, e2;
 		int dx =  Math.abs(x2-x1);
-		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to save a clock cycle down there
+		int dy = -Math.abs(y2-y1); //we calculate -dx in the first place to possibly save a clock cycle down there
 
 		sx = x1 < x2? 1 : -1;
 		sy = y1 < y2? 1 : -1;
@@ -76,13 +69,8 @@ public class Trace {
 		}
 	}
 
-	/** Equivalent to calling circle() with thick set to false */
-	public static void circle(int x0, int y0, int radius, PointPredicate op) {
-		circle(x0, y0, radius, false, op);
-	}
-
 	/** Source: http://en.wikipedia.org/wiki/Midpoint_circle_algorithm#Example */
-	public static void circle(int x0, int y0, int radius, boolean thick, PointPredicate op) {
+	public static void circle(int x0, int y0, int radius, PointPredicate op) {
 		int x = radius;
 		int y = 0;
 		int radiusError = 1-x;
@@ -94,8 +82,6 @@ public class Trace {
 				radiusError += 2 * y + 1;
 			}
 			else {
-				if (thick)
-					circlePointImpl(x - 1, y - 1, x0, y0, op);
 				x--;
 				radiusError += 2 * (y - x + 1);
 			}
@@ -122,15 +108,6 @@ public class Trace {
 			if (op.on(p.x    , p.y - 1)) points.push(new Point(p.x    , p.y - 1));
 			if (op.on(p.x + 1, p.y    )) points.push(new Point(p.x + 1, p.y    ));
 			if (op.on(p.x - 1, p.y    )) points.push(new Point(p.x - 1, p.y    ));
-		}
-	}
-
-	/** Traces a filled rectangle */
-	public static void rectangle(int x0, int y0, int width, int height, PointPredicate op) {
-		for (int y =  y0 + height; y --> y0;) {
-			for (int x = x0 +width; x --> x0;) {
-				op.on(x, y);
-			}
 		}
 	}
 }
