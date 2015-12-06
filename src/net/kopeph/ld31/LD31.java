@@ -17,7 +17,7 @@ public class LD31 extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	private static final String BG_MUSIC = "res/sound/music.mp3"; //file path
-	public static final String TEST_LEVEL = "res/test-level.txt"; //file path
+	public static final String TEST_LEVEL = "res/toriel/tutorial-1.txt"; //file path
 
 	public static final int // Game state enum
 		ST_RESET_HARD = -2, // Window size has changed
