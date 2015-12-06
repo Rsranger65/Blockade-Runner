@@ -123,14 +123,16 @@ public final class InputHandler {
 
 		bindControlCode(InputHandler.CTL_ESCAPE, (down) -> {
 			switch(context.gameState()) {
-			case LD31.ST_MENU:       context.exit();                           break;
-			case LD31.ST_RUNNING:    context.setGameState(LD31.ST_PAUSE);      break;
-			case LD31.ST_PAUSE:      context.setGameState(LD31.ST_RUNNING);    break;
-			case LD31.ST_KEYBIND:    context.setGameState(LD31.ST_SETTINGS);   break;
-			case LD31.ST_SETTINGS:   context.setGameState(LD31.ST_MENU);       break;
-			case LD31.ST_KEY_INGAME: context.setGameState(LD31.ST_SET_INGAME); break;
-			case LD31.ST_SET_INGAME: context.setGameState(LD31.ST_PAUSE);      break;
-			default:                 context.setGameState(LD31.ST_MENU);       break;
+				case LD31.ST_MENU:       context.exit();                           break;
+				case LD31.ST_RUNNING:    context.setGameState(LD31.ST_PAUSE);      break;
+				case LD31.ST_WIN:        context.setGameState(LD31.ST_RESET);      break;
+				case LD31.ST_DIE:        context.setGameState(LD31.ST_RESET);      break;
+				case LD31.ST_PAUSE:      context.setGameState(LD31.ST_RUNNING);    break;
+				case LD31.ST_SETTINGS:   context.setGameState(LD31.ST_MENU);       break;
+				case LD31.ST_SET_INGAME: context.setGameState(LD31.ST_PAUSE);      break;
+				case LD31.ST_KEYBIND:    context.setGameState(LD31.ST_SETTINGS);   break;
+				case LD31.ST_KEY_INGAME: context.setGameState(LD31.ST_SET_INGAME); break;
+				default:                 context.setGameState(LD31.ST_MENU);       break;
 			}
 		});
 	}
